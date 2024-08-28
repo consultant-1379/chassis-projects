@@ -1,0 +1,20 @@
+FROM armdocker.rnd.ericsson.se/proj-ipworks/buildtool:v3
+RUN mkdir -p /go/src/gerrit.ericsson.se/udm/nrf_discovery/
+RUN mkdir -p /go/src/gerrit.ericsson.se/udm/nrf_common/
+RUN mkdir -p /go/src/gerrit.ericsson.se/udm/nrf_dbproxy/
+RUN mkdir -p /go/src/gerrit.ericsson.se/udm/common/
+RUN mkdir -p /go/src/gerrit.ericsson.se/udm/vendor/
+ENV GOPATH=/go
+WORKDIR  /go/src/gerrit.ericsson.se/udm/nrf_discovery/
+COPY nrf_discovery /go/src/gerrit.ericsson.se/udm/nrf_discovery/
+COPY nrf_common /go/src/gerrit.ericsson.se/udm/nrf_common/
+COPY nrf_dbproxy /go/src/gerrit.ericsson.se/udm/nrf_dbproxy/
+COPY common /go/src/gerrit.ericsson.se/udm/common/
+COPY vendor /go/src/gerrit.ericsson.se/udm/vendor/
+COPY common/3ppcustomize/http2/ /go/src/gerrit.ericsson.se/udm/vendor/golang.org/x/net/http2/
+COPY nrf_common/pkg/http2/ /go/src/gerrit.ericsson.se/udm/vendor/golang.org/x/net/http2/
+RUN sed 's/go sc.runHandler(rw, req, handler)/Process(sc, rw, req, handler)/g' /go/src/gerrit.ericsson.se/udm/vendor/golang.org/x/net/http2/server.go  > /go/src/gerrit.ericsson.se/udm/vendor/golang.org/x/net/http2/temp.go
+RUN mv /go/src/gerrit.ericsson.se/udm/vendor/golang.org/x/net/http2/temp.go /go/src/gerrit.ericsson.se/udm/vendor/golang.org/x/net/http2/server.go
+RUN rm -rf /go/src/gerrit.ericsson.se/udm/vendor/com && find ../nrf_dbproxy/java/src/main/proto -type f | xargs -t -I {} protoc --proto_path=../nrf_dbproxy/java/src/main/proto --go_out=plugins=grpc:/go/src/gerrit.ericsson.se/udm/vendor {}
+RUN go build -ldflags "-X gerrit.ericsson.se/udm/nrf_discovery/pkg/options/options.Version=`date -u +%Y%m%d.%H%M%S`" -o /bin/app cmd/nrfdisc/nrfdisc.go;
+

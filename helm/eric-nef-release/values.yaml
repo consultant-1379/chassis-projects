@@ -1,0 +1,54 @@
+# ########################################################################### #
+# Global values
+# ########################################################################### #
+global:
+  timezone: UTC
+  registry:
+    url: selidocker.lmera.ericsson.se
+    # Secret must be manually created in the namespace, no default value
+    #pullSecret: eric-adp-example-secret
+  adp:
+    kafka: "eric-data-message-bus-kf:9092"
+    cm:
+      service: "http://eric-cm-mediator:5003/cm/api/v1"
+      schemaName: "ericsson-nef"
+      path: "ericsson-nef:nef"
+  eric-nef-common:
+    enabled: true
+  eric-nef-trafficinfluence:
+    enabled: true
+  nef-evex-singleton:
+    enabled: true 
+  eric-nef-bdt:
+    enabled: true
+  eric-nef-cp:
+    enabled: true
+
+## TODO
+productInfo:
+  rstate:
+
+nameOverride: null
+
+imageCredentials:
+  #registry:
+    # overrides global registry url
+    #url: armdocker.companyA.se
+    # Secret must be manually created in the namespace, no default value
+    #pullSecret: eric-adp-example-secret
+  repoPath: proj-nef
+  pullPolicy: IfNotPresent
+
+
+
+# ########################################################################### #
+#  CCES NEF configuration
+# ########################################################################### #
+eric-nef-trafficinfluece:
+  replicaCount: 2
+  resources:
+  app-config:
+      udr-url:
+
+eric-nef-bdt:
+  replicaCount: 2

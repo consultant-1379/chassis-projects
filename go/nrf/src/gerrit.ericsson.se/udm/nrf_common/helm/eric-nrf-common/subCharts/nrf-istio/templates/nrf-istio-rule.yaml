@@ -1,0 +1,85 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: {{ .Values.istio.gatewayName }}
+spec:
+  selector:
+    istio: {{ .Values.istio.ingressGatewayName }}  # use istio default controller
+  servers:
+  - port:
+      number: {{ .Values.istio.ingressGatewayPort }}
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+#  - port:
+#      number: 443
+#      name: https
+#      protocol: HTTPS
+#    tls:
+#      mode: SIMPLE
+#      serverCertificate: /etc/istio/ingressgateway-certs/tls.crt
+#      privateKey: /etc/istio/ingressgateway-certs/tls.key
+#    hosts:
+#    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: {{ .Values.istio.provision_gatewayName }}
+spec:
+  selector:
+    istio: {{ .Values.istio.provision_ingressGatewayName }}  # use nrf provision istio controller
+  servers:
+  - port:
+      number: {{ .Values.istio.provision_ingressGatewayPort }}
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: eric-nrf-virtualservice
+spec:
+  hosts:
+  - '*'
+  gateways:
+  - {{ .Values.istio.gatewayName }}
+  http:
+  - match:
+    - uri:
+        prefix: /nnrf-nfm
+    route:
+    - destination:
+        host: {{ .Values.service.name_nrf_mgmt }}
+        port:
+          number: 3000
+  - match:
+    - uri:
+        prefix: /nnrf-disc
+    route:
+    - destination:
+        host: {{ .Values.service.name_nrf_disc }}
+        port:
+          number: 3000
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: eric-nrf-provisioning-virtualservice
+spec:
+  hosts:
+  - '*'
+  gateways:
+  - {{ .Values.istio.provision_gatewayName }}
+  http:
+  - match:
+    - uri:
+        prefix: /nnrf-prov
+    route:
+    - destination:
+        host: {{ .Values.service.name_nrf_prov }}
+        port:
+          number: 3000

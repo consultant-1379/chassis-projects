@@ -1,0 +1,11 @@
+FROM armdocker.rnd.ericsson.se/proj-ldc/common_base_os/sles:1.0.0-9
+
+# mv tcpdump to /usr/bin to solve privilege issue
+RUN zypper ar -p 10 -C -G -f https://arm.rnd.ki.sw.ericsson.se/artifactory/proj-ldc-repo-rpm-local/common_base_os/sles/1.0.0-9?ssl_verify=no LDC-SLES15 \
+    && zypper ref -f -r LDC-SLES15 \
+    && zypper install -l -y tcpdump uuidd curl \
+    && mv /usr/sbin/tcpdump /usr/bin/tcpdump \
+    && curl -k -L -o /usr/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 && chmod a+x /usr/bin/jq \
+    && echo "curl -k -L -o /usr/bin/busybox https://busybox.net/downloads/binaries/1.28.1-defconfig-multiarch/busybox-x86_64; chmod a+x /usr/bin/busybox" > /usr/bin/busybox_dl && chmod a+x /usr/bin/busybox_dl \
+    && zypper clean -a
+

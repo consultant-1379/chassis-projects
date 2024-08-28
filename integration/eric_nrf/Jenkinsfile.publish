@@ -1,0 +1,88 @@
+@Library("PipelineGlobalLibrary") _
+import com.ericsson.ci.mason.Mason2
+
+def _project = "5gcicd/chassis-projects"
+def _unit = "spinnint"
+def _credentials = "userpwd-adp"
+def _branch = "master"
+def _refspec = ""
+def _gerrit_user = ""
+def _gerrit_pass = ""
+def _arm_token = ""
+def _arm_user = ""
+def _arm_pass = ""
+def _cloud = "kubernetes"
+def _CHART_NAME = ""
+def _CHART_VERSION = ""
+def _CHART_REPO = ""
+def _RELEASE = "false"
+String _VERSION_STRATEGY = "PATCH"
+
+if ( System.getenv("JENKINS_HOME")) { // Jenkins execution
+    _branch = params.GERRIT_BRANCH?: 'master'
+    _refspec = params.GERRIT_REFSPEC?: ''
+    _cloud = params.CLOUD?: _cloud
+    _CHART_NAME = params.CHART_NAME
+    _CHART_VERSION = params.CHART_VERSION
+    _CHART_REPO = params.CHART_REPO
+    _RELEASE = params.RELEASE?: _RELEASE
+    _VERSION_STRATEGY = params.VERSION_STRATEGY?: _VERSION_STRATEGY
+    // Import Gerrit credentials
+    withCredentials([usernamePassword(credentialsId: "${_credentials}",
+                                      usernameVariable: "GERRIT_USER",
+                                      passwordVariable: 'GERRIT_PASS')
+                    ]){
+        _gerrit_user = GERRIT_USER
+        _gerrit_pass = GERRIT_PASS
+    }
+
+    withCredentials([string(credentialsId: "armpass-adp",
+                            variable: 'ARM_TOKEN')
+                    ]) {
+        _arm_token = ARM_TOKEN
+    }
+
+} else { // Local Execution
+        _gerrit_user = ''       // Assign value to this credential locally
+        _gerrit_pass = ''       // Assign value to this credential locally
+        _arm_token = ''   // Assign value to this credential locally
+}
+
+def result = Mason2.ciPipeline(this) {
+    cloud(_cloud)
+    parallel(false)
+    unit(_unit)
+
+    integration{
+        publish ("CCSM-HSS-publish"){
+            env("GERRIT_USERNAME", _gerrit_user)
+            env("GERRIT_PASSWORD", _gerrit_pass)
+            env("ARM_API_TOKEN", _arm_token)
+            env("ARM_API_TOKEN", _arm_token)
+            configFile('helm_credentials')
+            git_repo_url("https://gerrit.ericsson.se/${_project}")
+            git_branch(_branch)
+            gerrit_refspec(_refspec)
+            chart_name(_CHART_NAME)
+            chart_repo(_CHART_REPO)
+            chart_version(_CHART_VERSION)
+            version_step_strategy_dependency(_VERSION_STRATEGY)
+            version_step_strategy_manual(_VERSION_STRATEGY)
+            always_release(_RELEASE)
+            automatic_release(_RELEASE)
+            chart_path("helm")
+            helm_internal_repo("https://arm.lmera.ericsson.se/artifactory/proj-cicd5g-test-internal-helm")
+            helm_drop_repo("https://arm.lmera.ericsson.se/artifactory/proj-cicd5g-test-drop-helm")
+            helm_released_repo("https://arm.lmera.ericsson.se/artifactory/proj-cicd5g-test-release-helm")
+            credentials(_credentials)
+        }
+    }
+
+    jenkins {
+        dsl("archive-artifacts"){
+            cmd {
+                archiveArtifacts(allowEmptyArchive: true, artifacts: 'artifact.properties', onlyIfSuccessful: true)
+            }
+        }
+    }
+}

@@ -1,0 +1,57 @@
+[
+    {
+        "container": "eric-nrf-management",
+        "severity": "info",
+        "customFilters": []
+    },
+    {
+        "container": "eric-nrf-management-notification",
+        "severity": "info",
+        "customFilters": []
+    },
+    {
+        "container": "eric-nrf-discovery",
+        "severity": "info",
+        "customFilters": []
+    },
+    {
+        "container": "eric-nrf-provision",
+        "severity": "info",
+        "customFilters": []
+    },
+    {
+        "container": "eric-nrf-accesstoken",
+        "severity": "info",
+        "customFilters": []
+    },
+    {
+        "container": "eric-nrf-dns",
+        "severity": "info",
+        "customFilters": []
+    },
+    {
+        "container": "eric-nrf-nfm-dbproxy",
+        "severity": "info",
+        "customFilters": []
+    },
+    {
+        "container": "eric-nrf-notify-dbproxy",
+        "severity": "info",
+        "customFilters": []
+    },
+    {
+        "container": "eric-nrf-disc-dbproxy",
+        "severity": "info",
+        "customFilters": []
+    },
+    {
+        "container": "eric-nrf-prov-dbproxy",
+        "severity": "info",
+        "customFilters": []
+    },
+    {
+        "container": "eric-nrf-accesstoken-dbproxy",
+        "severity": "info",
+        "customFilters": []
+    }
+]

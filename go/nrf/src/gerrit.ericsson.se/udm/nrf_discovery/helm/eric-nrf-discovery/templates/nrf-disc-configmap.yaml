@@ -1,0 +1,14 @@
+apiVersion: v1
+data:
+{{ (.Files.Glob "config/internal/internalConf.json").AsConfig | indent 2 }}
+kind: ConfigMap
+metadata:
+  name: {{ .Values.disc.internalConf.configmap.name }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.dbproxy.configmap.name }}
+data:
+{{ (.Files.Glob "config/dbproxy/nrf-disc-log4j2.xml").AsConfig | indent 2 }}
+{{ (.Files.Glob "config/dbproxy/dbproxy-internal.json").AsConfig | indent 2 }}

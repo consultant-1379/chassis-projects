@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+// Language Dependent Statements Start, below statements are applicable only for Java
+option java_package = "ericsson.core.nrf.dbproxy.grpc.nfmessage.gpsiprofile";
+option java_outer_classname = "GpsiProfileIndexProto";
+option go_package = "com/dbproxy/nfmessage/gpsiprofile";
+package grpc;
+// Language Dependent Statements End
+
+message GpsiProfileIndex {
+    repeated string nf_type      = 1;
+	repeated string group_index  = 2;
+	uint32 profile_type          = 3;
+}

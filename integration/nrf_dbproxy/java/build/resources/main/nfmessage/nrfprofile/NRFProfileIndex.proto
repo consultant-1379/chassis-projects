@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+// Language Dependent Statements Start, below statements are applicable only for Java
+option java_package = "ericsson.core.nrf.dbproxy.grpc.nfmessage.nrfprofile";
+option java_outer_classname = "NRFProfileIndexProto";
+option go_package = "com/dbproxy/nfmessage/nrfprofile";
+package grpc;
+// Language Dependent Statements End
+
+message NRFProfileIndex {
+    //for exprire time(Put) / start expire time(Get)
+    uint64 key1             = 1;
+    //                      / end expire time(Get)
+    uint64 key2             = 2;
+    //for register type(Put) / for register type 1:register 2:provision(Get)
+    uint64 key3             = 3;
+
+    // for amfInfoSum
+    repeated NRFKeyStruct amf_key1  = 4;
+    repeated NRFKeyStruct amf_key2  = 5;
+    repeated NRFKeyStruct amf_key3  = 6;
+    repeated NRFKeyStruct amf_key4  = 7;
+
+    // for smfInfoSum
+    repeated NRFKeyStruct smf_key1  = 8;
+    repeated NRFKeyStruct smf_key2  = 9;
+    repeated NRFKeyStruct smf_key3  = 10;
+
+    // for udmInfoSum
+    repeated NRFKeyStruct udm_key1  = 11;
+    repeated NRFKeyStruct udm_key2  = 12;
+
+    // for ausfInfoSum
+    repeated NRFKeyStruct ausf_key1 = 13;
+    repeated NRFKeyStruct ausf_key2 = 14;
+
+    // for pcfInfoSum
+    repeated NRFKeyStruct pcf_key1 = 15;
+    repeated NRFKeyStruct pcf_key2 = 16;
+
+
+
+}
+
+message NRFKeyStruct {
+    string sub_key1          = 1;
+    string sub_key2          = 2;
+    string sub_key3          = 3;
+    string sub_key4          = 4;
+    string sub_key5          = 5;
+}

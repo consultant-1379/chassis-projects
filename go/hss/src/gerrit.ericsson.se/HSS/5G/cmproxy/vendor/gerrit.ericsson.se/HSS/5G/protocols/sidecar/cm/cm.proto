@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package ericsson.udm.sidecar.cm.v1;
+
+message CmRequest{
+  string key = 1;
+}
+
+message CmResponse{
+  string value = 1;
+}
+
+service CmService {
+  // Read a name and return a service configuration
+  rpc Read(CmRequest) returns (CmResponse);
+}
+

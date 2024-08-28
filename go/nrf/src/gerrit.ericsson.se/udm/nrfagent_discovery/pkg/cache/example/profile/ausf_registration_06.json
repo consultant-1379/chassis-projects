@@ -1,0 +1,235 @@
+{
+		"validityPeriod": 200,
+		"nfInstances": [
+			   {
+			     "nfInstanceId": "ausf-5g-01",
+			     "nfType": "ausf",
+				 "nfStatus": "REGISTERED",
+			     "plmn": {
+			       "mcc": "001",
+			       "mnc": "001"
+			     },
+			     "sNssais": [
+			       {
+			         "sst": 1,
+			         "sd": "01"
+			       },
+					{
+					 "sst": 11,
+			         "sd": "11"
+					}
+			     ],
+			     "fqdn": "seliius03696.seli.gic.ericsson.se",
+			     "ipv4Addresses": [
+			       "172.16.208.1"
+			     ],
+			     "ipv6Addresses": [
+			       "FF01::1101"
+			     ],
+			     "ipv6Prefixes": [
+			       "FF01"
+			     ],
+			     "capacity": 1,
+				 "priority":1,		
+			     "udrInfo": {
+			       "supiRanges": [
+			         {
+			           "start": "000001",
+			           "end": "000010",
+			           "pattern": "(^imsi-[0-9]{5,15}$)|(^nai-.+$)"
+			         }
+			       ]
+			     },
+			     "amfInfo": {
+			       "amfSetId": "amf-01"
+			     },
+			     "smfInfo": {
+			       "dnnList": [
+			         "ausf-01",
+					 "ausf-011",
+					 "ausf-02"
+			       ],
+			       "servingArea": [
+			         "ausf-01"
+			       ]
+			     },
+			     "upfInfo": {
+			       "sNssaiUpfInfoList": [
+			         {
+			           "sNssai": {
+			             "sst": 0,
+			             "sd": "ausf-01"
+			           },
+			           "dnnUpfInfoList": [
+			             {
+			               "dnn": "111111"
+			             }
+			           ]
+			         }
+			       ]
+			     },
+			     "nfServices": [
+			       {
+			         "serviceInstanceId": "nausf-auth-02",
+			         "serviceName": "nausf-auth-02",
+			         "version": "v1",
+			         "schema": "https://",
+			         "fqdn": "seliius03695.seli.gic.ericsson.se",
+			         "ipEndPoints": [
+			           {
+			             "ipv4Address": "127.0,0,1",
+			             "ipv6Address": "FF01::1101",
+			             "ipv6Prefix": "FF01",
+			             "port": 30080
+			           }
+			         ],
+			         "apiPrefix": "nudm-uecm",
+			         "defaultNotificationSubscriptions": [
+			           {
+			             "callbackUri": "https://seliius03695.seli.gic.ericsson.se"
+			           }
+			         ],
+			         "capacity": 1,
+			         "priority": 1,
+			         "supportedFeatures": "supportedFeatures-011"
+			       },
+				 {
+			         "serviceInstanceId": "nausf-auth-01",
+			         "serviceName": "nausf-auth-01",
+			         "version": "v1",
+			         "schema": "https://",
+			         "fqdn": "seliius03695.seli.gic.ericsson.se",
+			         "ipEndPoints": [
+			           {
+			             "ipv4Address": "127.0,0,1",
+			             "ipv6Address": "FF01::1101",
+			             "ipv6Prefix": "FF01",
+			             "port": 30080
+			           }
+			         ],
+			         "apiPrefix": "nudm-uecm",
+			         "defaultNotificationSubscriptions": [
+			           {
+			             "callbackUri": "https://seliius03695.seli.gic.ericsson.se"
+			           }
+			         ],
+			         "capacity": 1,
+			         "priority": 1,
+			         "supportedFeatures": "supportedFeatures-01"
+			       }
+			     ]
+			   },
+			  {
+			     "nfInstanceId": "ausf-5g-02",
+			     "nfType": "ausf",				
+			     "plmn": {
+			       "mcc": "002",
+			       "mnc": "002"
+			     },
+			     "sNssais": [
+			       {
+			         "sst": 2,
+			         "sd": "02"
+			       }
+			     ],
+			     "fqdn": "seliius03696.seli.gic.ericsson.se",
+			     "ipv4Addresses": [
+			       "172.16.208.2"
+			     ],
+			     "ipv6Addresses": [
+			       "FF01::1102"
+			     ],
+			     "ipv6Prefixes": [
+			       "FF02"
+			     ],
+			     "capacity": 1,	
+				 "priority":1,
+			     "udrInfo": {
+			       "supiRanges": [
+			         {
+			           "start": "000011",
+			           "end": "000020",
+			           "pattern": "(^imsi-[6-9]{5,15}$)|(^nai-.+$)"
+			         }
+			       ]
+			     },
+			     "amfInfo": {
+			       "amfSetId": "amf-02"
+			     },
+			     "smfInfo": {
+			       "dnnList": [
+			         "ausf-02"
+			       ],
+			       "servingArea": [
+			         "servingArea-02",
+					 "servingArea-022"
+			       ]
+			     },
+			     "upfInfo": {
+			       "sNssaiUpfInfoList": [
+			         {
+			           "sNssai": {
+			             "sst": 0,
+			             "sd": "ausf-02"
+			           },
+			           "dnnUpfInfoList": [
+			             {
+			               "dnn": "222222"
+			             }
+			           ]
+			         }
+			       ]
+			     },
+			     "nfServices": [
+			       {
+			         "serviceInstanceId": "nudm-uecm-02",
+			         "serviceName": "nudm-uecm-02",
+			         "version": "v1",
+			         "schema": "https://",
+			         "fqdn": "seliius03695.seli.gic.ericsson.se",
+			         "ipEndPoints": [
+			           {
+			             "ipv4Address": "127.0,0,2",
+			             "ipv6Address": "FF01::1102",
+			             "ipv6Prefix": "FF01",
+			             "port": 30080
+			           }
+			         ],
+			         "apiPrefix": "nudm-uecm",
+			         "defaultNotificationSubscriptions": [
+			           {
+			             "callbackUri": "https://seliius03695.seli.gic.ericsson.se"
+			           }
+			         ],
+			         "capacity": 1,
+			         "priority": 1,
+			         "supportedFeatures": "supportedFeatures-022"
+			       },
+				 {
+			         "serviceInstanceId": "nausf-auth-02",
+			         "serviceName": "nausf-auth-02",
+			         "version": "v1",
+			         "schema": "https://",
+			         "fqdn": "seliius03695.seli.gic.ericsson.se",
+			         "ipEndPoints": [
+			           {
+			             "ipv4Address": "127.0,0,1",
+			             "ipv6Address": "FF01::1101",
+			             "ipv6Prefix": "FF01",
+			             "port": 30080
+			           }
+			         ],
+			         "apiPrefix": "nudm-uecm",
+			         "defaultNotificationSubscriptions": [
+			           {
+			             "callbackUri": "https://seliius03695.seli.gic.ericsson.se"
+			           }
+			         ],
+			         "capacity": 2,
+			         "priority": 2,
+			         "supportedFeatures": "supportedFeatures-02"
+			       }
+			     ]
+			   }
+			]
+	}		

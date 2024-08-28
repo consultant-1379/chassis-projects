@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "required": [
+     "event",
+     "nfInstanceId",
+     "agentProducerId"
+  ],
+  "properties": {
+    "event": {
+      "properties": {
+        "type": {
+          "enum": [
+            "NF_REGISTERED",
+            "NF_DEREGISTERED",
+            "NF_PROFILE_CHANGED",
+            "AGENT_EVENT_DISC_RESULT"
+          ]
+        }
+      }
+    },
+    "nfType":{
+      "type": "string"
+    },
+    "nfInstanceId": {
+      "type": "string"
+    },
+    "agentProducerId": {
+      "type": "string"
+    },
+    "messageBody": {
+      "type": "object",
+      "properties": {
+         "validityPeriod": {
+            "type": "integer"
+         },
+         "nfInstances": {
+            "type": "array",
+            "items": {
+               "$ref": "TS29510_Nnrf_NFDiscvoery.yaml#/components/schemas/NFProfile"
+            }
+         }
+      }
+    }
+  }
+}
+

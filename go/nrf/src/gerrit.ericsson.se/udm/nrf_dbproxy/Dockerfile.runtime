@@ -1,0 +1,21 @@
+FROM armdocker.rnd.ericsson.se/proj-ipworks/buildtool-java:v2 as builder
+MAINTAINER ezganlu/ericsson
+
+COPY ["java", "/tmp/"]
+
+RUN cd /tmp && ./gradlew clean && ./gradlew build && ./gradlew install
+
+
+
+
+# make runtime image
+FROM armdocker.rnd.ericsson.se/proj-ipworks/sles-java-tools:v1
+
+
+WORKDIR /home/dbproxy
+
+COPY --from=builder /tmp/build/install/db_proxy/lib /home/dbproxy/lib
+
+COPY start_dbproxy.sh /home/dbproxy
+
+CMD ["/home/dbproxy/start_dbproxy.sh", "-Djava.ext.dirs=lib", "ericsson.core.nrf.dbproxy.DBProxyServer"]

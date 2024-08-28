@@ -1,0 +1,148 @@
+submodule nrf-submodule-management {
+	yang-version "1.1";
+ 
+  // module identification
+    belongs-to ericsson-nrf {
+        prefix "nrfe";
+    }
+
+ // linkage statements
+	import ericsson-yang-extensions { 
+		prefix yexte;
+	}
+
+	import ericsson-yang-types { 
+		prefix typese;
+	} 
+
+	import ericsson-notifications { 
+		prefix notife;
+	}     
+    
+    import ericsson-5gcudmpol-common {
+	    prefix udmp5gce;
+    }
+
+	organization "Ericsson AB";
+	contact "Ericsson first line support via email";
+	description "NRF management service submodel.
+			     Copyright (c) 2018 Ericsson AB. All rights reserved.";
+
+    revision "2019-04-03" {
+	  	description "align design rule";
+	    yexte:version 1;
+		yexte:release 0;
+		yexte:correction 6; 
+	}
+
+    revision "2019-01-14" {
+	  	description "Update to align with 29.510 version 15.2.0";
+	    yexte:version 1;
+		yexte:release 0;
+		yexte:correction 5; 
+	}
+
+    revision "2018-11-08" {
+	  	description "Update list management-nf-service";
+	    yexte:version 1;
+		yexte:release 0;
+		yexte:correction 4; 
+	}				 
+				 
+    revision "2018-10-15" {
+	  	description "Add subscription-expired-time";
+	    yexte:version 1;
+		yexte:release 0;
+		yexte:correction 3; 
+	}
+	
+    revision "2018-09-03" {
+	  	description "Add management_nf_service";
+	    yexte:version 1;
+		yexte:release 0;
+		yexte:correction 2; 
+	}
+    
+    revision "2018-08-01" {
+	  	description "Updated nrf prefix";
+	    yexte:version 1;
+		yexte:release 0;
+		yexte:correction 1; 
+	}
+	
+	revision "2018-05-25" {
+	  	description "Initial version. YANG modeling of 5G nrf";
+	    yexte:version 1;
+		yexte:release 0;
+		yexte:correction 0; 
+	} 
+
+ 
+ // module definitions
+ grouping management-service {
+
+
+	        leaf administrative-state {
+                status current {
+                    yexte:preliminary; 
+                }                
+                type typese:adm-state; 
+                description "Administrative status of management service.";
+            }
+
+            leaf operational-state {
+                status current {
+                    yexte:preliminary; 
+                }                
+                type typese:oper-state; 
+                config false;
+                notife:notifiable-state-data true;
+                description "Operational status of management service.";
+            }  
+
+           container heartbeat {
+               leaf default {
+                   description "Default NF heartbeat timer in seconds that the NRF shall be contacted.";
+                   type uint32;
+                    must ". > 0 " {
+                        error-message "The value of default must be larger than zero.";
+                    }	                   
+                   mandatory true;
+               }
+               list default-per-nftype {
+                   description "Default NF heartbeat timer in seconds per NF type that the NRF shall be contacted.";
+                   key nf-type;
+                   leaf nf-type {
+                       type udmp5gce:nf-type; 
+                   }
+                   leaf value {
+                       type uint32;
+                        must ". > 0 " {
+                            error-message "The value must be larger than zero.";
+                        }	                       
+                   }
+               } 
+
+                leaf grace-period {
+                    type uint32;
+                    must ". > 0 " {
+                        error-message "The value of grace-period must be larger than zero.";
+                    }			   
+                    default 5;
+                    description "Extra time in seconds that NRF will wait before NRF change one NF's status to SUSPENDED. 
+                    If one NF has not updated its profile for heartbeat timer interval plus heartbeat-grace-period, 
+                    NRF will change the status of the NF to SUSPENDED and consider that the NF and its services can no longer be discovered by other NFs via the NFDiscovery service.";            
+                    }
+
+           }                            
+
+            leaf subscription-expired-time {
+		       type uint32;
+			   default 86400;
+			   description "NF subscription expiration in seconds, NRF will consider one subscription invalid after the time interval.";            
+            }
+		}
+
+
+}
+

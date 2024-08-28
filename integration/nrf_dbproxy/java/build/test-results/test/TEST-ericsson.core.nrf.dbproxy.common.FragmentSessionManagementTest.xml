@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ericsson.core.nrf.dbproxy.common.FragmentSessionManagementTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2019-09-02T07:45:26" hostname="c3b6544a0f6e" time="1.281">
+  <properties/>
+  <testcase name="validate" classname="ericsson.core.nrf.dbproxy.common.FragmentSessionManagementTest" time="1.251"/>
+  <testcase name="get" classname="ericsson.core.nrf.dbproxy.common.FragmentSessionManagementTest" time="0.029"/>
+  <testcase name="put" classname="ericsson.core.nrf.dbproxy.common.FragmentSessionManagementTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

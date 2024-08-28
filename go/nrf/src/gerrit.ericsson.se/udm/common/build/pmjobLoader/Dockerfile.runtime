@@ -1,0 +1,5 @@
+FROM armdocker.rnd.ericsson.se/proj-ipworks/sles-tools:v1
+COPY pm_br_conf /
+COPY --from=pmjobloader-builder /bin/app /bin/pmjobLoader
+
+CMD ["/bin/pmjobLoader"]

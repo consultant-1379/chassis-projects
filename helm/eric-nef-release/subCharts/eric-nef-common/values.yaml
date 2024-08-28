@@ -1,0 +1,51 @@
+# ########################################################################### #
+# Deployment Tags, select which 5g@nef common services would like to deploy
+# ########################################################################### #
+tags:
+  eric-nrfagent-release: true
+  nef-istio: false
+
+# ########################################################################### #
+# Global values
+# ########################################################################### #
+global:
+  timezone: UTC
+  registry:
+    url: selidocker.lmera.ericsson.se
+    # Secret must be manually created in the namespace, no default value
+    #pullSecret: eric-adp-example-secret
+  adp:
+    kafka: "eric-data-message-bus-kf:9092"
+    cm:
+      service: "http://eric-cm-mediator:5003/cm/api/v1"
+      schemaName: "ericsson-nef"
+      path: "ericsson-nef:nef"
+      subscribeLeaseTime: 3600
+      subscribeRandomBound: 120
+
+## TODO
+productInfo:
+  rstate:
+
+nameOverride: null
+
+imageCredentials:
+  #registry:
+    # overrides global registry url
+    #url: armdocker.companyA.se
+    # Secret must be manually created in the namespace, no default value
+    #pullSecret: eric-adp-example-secret
+  repoPath: proj-nef
+  pullPolicy: IfNotPresent
+
+
+# ########################################################################### #
+# Values for nef-nf-registration micro service
+#     configure micro services to be registered
+#     configure parameters for nfProfile in cm
+# ########################################################################### #
+eric-nef-nf-registration:
+  config:
+    serviceNameMap:
+      dummy-service-fornrfagent: dummy-service-fornrfagent
+

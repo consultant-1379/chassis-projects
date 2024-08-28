@@ -1,0 +1,57 @@
+global:
+  timezone: UTC
+
+  #If the ADP deployed in a different namespace with eric-nrf
+  #please assign the namespace of ADP when install nrf.
+  adpNamespace:
+
+  adp:
+    cmm_service: "http://eric-cm-mediator"
+    cmm_service_port_path: "5003/cm/api/v1.1"
+
+  registry:
+    url: armdocker.rnd.ericsson.se
+    pullSecret:
+  imageCredentials:
+    pullPolicy: IfNotPresent
+
+
+#####################################################################
+##                          IMPORTANT!!
+#####################################################################
+##  Set the value of this attribute according to your needs
+##  when integrating nrf discovery as a sub-chart.
+##  Its value will determine the names of chart resources!
+#####################################################################
+nameOverride:
+
+productInfo:
+  # R-State of the product. R State should match helm chart version (3.1.0 -> R2A)
+  # To automate it when packaging the helm chart rstate can be generated
+  # and below value replaced with correct R-State
+  rstate: R21A
+
+imageCredentials:
+  pullPolicy:
+  repoPath: proj-ipworks
+  registry:
+    # Setting these parameters will override the values provided in their 'global' counterparts
+    url:
+    # note: armdocker does not request pullSecret
+    pullSecret:
+
+images:
+  pmJob:
+    name: nrfpmjobloader
+    tag: latest
+
+pmJob:
+
+  nf_type: "NRF"
+  loader_name: "loader"
+  unloader_name: "unloader"
+  pm_br_schema_name: "adp-gs-pm-br"
+  pm_br_conf_name: "adp-gs-pm-br"
+  pm_br_skeleton_file: "/pm_br_config_skeleton.json"
+  pm_br_service_file: "/pm_br_config_eric_nrf.json"
+

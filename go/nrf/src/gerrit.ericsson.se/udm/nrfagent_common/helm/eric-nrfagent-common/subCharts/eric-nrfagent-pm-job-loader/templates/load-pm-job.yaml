@@ -1,0 +1,42 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.pmjob.load_pmjob_name }}
+  labels:
+    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      name: {{ .Values.pmjob.load_pmjob_name }}
+      labels:
+        chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+      annotations:
+        sidecar.istio.io/inject: "false"
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: {{ .Values.pmjob.load_pmjob_name }}
+        image: {{ .Values.global.imageCredentials.repository }}/{{ .Values.pmjob.image.name }}:{{ .Values.pmjob.image.tag }}
+        imagePullPolicy: {{ .Values.pmjob.image.pullPolicy }}
+        command:
+        - /bin/pmjobLoader
+        args:
+        - load
+        env:
+        - name: CMM_SERVICE
+          value: {{ .Values.global.cm_uri_prefix }}
+        - name: PM_BR_SCHEMA_NAME
+          value: {{ .Values.pmjob.pm_br_schema_name }}
+        - name: PM_BR_CONF_NAME
+          value: {{ .Values.pmjob.pm_br_conf_name }}
+        - name: PM_BR_SKELETON_FILE
+          value: {{ .Values.pmjob.pm_br_skeleton_file }}
+        - name: PM_BR_SERVICE_FILE
+          value: {{ .Values.pmjob.pm_br_service_file }}
+        - name: POD_IP
+          valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+        - name: NF_TYPE
+          value: {{ .Values.pmjob.nf_type }}    

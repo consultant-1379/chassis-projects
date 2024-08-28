@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+// Language Dependent Statements Start
+option java_package = "ericsson.core.nrf.dbproxy.grpc.nfmessage.common";
+option java_outer_classname = "SearchExpressionProto";
+option go_package = "com/dbproxy/nfmessage/common";
+import "nfmessage/common/SearchParameter.proto";
+package grpc;
+// Language Dependent Statements End
+
+message SearchExpression {
+    oneof data {
+        AndExpression and_expression = 1;
+        ORExpression or_expression   = 2;
+    }
+}
+
+message AndExpression {
+    repeated MetaExpression meta_expression = 1;
+}
+
+message ORExpression {
+    repeated MetaExpression meta_expression = 1;
+}
+
+message MetaExpression {
+    oneof data {
+	SearchParameter search_parameter = 1;
+	AndExpression and_expression     = 2;
+	ORExpression or_expression       = 3;
+    }
+}
+

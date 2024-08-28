@@ -1,0 +1,12 @@
+FROM armdocker.rnd.ericsson.se/proj-ipworks/buildtool-java:v2 as builder
+COPY ["kvdb", "/tmp/"]
+RUN cd /tmp && ./gradlew clean && ./gradlew build
+
+FROM armdocker.rnd.ericsson.se/proj-ipworks/sles-java-tools:v2
+RUN mkdir -p /cm-schema /cm-init-config
+COPY script/import-cm-schema-conf.sh script/delete-cm-schema-conf.sh /bin/
+COPY script/pre-config-kvdb.sh /bin/
+COPY --from=builder /tmp/build/libs/kvdb-1.0.jar /bin
+COPY config/ericsson-nrf.json config/ericsson-nrf.yang.tar.gz /cm-schema/
+COPY config/cm-init-config.json /cm-init-config/
+CMD ["/bin/import-cm-schema-conf.sh"]

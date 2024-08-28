@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ericsson-nrf-pm-group-instances 0.1.7 -->
+<!-- modified: 2019-07-11 -->
+<config xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+  <pm xmlns="urn:rdns:com:ericsson:oammodel:ericsson-pm">  
+    <group>
+      <name>eric-nrf-nnrf-nfm-group</name>
+      <generation>5GS</generation>
+      <validity>true</validity>
+      <description>NRF management counter group</description>
+      <version>0.1.7</version>
+      <measurement-type>
+        <id>eric-nrf-nnrf-nfm-requests-recv</id>
+        <measurement-name>eric-nrf-nnrf-nfm-requests-recv</measurement-name>
+        <size>8</size>
+        <collection-method>cc</collection-method>
+        <description>Total number of OpenAPI requests received by NRF management service</description>
+        <condition>Incremented when OpenAPI requests are received by NRF management service</condition>
+        <aggregation>sum</aggregation>
+        <measurement-status>used</measurement-status>
+        <measurement-result>Integer value</measurement-result>
+        <multiplicity>1</multiplicity>
+        <reset-at-gran-period>true</reset-at-gran-period>
+      </measurement-type>
+      <measurement-type>
+        <id>eric-nrf-nnrf-nfm-successful-responses-sent</id>
+        <measurement-name>eric-nrf-nnrf-nfm-successful-responses-sent</measurement-name>
+        <size>8</size>
+        <collection-method>cc</collection-method>
+        <description>Total number of successful responses sent by NRF management service</description>
+        <condition>Incremented when requests are successfully handled and replied by NRF management service</condition>
+        <aggregation>sum</aggregation>
+        <measurement-status>used</measurement-status>
+        <measurement-result>Integer value</measurement-result>
+        <multiplicity>1</multiplicity>
+        <reset-at-gran-period>true</reset-at-gran-period>
+      </measurement-type>
+      <measurement-type>
+        <id>eric-nrf-nnrf-nfm-unsuccessful-responses-sent</id>
+        <measurement-name>eric-nrf-nnrf-nfm-unsuccessful-responses-sent</measurement-name>
+        <size>8</size>
+        <collection-method>cc</collection-method>
+        <description>Total number of failure responses handled by NRF management service</description>
+        <condition>Incremented when requests are not successfully replied by NRF management service</condition>
+        <aggregation>sum</aggregation>
+        <measurement-status>used</measurement-status>
+        <measurement-result>Integer value</measurement-result>
+        <multiplicity>1</multiplicity>
+        <reset-at-gran-period>true</reset-at-gran-period>
+      </measurement-type>
+      <measurement-type>
+        <id>eric-nrf-nnrf-nfm-requests-sent</id>
+        <measurement-name>eric-nrf-nnrf-nfm-requests-sent</measurement-name>
+        <size>8</size>
+        <collection-method>cc</collection-method>
+        <description>Total number of requests sent by NRF management service</description>
+        <condition>Incremented when a request is sent by NRF management service</condition>
+        <aggregation>sum</aggregation>
+        <measurement-status>used</measurement-status>
+        <measurement-result>Integer value</measurement-result>
+        <multiplicity>1</multiplicity>
+        <reset-at-gran-period>true</reset-at-gran-period>
+      </measurement-type>
+      <measurement-type>
+        <id>eric-nrf-nnrf-nfm-successful-responses-recv</id>
+        <measurement-name>eric-nrf-nnrf-nfm-successful-responses-recv</measurement-name>
+        <size>8</size>
+        <collection-method>cc</collection-method>
+        <description>Total number of successful responses received by NRF management service</description>
+        <condition>Incremented when a successful response is received by NRF management service</condition>
+        <aggregation>sum</aggregation>
+        <measurement-status>used</measurement-status>
+        <measurement-result>Integer value</measurement-result>
+        <multiplicity>1</multiplicity>
+        <reset-at-gran-period>true</reset-at-gran-period>
+      </measurement-type>
+      <measurement-type>
+        <id>eric-nrf-nnrf-nfm-unsuccessful-responses-recv</id>
+        <measurement-name>eric-nrf-nnrf-nfm-unsuccessful-responses-recv</measurement-name>
+        <size>8</size>
+        <collection-method>cc</collection-method>
+        <description>Total number of failure responses received by NRF management service</description>
+        <condition>Incremented when an unsuccessful response is received by NRF management service or request timeout</condition>
+        <aggregation>sum</aggregation>
+        <measurement-status>used</measurement-status>
+        <measurement-result>Integer value</measurement-result>
+        <multiplicity>1</multiplicity>
+        <reset-at-gran-period>true</reset-at-gran-period>
+      </measurement-type>
+      <measurement-type>
+        <id>eric-nrf-nf-profiles</id>
+        <measurement-name>eric-nrf-nf-profiles</measurement-name>
+        <size>8</size>
+        <collection-method>gauge</collection-method>
+        <description>Total number of NF profiles per specific status in NRF</description>
+        <condition>Set every 30 seconds in NRF management service</condition>
+        <aggregation>last-update</aggregation>
+        <measurement-status>used</measurement-status>
+        <measurement-result>Integer value</measurement-result>
+        <multiplicity>1</multiplicity>
+        <reset-at-gran-period>false</reset-at-gran-period>
+      </measurement-type>
+    </group>
+    <group>
+      <name>eric-nrf-nnrf-disc-group</name>
+      <generation>5GS</generation>
+      <validity>true</validity>
+      <description>NRF discovery counter group</description>
+      <version>0.1.7</version>
+      <measurement-type>
+        <id>eric-nrf-nnrf-disc-requests-recv</id>
+        <measurement-name>eric-nrf-nnrf-disc-requests-recv</measurement-name>
+        <size>8</size>
+        <collection-method>cc</collection-method>
+        <description>Total number of OpenAPI requests received by NRF discovery service</description>
+        <condition>Incremented when OpenAPI requests are received by NRF discovery service</condition>
+        <aggregation>sum</aggregation>
+        <measurement-status>used</measurement-status>
+        <measurement-result>Integer value</measurement-result>
+        <multiplicity>1</multiplicity>
+        <reset-at-gran-period>true</reset-at-gran-period>
+      </measurement-type>
+      <measurement-type>
+        <id>eric-nrf-nnrf-disc-successful-responses-sent</id>
+        <measurement-name>eric-nrf-nnrf-disc-successful-responses-sent</measurement-name>
+        <size>8</size>
+        <collection-method>cc</collection-method>
+        <description>Total number of successful responses sent by NRF discovery service</description>
+        <condition>Incremented when requests are successfully handled and replied by NRF discovery service</condition>
+        <aggregation>sum</aggregation>
+        <measurement-status>used</measurement-status>
+        <measurement-result>Integer value</measurement-result>
+        <multiplicity>1</multiplicity>
+        <reset-at-gran-period>true</reset-at-gran-period>
+      </measurement-type>
+      <measurement-type>
+        <id>eric-nrf-nnrf-disc-unsuccessful-responses-sent</id>
+        <measurement-name>eric-nrf-nnrf-disc-unsuccessful-responses-sent</measurement-name>
+        <size>8</size>
+        <collection-method>cc</collection-method>
+        <description>Total number of failure responses handled by NRF discovery service</description>
+        <condition>Incremented when requests are not successfully replied by NRF discovery service</condition>
+        <aggregation>sum</aggregation>
+        <measurement-status>used</measurement-status>
+        <measurement-result>Integer value</measurement-result>
+        <multiplicity>1</multiplicity>
+        <reset-at-gran-period>true</reset-at-gran-period>
+      </measurement-type>
+      <measurement-type>
+        <id>eric-nrf-nnrf-disc-requests-sent</id>
+        <measurement-name>eric-nrf-nnrf-disc-requests-sent</measurement-name>
+        <size>8</size>
+        <collection-method>cc</collection-method>
+        <description>Total number of requests sent by NRF discovery service</description>
+        <condition>Incremented when requests are sent by NRF discovery service</condition>
+        <aggregation>sum</aggregation>
+        <measurement-status>used</measurement-status>
+        <measurement-result>Integer value</measurement-result>
+        <multiplicity>1</multiplicity>
+        <reset-at-gran-period>true</reset-at-gran-period>
+      </measurement-type>
+      <measurement-type>
+        <id>eric-nrf-nnrf-disc-successful-responses-recv</id>
+        <measurement-name>eric-nrf-nnrf-disc-successful-responses-recv</measurement-name>
+        <size>8</size>
+        <collection-method>cc</collection-method>
+        <description>Total number of successful responses received by NRF discovery service</description>
+        <condition>Incremented when successful requests are received by NRF discovery service</condition>
+        <aggregation>sum</aggregation>
+        <measurement-status>used</measurement-status>
+        <measurement-result>Integer value</measurement-result>
+        <multiplicity>1</multiplicity>
+        <reset-at-gran-period>true</reset-at-gran-period>
+      </measurement-type>
+      <measurement-type>
+        <id>eric-nrf-nnrf-disc-unsuccessful-responses-recv</id>
+        <measurement-name>eric-nrf-nnrf-disc-unsuccessful-responses-recv</measurement-name>
+        <size>8</size>
+        <collection-method>cc</collection-method>
+        <description>Total number of failure responses received by NRF discovery service</description>
+        <condition>Incremented when failure requests are received by NRF discovery service</condition>
+        <aggregation>sum</aggregation>
+        <measurement-status>used</measurement-status>
+        <measurement-result>Integer value</measurement-result>
+        <multiplicity>1</multiplicity>
+        <reset-at-gran-period>true</reset-at-gran-period>
+      </measurement-type>
+    </group>
+    <group>
+      <name>eric-nrf-nnrf-prov-group</name>
+      <generation>5GS</generation>
+      <validity>true</validity>
+      <description>NRF provision counter group</description>
+      <version>0.1.7</version>
+      <measurement-type>
+        <id>eric-nrf-nnrf-prov-requests-recv</id>
+        <measurement-name>eric-nrf-nnrf-prov-requests-recv</measurement-name>
+        <size>8</size>
+        <collection-method>cc</collection-method>
+        <description>Total number of OpenAPI requests received by NRF provision service</description>
+        <condition>Incremented when OpenAPI requests are received by NRF provision service</condition>
+        <aggregation>sum</aggregation>
+        <measurement-status>used</measurement-status>
+        <measurement-result>Integer value</measurement-result>
+        <multiplicity>1</multiplicity>
+        <reset-at-gran-period>true</reset-at-gran-period>
+      </measurement-type>
+      <measurement-type>
+        <id>eric-nrf-nnrf-prov-successful-responses-sent</id>
+        <measurement-name>eric-nrf-nnrf-prov-successful-responses-sent</measurement-name>
+        <size>8</size>
+        <collection-method>cc</collection-method>
+        <description>Total number of successful responses sent by NRF provision service</description>
+        <condition>Incremented when requests are successfully handled and replied by NRF provision service</condition>
+        <aggregation>sum</aggregation>
+        <measurement-status>used</measurement-status>
+        <measurement-result>Integer value</measurement-result>
+        <multiplicity>1</multiplicity>
+        <reset-at-gran-period>true</reset-at-gran-period>
+      </measurement-type>
+      <measurement-type>
+        <id>eric-nrf-nnrf-prov-unsuccessful-responses-sent</id>
+        <measurement-name>eric-nrf-nnrf-prov-unsuccessful-responses-sent</measurement-name>
+        <size>8</size>
+        <collection-method>cc</collection-method>
+        <description>Total number of failure responses handled by NRF provision service</description>
+        <condition>Incremented when requests are not successfully replied by NRF provision service</condition>
+        <aggregation>sum</aggregation>
+        <measurement-status>used</measurement-status>
+        <measurement-result>Integer value</measurement-result>
+        <multiplicity>1</multiplicity>
+        <reset-at-gran-period>true</reset-at-gran-period>
+      </measurement-type> 
+    </group>
+  </pm>
+</config>

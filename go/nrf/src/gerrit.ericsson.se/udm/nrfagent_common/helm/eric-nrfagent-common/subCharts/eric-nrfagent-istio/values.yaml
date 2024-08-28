@@ -1,0 +1,22 @@
+port:
+  number: 85
+  name: http
+  protocol: HTTP
+
+service:
+  name_nrfagent_ntf: nrf-notify-agent
+  name_nrfagent_disc: nrf-discovery-agent
+
+serviceport:
+  ntf_h1_withouttls: 3011
+  ntf_h2_withtls: 3012
+  ntf_h2_withouttls: 3013
+  disc_h1_withouttls: 3201
+  disc_h2_withouttls: 3202
+
+istio:
+  gatewayName: eric-nrf-agent-traffic-gateway
+  ingressGatewayName: eric-nrf-agent-traffic
+
+global:
+  nf_instance_name: eric

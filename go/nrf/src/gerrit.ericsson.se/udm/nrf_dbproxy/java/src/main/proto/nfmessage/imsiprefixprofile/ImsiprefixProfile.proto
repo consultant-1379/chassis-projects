@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+// Language Dependent Statements Start, below statements are applicable only for Java
+option java_package = "ericsson.core.nrf.dbproxy.grpc.nfmessage.imsiprefixprofile";
+option java_outer_classname = "ImsiprefixProfileProto";
+option go_package = "com/dbproxy/nfmessage/imsiprefixprofile";
+package grpc;
+// Language Dependent Statements End
+
+message ImsiprefixProfile {
+    uint64 imsi_prefix         = 1;
+    string value_info          = 2;
+}

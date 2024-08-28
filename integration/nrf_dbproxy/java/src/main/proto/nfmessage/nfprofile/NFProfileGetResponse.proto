@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+// Language Dependent Statements Start
+option java_package = "ericsson.core.nrf.dbproxy.grpc.nfmessage.nfprofile";
+option java_outer_classname = "NFProfileGetResponseProto";
+option go_package = "com/dbproxy/nfmessage/nfprofile";
+import "nfmessage/common/FragmentInfo.proto";
+package grpc;
+// Language Dependent Statements End
+
+message NFProfileGetResponse {
+    uint32 code                       = 1;
+    repeated string nf_profile        = 2;
+    FragmentInfo fragment_info        = 3;
+}

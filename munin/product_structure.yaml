@@ -1,0 +1,16 @@
+modelVersion: "2.0"
+flavor: "Generic"
+service:
+  name: "TestCI"
+  design_responsible: "UDM5G"
+  top_product:
+    alias: ["eric-udm-testci"]
+    number: UDM 1234 568
+  derivative_products: []
+  src_products:
+    - label: "Test ss"
+      number: UDM 1234 569
+  design_countries:
+    - "ES"
+  sw_compilation_country: "ES"
+  design_responsible: "5G CI/CD Team"

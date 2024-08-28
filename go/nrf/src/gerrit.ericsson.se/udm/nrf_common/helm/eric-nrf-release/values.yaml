@@ -1,0 +1,35 @@
+# ########################################################################### #
+# Deployment Tags, select which 5g@nrf service would like to deploy
+# ########################################################################### #
+tags:
+  eric-nrf-all: false
+  eric-nrf-common: true
+  eric-nrf-discovery: true
+  eric-nrf-management: true
+  eric-nrf-provision: true
+  eric-nrf-dns: false
+
+global:
+  serviceType: ClusterIP
+
+  sidecarInjected: "false"
+
+  imageCredentials:
+    repository: armdocker.rnd.ericsson.se/proj-ipworks
+
+  cmproxy:
+    kafka_connection: "eric-data-message-bus-kf:9092"
+    cmm_service: "http://eric-cm-mediator:5003/cm/api/v1.1"
+    cmm_config_schema_prefix_name: "ericsson-nrf"
+    cmm_config_module_name: "ericsson-nrf:nrf"
+    cmm_config_topic: "nrf-agent-cmproxy"
+
+  db:
+    info:
+      configmap:
+        name: "eric-nrf-dbinfo-conf"
+        mountpath: "/etc"
+    multisite:
+      configmap:
+        name: "eric-nrf-multisite-conf"
+        mountpath: "/etc"

@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+// Language Dependent Statements Start
+option java_package = "ericsson.core.nrf.dbproxy.grpc.nfmessage.nfprofile";
+option java_outer_classname = "NFProfileCountGetResponseProto";
+option go_package = "com/dbproxy/nfmessage/nfprofile";
+package grpc;
+// Language Dependent Statements End
+
+message NFProfileCountGetResponse {
+    uint32 code         = 1;
+    uint32 count        = 2;
+}

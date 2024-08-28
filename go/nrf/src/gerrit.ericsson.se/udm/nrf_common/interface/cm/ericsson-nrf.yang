@@ -1,0 +1,315 @@
+module ericsson-nrf {
+	yang-version "1.1";
+	namespace urn:rdns:com:ericsson:oammodel:ericsson-nrf;
+	prefix nrfe;
+	
+	import ericsson-yang-types { 
+		prefix typese;
+	}  
+
+	import ericsson-yang-extensions { 
+		prefix yexte;
+	} 
+
+	import ericsson-notifications { 
+		prefix notife;
+	}    
+
+ 	import ietf-inet-types {
+  		prefix inet;
+  	}
+
+    import ericsson-5gcudmpol-common {
+	    prefix udmp5gce;
+    }
+
+    import ericsson-nrf-common {
+		prefix comtypese;
+	}   
+
+
+    include "nrf-submodule-management";    
+    include "nrf-submodule-discovery";
+    include "nrf-submodule-provisioning";
+    include "nrf-submodule-policy";
+       
+	organization "Ericsson AB";
+	contact "Ericsson first line support via email";
+	description "5G NRF model.
+			     Copyright (c) 2018 Ericsson AB. All rights reserved.";
+
+	revision "2019-04-24" {
+	  	description "align with ericsson-5gcudmpol-common 0.1.4,
+                     align with design rule in UDM&P solution study
+                     update according to NRF CM review comments.";
+	    yexte:version 1;
+		yexte:release 0;
+		yexte:correction 11; 
+	}
+
+    revision "2019-03-15" {
+        description "Add witness-nf for geored-function";
+        yexte:version 1;
+        yexte:release 0;
+        yexte:correction 10;
+    }
+
+	revision "2019-01-21" {
+	  	description "Submodule nrf-submodule-management update to 1.0.5,
+          Submodule ericsson-nrf-common update to 0.1.3,
+		  Submodule submodule-sbi update to 1.0.5,
+          add submodule nrf-submodule-policy
+          add geored-function";
+	    yexte:version 1;
+		yexte:release 0;
+		yexte:correction 9; 
+	}
+
+	revision "2018-12-12" {
+	  	description "Submodule nrf-submodule-discovery update to 1.0.8";
+	    yexte:version 1;
+		yexte:release 0;
+		yexte:correction 8; 
+	}				 
+				 
+	revision "2018-11-08" {
+	  	description "Align 29.510 version 15.1.0";
+	    yexte:version 1;
+		yexte:release 0;
+		yexte:correction 7; 
+	}
+
+	revision "2018-10-19" {
+	  	description "Remove submodule-backend-db";
+	    yexte:version 1;
+		yexte:release 0;
+		yexte:correction 6; 
+	}
+	
+	revision "2018-10-15" {
+	  	description "Remove default value of nrf-role";
+	    yexte:version 1;
+		yexte:release 0;
+		yexte:correction 5; 
+	}
+
+	revision "2018-09-17" {
+	  	description "Add nrf-submodule-provisioning";
+	    yexte:version 1;
+		yexte:release 0;
+		yexte:correction 4; 
+	}
+
+	revision "2018-09-03" {
+	  	description "Update name format, add nf-profile info, nf-common";
+	    yexte:version 1;
+		yexte:release 0;
+		yexte:correction 3; 
+	}
+	
+	revision "2018-08-03" {
+	  	description "Update submodule-sbi";
+	    yexte:version 1;
+		yexte:release 0;
+		yexte:correction 2; 
+	}
+	
+	revision "2018-08-01" {
+	  	description "Update submodule-sbi:fqdn and interPlmnFqdn to container";
+	    yexte:version 1;
+		yexte:release 0;
+		yexte:correction 1; 
+	}
+	
+	revision "2018-05-25" {
+	  	description "Initial version. YANG modeling of 5G nrf";
+	    yexte:version 1;
+		yexte:release 0;
+		yexte:correction 0; 
+	}
+
+
+	container nrf {
+	    presence ""; 
+		description "NRF configuration";
+
+
+        container common {
+
+	        leaf administrative-state {
+                status current {
+                    yexte:preliminary; 
+                }
+                type typese:adm-state; 
+                description "Administrative status of NRF";
+            }
+
+            leaf operational-state {
+                status current {
+                    yexte:preliminary; 
+                }
+                type typese:oper-state; 
+                config false;
+                notife:notifiable-state-data true;
+                description "Operational status of NRF";
+            }            
+
+            leaf role {
+                type enumeration
+                {
+                    enum plmn-nrf {
+                        value 0;
+                        description "PLMN level NRF";
+                    }
+                    enum region-nrf {
+                        value 1;
+                        description "Region Level NRF";
+                    }
+                    enum slice-nrf {
+                        value 2;
+                        description "Slice level NRF";
+                    }
+                }
+            }
+
+
+            container plmn-nrf {
+                when "../role != 'plmn-nrf'";
+                description "The PLMN Level NRFs, towards which region NRF registers itself and 
+                    forwards discovery request in case no match result within region.";
+
+                leaf mode {
+                    type comtypese:load-balance-mode;
+                    default active-standby;
+                }
+                
+                list profile {
+                    key "id";
+                    uses comtypese:nrf-server-profile;
+                }
+            }
+
+           container remote-default-setting {
+               description	"Default scheme and port to be used when peer FQDN is derived from MCC and MNC in across PLMN scenario.";
+               status current {
+                   yexte:preliminary; 
+               }               
+               leaf scheme { 
+                   type string;
+                   default "https";		  
+               }
+               leaf port {
+                   type inet:port-number;
+                   default 443;
+               }	
+           }
+
+            // add CM for NRF geographical redundancy function
+            container geo-red {
+                description "Additional options to control NRF service availability status when Geographical Redundancy function encounters external faults. The Geographical Redundancy function itself has to be setup manually according to user guide.";
+                leaf keep-management-service {
+                    type boolean;
+                    default true;
+                    description "NRF NFManagement Service keeps handling service requests even if Geographical Redundancy function detects that this NRF leaves the redundancy configuration. This applies also for provisioning service.";
+                }
+                leaf keep-discovery-service {
+                    type boolean;
+                    default true;
+                    description "NRF NFDiscovery Service keeps handling service requests even if Geographical Redundancy function detects that this NRF leaves the redundancy configuration.";
+                }
+                
+                container witness-nf {               
+                    description "Witness NF used to assist NRF Geographical Redundancy function to select leading NRF.";
+
+                    leaf identity-type {
+                        type enumeration {
+                            enum nf-fqdn {
+                                value 0;
+                                description "Use fqdn of the root NF Profile as key to specify the witness NF instance.";
+                            }
+                            enum nf-instance-id {
+                                value 1;
+                                description "Use nfInstanceId of the root NF Profile as key to specify the witness NF instance.";
+                            }
+                        }
+                    }
+
+                    leaf identity-value {
+                        type string {
+                        }
+                        description "To specify the fqdn or nfInstanceId of the witness NF";
+                    }
+                }
+            }
+        }
+        
+    	container nf-profile {
+          	description	"NRF own NFProfile info.";
+            uses udmp5gce:nf-profile;
+
+            list service {
+                 key "instance-id";
+                 yexte:is-system-created;
+                 uses udmp5gce:nf-service;
+            }
+       } 
+	
+        container  management-service {
+            uses management-service;
+        }
+
+        container  discovery-service {
+            uses discovery-service;
+        }
+
+        container  provisioning-service {
+            uses provisioning-service;
+        }  
+
+        container  policy {
+            uses nrf-policy;
+        }            
+
+        list nf-service-log {
+			key log-id;
+			description "Represents a specific Service log in the system. e.g. nrf managment, or nrf discovery";
+			yexte:is-system-created;
+			status current {
+                yexte:preliminary; 
+            }
+			
+            leaf log-id {
+				type string {
+                  length "1..64";
+                }
+				description "Identity of the log entry.";
+			}
+
+			leaf severity {
+				type comtypese:log-severity;
+				description "Log level.";
+			}
+
+            list pod-log {
+                key pod-id;
+                description "Represents a specific pod related log in the system.";
+                
+			    leaf pod-id {
+				    type string{
+                      length "1..64";
+                    }
+				    description "Identity of the pod entry.";                            
+                } 
+            
+                leaf severity {
+				    type comtypese:log-severity;
+				    description "Log level.";
+			    }
+
+            }
+        }
+
+     }
+
+}
+

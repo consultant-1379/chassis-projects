@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.hookjob.pre_install_name }}
+  labels:
+    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded	
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      name: {{ .Values.hookjob.pre_install_name }}
+      labels:
+        chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+      annotations:
+        sidecar.istio.io/inject: "false"
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: {{ .Values.hookjob.pre_install_name }}
+        image: {{ .Values.image.name }}:{{ .Values.image.tag }}

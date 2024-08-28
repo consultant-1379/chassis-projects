@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+// Language Dependent Statements Start
+option java_package = "ericsson.core.nrf.dbproxy.grpc.nfmessage.common";
+option java_outer_classname = "FragmentInfoProto";
+option go_package = "com/dbproxy/nfmessage/common";
+package grpc;
+// Language Dependent Statements End
+
+message FragmentInfo {
+    uint32 total_number        = 1;
+    uint32 transmitted_number  = 2;
+    string fragment_session_id = 3;
+}

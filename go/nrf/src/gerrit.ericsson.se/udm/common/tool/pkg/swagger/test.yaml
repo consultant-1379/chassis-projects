@@ -1,0 +1,491 @@
+openapi: 3.0.0
+info:
+  version: v1
+  title: NRF NFManagement Service
+  description: NRF NFManagement Service
+servers:
+  - description: SwaggerHub API Auto Mocking
+    url: 'https://virtserver.swaggerhub.com/EriCT4/nrf-nfm/v1'
+paths:
+  /nf-instances:
+    get:
+      summary: Retrieves a collection of NF Instances
+      operationId: GetNFInstances
+      tags:
+        - NF Instances (Store)
+      parameters:
+        - name: nfType
+          in: query
+          description: Type of NF
+          required: true
+          schema:
+            $ref: '#/components/schemas/NFType'
+        - name: limit
+          in: query
+          description: How many items to return at one time
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NFProfile'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  '/nf-instances/{nfInstanceID}':
+    get:
+      summary: Read the profile of a given NF Instance
+      operationId: GetNFInstance
+      tags:
+        - NF Instance ID (Document)
+      parameters:
+        - name: nfInstanceID
+          in: path
+          description: Unique ID of the NF Instance
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NFProfile'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+    put:
+      summary: Register a new NF Instance
+      operationId: RegisterNFInstance
+      tags:
+        - NF Instance ID (Document)
+      parameters:
+        - name: nfInstanceID
+          in: path
+          required: true
+          description: Unique ID of the NF Instance to register
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NFProfile'
+        required: true
+      responses:
+        '201':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NFProfile'
+          headers:
+            Location:
+              description: >-
+                the payload body of the PUT response shall contain the
+                representation of the created resource and the "Location" header
+                shall contain the URI of the created resource.
+              schema:
+                type: string
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+    patch:
+      summary: Update NF Instance profile
+      operationId: RegisterNFInstance
+      tags:
+        - NF Instance ID (Document)
+      parameters:
+        - name: nfInstanceID
+          in: path
+          required: true
+          description: Unique ID of the NF Instance to update
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              description: Document specifying the PATCH operations
+              $ref: '#/components/schemas/PatchDocument'
+        required: true
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NFProfile'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+    delete:
+      summary: Deregisters a given NF Instance
+      operationId: DeregisterNFInstance
+      tags:
+        - NF Instance ID (Document)
+      parameters:
+        - name: nfInstanceID
+          in: path
+          required: true
+          description: Unique ID of the NF Instance to deregister
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Expected response to a successful deregistration
+  '/nf-instances/{nfInstanceID}/nf-subscriptions':
+    post:
+      summary: Create a new subscription to a given NF Instance
+      operationId: Create NF Subscription
+      tags:
+        - NF Subscriptions (Collection)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NfSubscriptionData'
+        required: true
+      responses:
+        '201':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NfSubscriptionData'
+          headers:
+            Location:
+              description: >-
+                the payload body of the POST response shall contain the
+                representation of the created resource and the "Location" header
+                shall contain the URI of the created resource.
+              schema:
+                type: string
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      callbacks:
+        onNFRegistration:
+          '{$request.body.callbackURL}':
+            post:
+              requestBody:
+                description: Subscription Payload
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/NotificationData'
+              responses:
+                '200':
+                  description: Expected response to a successful callback processing
+  '/nf-instances/{nfInstanceID}/nf-subscriptions/{nfSubscriptionID}':
+    delete:
+      summary: Deletes a NF Subscription
+      operationId: RemoveNFSubscription
+      tags:
+        - NF Subscription ID (Document)
+      parameters:
+        - name: nfInstanceID
+          in: path
+          required: true
+          description: Unique ID of the NF Instance
+          schema:
+            type: string
+        - name: nfSubscriptionID
+          in: path
+          required: true
+          description: Unique ID of the subscription to remove
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Expected response to a successful subscription removal
+  /subscriptions:
+    post:
+      summary: Create a new subscription
+      operationId: Create Subscription
+      tags:
+        - Subscriptions (Collection)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionData'
+        required: true
+      responses:
+        '201':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionData'
+          headers:
+            Location:
+              description: >-
+                the payload body of the POST response shall contain the
+                representation of the created resource and the "Location" header
+                shall contain the URI of the created resource.
+              schema:
+                type: string
+        default:
+          description: unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      callbacks:
+        onNFRegistration:
+          '{$request.body.callbackURL}':
+            post:
+              requestBody:
+                description: Subscription Payload
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/NotificationData'
+              responses:
+                '200':
+                  description: Expected response to a successful callback processing
+  '/subscriptions/{subscriptionID}':
+    delete:
+      summary: Deletes a subscription
+      operationId: RemoveSubscription
+      tags:
+        - Subscription ID (Document)
+      parameters:
+        - name: subscriptionID
+          in: path
+          required: true
+          description: Unique ID of the subscription to remove
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Expected response to a successful subscription removal
+components:
+  schemas:
+    NFProfile:
+      required:
+        - nfInstanceID
+        - nfType
+      properties:
+        nfInstanceID:
+          type: string
+        nfType:
+          $ref: '#/components/schemas/NFType'
+        plmn:
+          type: string
+        sNssai:
+          $ref: '#/components/schemas/SingleNssai'
+        fqdn:
+          type: string
+        ipAddress:
+          type: array
+          items:
+            type: string
+        capacity:
+          type: integer
+        nfServiceList:
+          type: array
+          items:
+            $ref: '#/components/schemas/NFService'
+    NFService:
+      required:
+        - serviceInstanceID
+        - serviceName
+        - version
+        - schema
+      properties:
+        serviceInstanceID:
+          type: string
+        serviceName:
+          type: string
+        version:
+          type: string
+        Schema:
+          type: string
+        fqdn:
+          type: string
+        ipAddress:
+          type: array
+          items:
+            type: string
+        port:
+          type: integer
+        apiPrefix:
+          type: string
+        callbackUri:
+          type: array
+          items:
+            type: string
+        allowedPlmns:
+          type: array
+          items:
+            type: string
+        allowedNfTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/NFType'
+        allowedNssais:
+          type: array
+          items:
+            $ref: '#/components/schemas/SingleNssai'
+    SingleNssai:
+      required:
+        - sst
+      properties:
+        sst:
+          type: string
+        sd:
+          type: string
+    NFType:
+      type: string
+      enum:
+        - nrf
+        - udm
+        - amf
+        - smf
+        - ausf
+        - nef
+        - pcf
+        - smsf
+        - nssf
+        - udr
+        - lmf
+        - 5g_eir
+        - sepp
+        - upf
+        - n3iwf
+        - af
+        - udsf
+    SubscriptionData:
+      required:
+        - callbackURL
+      properties:
+        subscriptionID:
+          type: string
+        targetNfType:
+          type: array
+          items:
+            $ref: '#/components/schemas/NFType'
+        targetServiceName:
+          type: array
+          items:
+            type: string
+        callbackURL:
+          type: string
+    NotificationData:
+      required:
+        - timestamp
+        - subscriptionID
+        - notificationBody
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        subscriptionID:
+          type: string
+        notificationBody:
+          oneOf:
+            - $ref: '#/components/schemas/Registration'
+            - $ref: '#/components/schemas/ProfileChange'
+            - $ref: '#/components/schemas/Deregistration'
+    Registration:
+      required:
+        - nfInstanceIDInReg
+        - nfProfileInReg
+      properties:
+        nfInstanceIDInReg:
+          type: string
+        nfProfileInReg:
+          $ref: '#/components/schemas/NFProfile'
+    ProfileChange:
+      required:
+        - nfInstanceIDInProfChange
+      properties:
+        nfInstanceIDInProfChange:
+          type: string
+        ChangedNfProfile:
+          $ref: '#/components/schemas/NFProfile'   
+    Deregistration:
+      required:
+        - nfInstanceIDInDereg
+      properties:
+        nfInstanceIDInDereg:
+          type: string
+    NfSubscriptionData:
+      required:
+        - callbackURL
+      properties:
+        nfSubscriptionID:
+          type: string
+        deRegisterNotification:
+          type: boolean
+        profileSet:
+          $ref: '#/components/schemas/NFProfile'
+        callbackURL:
+          type: string
+    PatchDocument:
+      type: array
+      items:
+        $ref: '#/components/schemas/PatchItem'
+    PatchItem:
+      required:
+        - op
+        - path
+      properties:
+        op:
+          type: string
+          enum:
+            - add
+            - remove
+            - replace
+            - move
+            - copy
+            - test
+        path:
+          type: string
+        value:
+          type: object
+        from:
+          type: string
+    ProblemDetails:
+      required:
+        - type
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+externalDocs:
+  description: Documentation
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.510/'

@@ -1,0 +1,28 @@
+dependencies:
+- name: eric-data-kvdb-ag
+  version: "1.7.0+6"
+  repository: "https://arm.rnd.ki.sw.ericsson.se/artifactory/proj-adp-gs-all-helm"
+  condition: eric-data-kvdb-ag.enabled
+  tags:
+    - database
+
+- name: nrf-pm-job-loader
+  version: "0.1.0"
+  repository: "file://./subCharts/nrf-pm-job-loader"
+  condition: nrf-pm-job.enabled
+  tags:
+    - pmjob
+    
+- name: nrf-istio
+  version: "0.1.0"
+  repository: "file://./subCharts/nrf-istio"
+  condition: nrf-istio.enabled
+  tags:
+    - istio
+- name: nrf-ingress-secret
+  version: "0.1.0"
+  repository: "file://./subCharts/nrf-ingress-secret"
+  condition: nrf-ingress-secret.enabled
+  tags:
+    - istio
+

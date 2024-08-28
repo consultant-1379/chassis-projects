@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+// Language Dependent Statements Start
+option java_package = "ericsson.core.nrf.dbproxy.grpc.nfmessage.gpsiprofile";
+option java_outer_classname = "GpsiProfilePutRequestProto";
+option go_package = "com/dbproxy/nfmessage/gpsiprofile";
+package grpc;
+import "nfmessage/gpsiprofile/GpsiProfileIndex.proto";
+import "nfmessage/gpsiprefixprofile/GpsiprefixProfile.proto";
+// Language Dependent Statements End
+
+message GpsiProfilePutRequest {
+    string gpsi_profile_id                          = 1;
+    GpsiProfileIndex index                          = 2;
+    uint64 gpsi_version                             = 3;
+    bytes gpsi_profile_data                         = 4;
+    repeated GpsiprefixProfile gpsi_prefix_delete   = 5;
+    repeated GpsiprefixProfile gpsi_prefix_put      = 6;
+
+}

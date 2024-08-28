@@ -1,0 +1,28 @@
+The geode server's config is included in the helm/ericsson-nrf-release/values/values_geode.yaml, which is the value of key "cache_xml"
+! Notice that !
+1. When modify the value of cache_xml, be careful with the indent, align with yaml
+2. It is strongly suggest that the designer do remove the extra empty line in the values_geode.yaml
+The reason is that, the yaml has strict limit on the space and indent.
+
+
+The geode client's config is in $ROOT/helm/ericsson-nrf-release/charts/nrf-dbproxy-configmap/config directory.
+
+
+start goede server locally:
+  gfsh run --file=start.gfsh
+  gfsh run --file=stop.gfsh
+
+
+ENVs to run:
+export GEODE_DBPROXY_GRPC_PORT=50051
+export GEODE_LOCATOR_SERVICENAME=127.0.0.1
+export GEODE_LOCATOR_SERVICEPORT=10334
+export GEODE_DBPROXY_CLIENT_CONF_PATH="/home/pdu/dev/nrf/helm/ericsson-nrf-release/charts/nrf-dbproxy-configmap/config/cache.xml"
+export GEODE_REGION_NFPROFILE="ericsson-nrf-nfprofiles"
+export GEODE_REGION_SUBSCRIPTION="subscription-region"
+export GEODE_LOG_LEVEL="DEBUG"
+export DBPROXY_GRPC_PORT=50051
+export DBPROXY_GEODE_CACHE_CONF="/home/pdu/dev/nrf/helm/ericsson-nrf-release/charts/nrf-dbproxy-configmap/config/cache.xml"
+export DBPROXY_CONF="/home/pdu/dev/nrf1/db_proxy/config/dbproxy.conf.json"
+export LOG4J_CONFIGURATION_FILE="/home/pdu/dev/nrf/helm/ericsson-nrf-release/charts/nrf-dbproxy-configmap/config/nrf-mgmt-log4j2.xml"
+

@@ -1,0 +1,67 @@
+[
+  {
+    "name": "ericsson-nrf-nfprofiles",
+    "type": "REPLICATE_PERSISTENT",
+    "additional": ""
+  },
+  {
+    "name": "ericsson-nrf-nfhelper",
+    "type": "REPLICATE_PERSISTENT",
+    "additional": ""
+  },
+  {
+    "name": "ericsson-nrf-subscriptions",
+    "type": "REPLICATE_PERSISTENT",
+    "additional": ""
+  },
+  {
+    "name": "ericsson-nrf-nrfaddresses",
+    "type": "REPLICATE_PERSISTENT",
+    "additional": ""
+  },
+  {
+    "name": "ericsson-nrf-groupprofiles",
+    "type": "REPLICATE_PERSISTENT",
+    "additional": ""
+  },
+  {
+    "name": "ericsson-nrf-imsiprefixprofiles",
+    "type": "REPLICATE_PERSISTENT",
+    "additional": ""
+  },
+  {
+    "name": "ericsson-nrf-nrfprofiles",
+    "type": "REPLICATE_PERSISTENT",
+    "additional": ""
+  },
+  {
+    "name": "ericsson-nrf-gpsiprofiles",
+    "type": "REPLICATE_PERSISTENT",
+    "additional": ""
+  },
+  {
+    "name": "ericsson-nrf-gpsiprefixprofiles",
+    "type": "REPLICATE_PERSISTENT",
+    "additional": ""
+  },
+  {
+    "name": "ericsson-nrf-multisiteinfo",
+    "type": "REPLICATE_PERSISTENT",
+    "additional": ""
+  },
+  {
+    "name": "ericsson-nrf-witnessinfo",
+    "type": "REPLICATE_PERSISTENT",
+    "additional": ""
+  },
+  {
+    "name": "ericsson-nrf-regionnfinfo",
+    "type": "REPLICATE_PERSISTENT",
+    "additional": ""
+  },
+  {
+    "name": "ericsson-nrf-cachenfprofiles",
+    "type": "REPLICATE",
+    "additional": "--enable-statistics=true --eviction-entry-count=20000 --eviction-action=local-destroy"
+  }
+]

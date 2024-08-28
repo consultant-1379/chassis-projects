@@ -1,0 +1,4 @@
+FROM armdocker.rnd.ericsson.se/proj-ipworks/sles-tools:v1
+COPY script/check-disc-cm-conf.sh /bin/
+COPY --from=nrf-builder /bin/app /bin/nrfdisc
+CMD ["/bin/nrfdisc"]

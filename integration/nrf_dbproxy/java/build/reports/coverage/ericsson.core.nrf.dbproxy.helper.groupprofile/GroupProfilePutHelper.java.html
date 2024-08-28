@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GroupProfilePutHelper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.helper.groupprofile</a> &gt; <span class="el_source">GroupProfilePutHelper.java</span></div><h1>GroupProfilePutHelper.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.helper.groupprofile;
+
+import com.google.protobuf.ByteString;
+import ericsson.core.nrf.dbproxy.common.Code;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PutResponse;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.groupprofile.GroupProfilePutRequestProto.GroupProfilePutRequest;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.groupprofile.GroupProfilePutResponseProto.GroupProfilePutResponse;
+import ericsson.core.nrf.dbproxy.helper.Helper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class GroupProfilePutHelper extends Helper {
+
+<span class="fc" id="L15">  private static final Logger LOGGER = LogManager.getLogger(GroupProfilePutHelper.class);</span>
+
+  private static GroupProfilePutHelper instance;
+
+  private GroupProfilePutHelper() {
+  }
+
+  public static synchronized GroupProfilePutHelper getInstance() {
+<span class="fc bfc" id="L23" title="All 2 branches covered.">    if (null == instance) {</span>
+<span class="fc" id="L24">      instance = new GroupProfilePutHelper();</span>
+    }
+<span class="fc" id="L26">    return instance;</span>
+  }
+
+  public int validate(NFMessage message) {
+
+<span class="fc" id="L31">    GroupProfilePutRequest request = message.getRequest().getPutRequest()</span>
+<span class="fc" id="L32">        .getGroupProfilePutRequest();</span>
+<span class="fc" id="L33">    String groupProfileId = request.getGroupProfileId();</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">    if (groupProfileId.isEmpty()) {</span>
+<span class="fc" id="L35">      LOGGER.error(&quot;groupProfileId field is empty in GroupProfilePutRequest&quot;);</span>
+<span class="fc" id="L36">      return Code.EMPTY_GROUP_PROFILE_ID;</span>
+    }
+
+<span class="fc bfc" id="L39" title="All 2 branches covered.">    if (groupProfileId.length() &gt; Code.KEY_MAX_LENGTH) {</span>
+<span class="fc" id="L40">      LOGGER.error(&quot;groupProfileId length {} is too large, max length is {}&quot;,</span>
+<span class="fc" id="L41">          groupProfileId.length(), Code.KEY_MAX_LENGTH);</span>
+<span class="fc" id="L42">      return Code.GROUP_PROFILE_ID_LENGTH_EXCEED_MAX;</span>
+    }
+
+<span class="fc" id="L45">    ByteString groupProfileData = request.getGroupProfileData();</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">    if (groupProfileData.isEmpty()) {</span>
+<span class="fc" id="L47">      LOGGER.error(&quot;groupProfileData field is empty in GroupProfilePutRequest&quot;);</span>
+<span class="fc" id="L48">      return Code.EMPTY_GROUP_PROFILE_DATA;</span>
+    }
+
+<span class="fc" id="L51">    int profileType = request.getIndex().getProfileType();</span>
+<span class="pc bpc" id="L52" title="1 of 4 branches missed.">    if (profileType != Code.PROFILE_TYPE_GROUPID &amp;&amp; profileType != Code.PROFILE_TYPE_INSTANCEID) {</span>
+<span class="fc" id="L53">      LOGGER.error(&quot;profileType is not PROFILE_TYPE_GROUPID or PROFILE_TYPE_INSTANCEID.&quot;);</span>
+<span class="fc" id="L54">      return Code.GROUP_PROFILE_INVALID_PROFILE_TYPE;</span>
+    }
+<span class="fc" id="L56">    return Code.VALID;</span>
+  }
+
+  public NFMessage createResponse(int code) {
+
+<span class="fc" id="L61">    GroupProfilePutResponse groupProfilePutResponse = GroupProfilePutResponse.newBuilder()</span>
+<span class="fc" id="L62">        .setCode(code).build();</span>
+<span class="fc" id="L63">    PutResponse putResponse = PutResponse.newBuilder()</span>
+<span class="fc" id="L64">        .setGroupProfilePutResponse(groupProfilePutResponse).build();</span>
+<span class="fc" id="L65">    return createNFMessage(putResponse);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

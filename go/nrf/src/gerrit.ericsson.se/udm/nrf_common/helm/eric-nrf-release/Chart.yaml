@@ -1,0 +1,4 @@
+apiVersion: v1
+description: nrf release chart 
+name: eric-nrf-release
+version: 0.0.0

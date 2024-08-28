@@ -1,0 +1,258 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["nfStatusNotificationUri"],
+    "properties": {
+        "nfStatusNotificationUri": {
+            "type": "string"
+        },
+        "subscrCond": {
+            "$ref": "#/components/schemas/SubscrCond"
+        },
+        "validityTime": {
+            "$ref": "#/components/schemas/DateTime"
+        },
+        "reqNotifEvents": {
+            "type": "array",
+            "items": {
+                "$ref": "#/components/schemas/NotificationEventType"
+            },
+            "minItems": 1
+        },
+        "plmnId": {
+            "$ref": "#/components/schemas/PlmnId"
+        },
+        "notifCondition": {
+            "$ref": "#/components/schemas/NotifCondition"
+        },
+        "reqNfType": {
+            "$ref": "#/components/schemas/NFType"
+        },
+        "reqNfFqdn": {
+            "$ref": "#/components/schemas/Fqdn"
+        }
+    },
+    "components": {
+        "schemas": {
+            "SubscrCond": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "nfInstanceId": {
+                        "$ref": "#/components/schemas/NfInstanceId"
+                    },
+                    "nfType": {
+                        "$ref": "#/components/schemas/NFType"
+                    },
+                    "serviceName": {
+                        "$ref": "#/components/schemas/ServiceName"
+                    },
+                    "amfSetId": {
+                        "type": "string"
+                    },
+                    "amfRegionId": {
+                        "type": "string"
+                    },
+                    "guamiList": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Guami"
+                        },
+                        "minItems": 1
+                    },
+                    "snssaiList": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Snssai"
+                        },
+                        "minItems": 1
+                    },
+                    "nsiList": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "minItems": 1
+                    },
+                    "nfGroupId": {
+                        "$ref": "#/components/schemas/NfGroupId"
+                    }
+                }
+            },
+            "DateTime": {
+                "type": "string",
+                "format": "date-time"
+            },
+            "NotificationEventType": {
+                "anyOf": [{
+                        "type": "string",
+                        "enum": ["NF_REGISTERED", "NF_DEREGISTERED", "NF_PROFILE_CHANGED"]
+                    },
+                    {
+                        "type": "string"
+                    }
+                ]
+            },
+            "PlmnId": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["mcc", "mnc"],
+                "properties": {
+                    "mcc": {
+                        "$ref": "#/components/schemas/Mcc"
+                    },
+                    "mnc": {
+                        "$ref": "#/components/schemas/Mnc"
+                    }
+                }
+            },
+            "Mcc": {
+                "type": "string",
+                "pattern": "^[0-9]{3}$"
+            },
+            "Mnc": {
+                "type": "string",
+                "pattern": "^[0-9]{2,3}$"
+            },
+            "Snssai": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["sst"],
+                "properties": {
+                    "sst": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 255
+                    },
+                    "sd": {
+                        "type": "string",
+                        "pattern": "^[A-Fa-f0-9]{6}$"
+                    }
+                }
+            },
+            "NfInstanceId": {
+                "type": "string"
+            },
+            "NFType": {
+                "anyOf": [{
+                        "type": "string",
+                        "enum": [
+                            "NRF",
+                            "UDM",
+                            "AMF",
+                            "SMF",
+                            "AUSF",
+                            "NEF",
+                            "PCF",
+                            "SMSF",
+                            "NSSF",
+                            "UDR",
+                            "LMF",
+                            "GMLC",
+                            "5G_EIR",
+                            "SEPP",
+                            "UPF",
+                            "N3IWF",
+                            "AF",
+                            "UDSF",
+                            "BSF",
+                            "CHF",
+                            "NWDAF"
+                        ]
+                    },
+                    {
+                        "type": "string"
+                    }
+                ]
+            },
+            "ServiceName": {
+                "anyOf": [{
+                        "type": "string",
+                        "enum": [
+                            "nnrf-nfm",
+                            "nnrf-disc",
+                            "nudm-sdm",
+                            "nudm-uecm",
+                            "nudm-ueau",
+                            "nudm-ee",
+                            "nudm-pp",
+                            "namf-comm",
+                            "namf-evts",
+                            "namf-mt",
+                            "namf-location",
+                            "nsmf-pdusession",
+                            "nsmf-event-exposure",
+                            "nausf-auth",
+                            "nausf-sorprotection",
+                            "nnef-pfdmanagement",
+                            "npcf-am-policy-control",
+                            "npcf-smpolicycontrol",
+                            "npcf-policyauthorization",
+                            "npcf-bdtpolicycontrol",
+                            "npcf-eventexposure",
+                            "npcf-ue-policy-control",
+                            "nsmsf-sms",
+                            "nnssf-nsselection",
+                            "nnssf-nssaiavailability",
+                            "nudr-dr",
+                            "nlmf-loc",
+                            "n5g-eir-eic",
+                            "nbsf-management",
+                            "nchf-spendinglimitcontrol",
+                            "nchf-convergedcharging",
+                            "nnwdaf-eventssubscription",
+                            "nnwdaf-analyticsinfo"
+                        ]
+                    },
+                    {
+                        "type": "string"
+                    }
+                ]
+            },
+            "Fqdn": {
+                "type": "string"
+            },
+            "Guami": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["plmnId", "amfId"],
+                "properties": {
+                    "plmnId": {
+                        "$ref": "#/components/schemas/PlmnId"
+                    },
+                    "amfId": {
+                        "$ref": "#/components/schemas/AmfId"
+                    }
+                }
+            },
+            "AmfId": {
+                "type": "string",
+                "pattern": "^[A-Fa-f0-9]{6}$"
+            },
+            "NotifCondition": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "monitoredAttributes": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "minItems": 1
+                    },
+                    "unmonitoredAttributes": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "minItems": 1
+                    }
+                }
+            },
+            "NfGroupId": {
+                "type": "string"
+            }
+        }
+    }
+}

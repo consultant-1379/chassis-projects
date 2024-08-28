@@ -1,0 +1,177 @@
+{
+  "data": {
+    "ericsson-nrf:nrf": {
+      "management-service": {
+          "heartbeat": {
+            "default": 120,
+            "default-per-nftype": [
+            {
+              "nf-type": "nrf",
+              "value": 120
+            }
+          ],
+            "grace-period": 5
+          },
+        "subscription-expired-time": 604800,
+        "traffic-rate-limit-per-instance": 10
+      },
+      "nf-profile": {
+        "service-persistence": false,
+        "nsi": [],
+        "requested-status": "registered",
+        "capacity": 100,
+        "allowed-nf-type": [],
+        "service": [
+          {
+            "status": "registered",
+            "allowed-plmn": [],
+            "capacity": 100,
+            "name": "nnrf-nfm",
+            "allowed-nf-domain": [],
+            "inter-plmn-fqdn": "",
+            "fqdn": "nrf.5gc.mnc000.mcc460.3gppnetwork.org",
+            "priority": 5,
+            "supported-features": "",
+            "version": [
+              {
+                "api-full-version": "1.R15.1.1",
+                "api-version-in-uri": "v1",
+                "expiry": "2020-07-06T02:54:32Z"
+              }
+            ],
+            "allowed-nssai": [],
+            "api-prefix": "",
+            "scheme": "http",
+            "ip-endpoint": [
+              {
+                "ipv4-address": "192.168.1.5",
+                "id": 1,
+                "transport": "tcp",
+                "port": 0
+              }
+            ],
+            "instance-id": "nnrf-nfm-01",
+            "allowed-nf-type": []
+          },
+          {
+            "status": "registered",
+            "allowed-plmn": [],
+            "capacity": 100,
+            "name": "nnrf-disc",
+            "allowed-nf-domain": [],
+            "inter-plmn-fqdn": "",
+            "fqdn": "",
+            "priority": 5,
+            "supported-features": "",
+            "version": [
+              {
+                "api-full-version": "1.R15.1.1",
+                "api-version-in-uri": "v1",
+                "expiry": "2020-07-06T02:54:32Z"
+              }
+            ],
+            "allowed-nssai": [],
+            "api-prefix": "",
+            "scheme": "http",
+            "ip-endpoint": [
+              {
+                "ipv4-address": "192.168.1.6",
+                "id": 1,
+                "transport": "tcp",
+                "port": 0
+              }
+            ],
+            "instance-id": "nnrf-disc-01",
+            "allowed-nf-type": []
+          }
+        ],
+        "locality": "",
+        "inter-plmn-fqdn": "",
+        "allowed-nf-domain": [],
+        "fqdn": "",
+        "plmn-id": [
+            {
+                "mcc": "460",
+                "mnc": "000"
+            },
+            {
+                "mcc":"660",
+                "mnc":"000"
+            },
+            {
+                "mcc":"860",
+                "mnc":"000"
+            }],
+        "priority": 10,
+        "allowed-plmn": [],
+        "allowed-nssai": [],
+        "ipv6-address": [],
+        "snssai": [],
+        "ipv4-address": [],
+        "type": "nrf",
+        "requested-heartbeat-timer": 120,
+        "instance-id": "549f0666-e0ce-11e9-8de6-92ec2768fbd3"
+      },
+      "provisioning-service": {
+        "prov-address": [
+          {
+            "fqdn": "seliius03696.seli.gic.ericsson.se",
+            "id": 1,
+            "ipv4-address": "192.168.1.7",
+            "scheme": "https",
+            "port": 443,
+            "transport": "tcp"
+          }
+        ]
+      },
+      "common": {
+        "plmn-nrf": {
+          "mode": "forward"
+        },
+        "geo-red": {
+          "witness-nf": {
+            "identity-value": "",
+            "identity-type": "nf-instance-id"
+          },
+          "keep-management-service": true,
+          "keep-discovery-service": true
+        }
+      },
+      "policy": {
+        "management-service": {
+          "subscription": {
+            "allowed-subscription-to-all-nfs": [
+              {
+                "allowed-nf-domains": "",
+                "id": 1,
+                "allowed-nf-type": "nef"
+              }
+            ]
+          }
+        },
+        "sbi-message-priority-policy": {
+          "priority-group-low-start": 16,
+          "priority-group-medium-start": 8,
+          "default-message-priority": 24
+        }
+      },
+      "discovery-service": {
+        "local-cache": {
+          "capacity": 100,
+          "enabled": false,
+          "timeout": 3000
+        },
+        "response-cache-time": 86400,
+        "overload-redirection": {
+          "redirection-url": [
+            "http://www.example.com"
+          ],
+          "enabled": false,
+          "mode": "manual"
+        }
+      }
+    }
+  },
+  "title": "ericsson nrf CM init configuration"
+}
+

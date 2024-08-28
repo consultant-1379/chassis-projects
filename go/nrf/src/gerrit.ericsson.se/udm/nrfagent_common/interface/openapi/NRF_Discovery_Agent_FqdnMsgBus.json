@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#", 
+  "type": "object",
+  "required": [
+     "nfInstanceId",
+     "nfType",
+     "requesterNfFqdn"
+  ],
+  "properties": {
+    "eventType": {
+      "properties": {
+        "type": {
+          "enum": [
+            "FQDN_CHANGED"
+          ]
+        }
+      }
+    },
+    "nfInstanceId": {
+      "type": "string"
+    },
+    "nfType": {
+      "type": "string"
+    },
+    "requesterNfFqdn": {
+      "type": "string"
+    }
+  }
+}

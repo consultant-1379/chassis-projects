@@ -1,0 +1,31 @@
+dependencies:
+- name: eric-nrfagent-rbac
+  version: "0.1.0"
+  repository: "file://./subCharts/eric-nrfagent-rbac"
+  condition: eric-nrfagent-rbac.enabled
+  tags:
+    - eric-nrfagent-rbac
+- name: eric-nrfagent-ingress-secret
+  version: "0.1.0"
+  repository: "file://./subCharts/eric-nrfagent-ingress-secret"
+  condition: eric-nrfagent-ingress-secret.enabled
+  tags:
+    - eric-nrfagent-ingress-secret
+- name: eric-nrfagent-istio
+  version: "0.1.0"
+  repository: "file://./subCharts/eric-nrfagent-istio"
+  condition: eric-nrfagent-istio.enabled
+  tags:
+    - eric-nrfagent-istio
+- name: eric-nrfagent-pm-job-loader
+  version: "0.1.0"
+  repository: "file://./subCharts/eric-nrfagent-pm-job-loader"
+  condition: eric-nrfagent-pm-job-loader.enabled
+  tags:
+    - eric-nrfagent-pm-job-loader
+- name: eric-nrfagent-initcm
+  version: "0.1.0"
+  repository: "file://./subCharts/eric-nrfagent-initcm"
+  condition: eric-nrfagent-initcm.enabled
+  tags:
+    - eric-nrfagent-initcm

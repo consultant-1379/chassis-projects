@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.nrfCommon.cmInit.jobName }}
+  labels:
+    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      name: {{ .Values.nrfCommon.cmInit.jobName }}
+      labels:
+        chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+      annotations:
+        sidecar.istio.io/inject: "false"
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: {{ .Values.nrfCommon.cmInit.jobName }}
+        image: {{ .Values.global.imageCredentials.repository }}/{{ .Values.nrfCommon.image.name }}:{{ .Values.nrfCommon.image.tag }}
+        imagePullPolicy: {{ .Values.nrfCommon.image.pullPolicy }}
+        command:
+        - /bin/import-cm-schema-conf.sh
+        env:
+        - name: CM_INIT_ENABLED
+          value: {{ .Values.nrfCommon.cmInit.enabled }}		
+        - name: CM_SERVICE_NAME	
+          value: {{ .Values.global.cmproxy.cmm_service }}
+        - name: CM_SCHEMA_NAME
+          value: {{ .Values.global.cmproxy.cmm_config_schema_prefix_name }}

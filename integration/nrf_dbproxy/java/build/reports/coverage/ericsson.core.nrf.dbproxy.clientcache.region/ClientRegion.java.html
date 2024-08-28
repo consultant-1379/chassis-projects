@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClientRegion.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.clientcache.region</a> &gt; <span class="el_source">ClientRegion.java</span></div><h1>ClientRegion.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.clientcache.region;
+
+import ericsson.core.nrf.dbproxy.clientcache.ClientCacheService;
+import ericsson.core.nrf.dbproxy.common.Code;
+import ericsson.core.nrf.dbproxy.common.ExecutionResult;
+import ericsson.core.nrf.dbproxy.common.FragmentResult;
+import ericsson.core.nrf.dbproxy.common.FragmentUtil;
+import ericsson.core.nrf.dbproxy.common.SearchResult;
+import java.util.List;
+import java.util.Map;
+import org.apache.geode.cache.CacheClosedException;
+import org.apache.geode.cache.CacheLoaderException;
+import org.apache.geode.cache.CacheTransactionManager;
+import org.apache.geode.cache.CacheWriterException;
+import org.apache.geode.cache.CommitConflictException;
+import org.apache.geode.cache.InterestResultPolicy;
+import org.apache.geode.cache.LowMemoryException;
+import org.apache.geode.cache.Region;
+import org.apache.geode.cache.RegionExistsException;
+import org.apache.geode.cache.TimeoutException;
+import org.apache.geode.cache.client.ClientCache;
+import org.apache.geode.cache.client.ClientRegionShortcut;
+import org.apache.geode.cache.query.FunctionDomainException;
+import org.apache.geode.cache.query.NameResolutionException;
+import org.apache.geode.cache.query.QueryInvocationTargetException;
+import org.apache.geode.cache.query.SelectResults;
+import org.apache.geode.cache.query.TypeMismatchException;
+import org.apache.geode.distributed.LeaseExpiredException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class ClientRegion {
+
+<span class="nc" id="L34">  private static final Logger LOGGER = LogManager.getLogger(ClientRegion.class);</span>
+
+  private static final String LOG_1 = &quot;Fail to put key = &quot;;
+  private static final String LOG_2 = &quot; in region &quot;;
+  protected String region_name;
+  protected Region region;
+
+<span class="nc" id="L41">  public ClientRegion(String regionName) {</span>
+<span class="nc" id="L42">    this.region_name = regionName;</span>
+<span class="nc" id="L43">  }</span>
+
+  public boolean initialize(ClientCache clientCache, String poolName,
+      boolean isSubscriptionEnabled) {
+    try {
+<span class="nc" id="L48">      int coreNumber = Runtime.getRuntime().availableProcessors();</span>
+<span class="nc bnc" id="L49" title="All 4 branches missed.">      if (region_name.equals(Code.NFPROFILE_INDICE) &amp;&amp; isSubscriptionEnabled) {</span>
+<span class="nc" id="L50">        region = clientCache.createClientRegionFactory(ClientRegionShortcut.CACHING_PROXY)</span>
+<span class="nc" id="L51">            .setConcurrencyLevel(coreNumber).setPoolName(poolName).create(region_name);</span>
+<span class="nc" id="L52">        region.registerInterestForAllKeys(InterestResultPolicy.KEYS_VALUES);</span>
+      } else {
+<span class="nc" id="L54">        region = clientCache.createClientRegionFactory(ClientRegionShortcut.PROXY)</span>
+<span class="nc" id="L55">            .setConcurrencyLevel(coreNumber).setPoolName(poolName).create(region_name);</span>
+      }
+<span class="nc" id="L57">    } catch (RegionExistsException | CacheClosedException e) {</span>
+<span class="nc" id="L58">      LOGGER.error(e.toString());</span>
+<span class="nc" id="L59">      LOGGER.error(&quot;Fail to create region = &quot; + region_name);</span>
+<span class="nc" id="L60">      return false;</span>
+<span class="nc" id="L61">    } catch (Exception e) {</span>
+<span class="nc" id="L62">      LOGGER.error(e.toString());</span>
+<span class="nc" id="L63">      LOGGER.error(&quot;Fail to create region = &quot; + region_name);</span>
+<span class="nc" id="L64">      return false;</span>
+<span class="nc" id="L65">    }</span>
+
+<span class="nc" id="L67">    LOGGER.debug(&quot;Create Region = &quot; + region_name + &quot; successfully&quot;);</span>
+
+<span class="nc" id="L69">    return true;</span>
+
+  }
+
+  public String getRegionName() {
+<span class="nc" id="L74">    return region_name;</span>
+  }
+
+  public Region getRegion() {
+<span class="nc" id="L78">    return region;</span>
+  }
+
+  public int put(Object regionKey, Object regionItem) {
+
+<span class="nc" id="L83">    int code = Code.CREATED;</span>
+    try {
+<span class="nc" id="L85">      region.put(regionKey, regionItem);</span>
+<span class="nc" id="L86">      LOGGER.debug(&quot;Key = &quot; + regionKey + &quot; is put successfully in region &quot; + region_name);</span>
+<span class="nc" id="L87">    } catch (NullPointerException | ClassCastException e) {</span>
+<span class="nc" id="L88">      LOGGER.error(e.toString());</span>
+<span class="nc" id="L89">      LOGGER.error(LOG_1 + regionKey + LOG_2 + region_name);</span>
+<span class="nc" id="L90">      code = Code.INVALID_NF_INSTANCE_ID_NOT_SERIALIZABLE;</span>
+<span class="nc" id="L91">    } catch (LeaseExpiredException | TimeoutException |</span>
+        CacheWriterException | LowMemoryException e) {
+<span class="nc" id="L93">      LOGGER.error(e.toString());</span>
+<span class="nc" id="L94">      LOGGER.error(LOG_1 + regionKey + LOG_2 + region_name);</span>
+<span class="nc" id="L95">      code = Code.INTERNAL_ERROR;</span>
+<span class="nc" id="L96">    } catch (Exception e) {</span>
+<span class="nc" id="L97">      LOGGER.error(e.toString());</span>
+<span class="nc" id="L98">      LOGGER.error(LOG_1 + regionKey + LOG_2 + region_name);</span>
+<span class="nc" id="L99">      code = Code.INTERNAL_ERROR;</span>
+<span class="nc" id="L100">    }</span>
+
+<span class="nc" id="L102">    return code;</span>
+
+  }
+
+  //putAll function is used transaction to put some key/value into region
+  public int putAll(Map&lt;Object, Object&gt; kvMap) {
+<span class="nc" id="L108">    int code = Code.INTERNAL_ERROR;</span>
+<span class="nc" id="L109">    CacheTransactionManager txManager = ClientCacheService.getInstance()</span>
+<span class="nc" id="L110">        .getCacheTransactionManager();</span>
+<span class="nc" id="L111">    boolean retryTransaction = false;</span>
+<span class="nc" id="L112">    int retryTime = 0;</span>
+    do {
+      try {
+<span class="nc" id="L115">        retryTime++;</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">        if (retryTime &gt; 3) {</span>
+          break;
+        }
+<span class="nc" id="L119">        txManager.begin();</span>
+<span class="nc" id="L120">        region.putAll(kvMap);</span>
+<span class="nc" id="L121">        txManager.commit();</span>
+<span class="nc" id="L122">        retryTransaction = false;</span>
+<span class="nc" id="L123">        code = Code.CREATED;</span>
+<span class="nc" id="L124">      } catch (CommitConflictException conflictException) {</span>
+<span class="nc" id="L125">        LOGGER.error(conflictException.toString());</span>
+<span class="nc" id="L126">        LOGGER.error(</span>
+<span class="nc" id="L127">            &quot;Transaction commit failed, put keys &quot; + kvMap.keySet() + &quot; to region &quot; + region_name</span>
+                + &quot; failed&quot;);
+<span class="nc" id="L129">        retryTransaction = true;</span>
+<span class="nc" id="L130">      } catch (Exception e) {</span>
+<span class="nc" id="L131">        LOGGER.error(e.toString());</span>
+      } finally {
+<span class="nc bnc" id="L133" title="All 2 branches missed.">        if (txManager.exists()) {</span>
+<span class="nc" id="L134">          txManager.rollback();</span>
+        }
+      }
+<span class="nc bnc" id="L137" title="All 2 branches missed.">    } while (retryTransaction);</span>
+<span class="nc" id="L138">    return code;</span>
+  }
+
+  public int delete(Object regionKey, boolean withTransaction) {
+<span class="nc" id="L142">    int code = Code.INTERNAL_ERROR;</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">    if (withTransaction) {</span>
+<span class="nc" id="L144">      CacheTransactionManager txManager = ClientCacheService.getInstance()</span>
+<span class="nc" id="L145">          .getCacheTransactionManager();</span>
+<span class="nc" id="L146">      boolean retryTransaction = false;</span>
+<span class="nc" id="L147">      int retryTime = 0;</span>
+      do {
+        try {
+<span class="nc" id="L150">          retryTime++;</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">          if (retryTime &gt; 3) {</span>
+            break;
+          }
+<span class="nc bnc" id="L154" title="All 2 branches missed.">          if (!region.containsKeyOnServer(regionKey)) {</span>
+<span class="nc" id="L155">            code = Code.DATA_NOT_EXIST;</span>
+<span class="nc" id="L156">            LOGGER.debug(&quot;Region Item is not found by key = &quot; + regionKey + LOG_2 + region_name);</span>
+            break;
+          }
+<span class="nc" id="L159">          txManager.begin();</span>
+<span class="nc" id="L160">          region.remove(regionKey);</span>
+<span class="nc" id="L161">          LOGGER.debug(</span>
+              &quot;Region Item is deleted successfully by key = &quot; + regionKey + LOG_2 + region_name);
+<span class="nc" id="L163">          txManager.commit();</span>
+<span class="nc" id="L164">          retryTransaction = false;</span>
+<span class="nc" id="L165">          code = Code.SUCCESS;</span>
+<span class="nc" id="L166">        } catch (CommitConflictException e) {</span>
+<span class="nc" id="L167">          LOGGER.error(e.toString());</span>
+<span class="nc" id="L168">          LOGGER.error(</span>
+              &quot;Transaction commit failed, delete key &quot; + regionKey + &quot; to region &quot; + region_name
+                  + &quot; failed&quot;);
+<span class="nc" id="L171">          retryTransaction = true;</span>
+<span class="nc" id="L172">        } catch (Exception e) {</span>
+<span class="nc" id="L173">          LOGGER.error(e.toString());</span>
+        } finally {
+<span class="nc bnc" id="L175" title="All 2 branches missed.">          if (txManager.exists()) {</span>
+<span class="nc" id="L176">            txManager.rollback();</span>
+          }
+        }
+<span class="nc bnc" id="L179" title="All 2 branches missed.">      } while (retryTransaction);</span>
+
+
+<span class="nc" id="L182">    } else {</span>
+      try {
+<span class="nc bnc" id="L184" title="All 2 branches missed.">        if (!region.containsKeyOnServer(regionKey)) {</span>
+<span class="nc" id="L185">          code = Code.DATA_NOT_EXIST;</span>
+<span class="nc" id="L186">          LOGGER.debug(&quot;Region Item is not found by key = &quot; + regionKey + LOG_2 + region_name);</span>
+        } else {
+<span class="nc" id="L188">          region.remove(regionKey);</span>
+<span class="nc" id="L189">          LOGGER.debug(</span>
+              &quot;Region Item is deleted successfully by key = &quot; + regionKey + LOG_2 + region_name);
+<span class="nc" id="L191">          code = Code.SUCCESS;</span>
+        }
+<span class="nc" id="L193">      } catch (Exception e) {</span>
+<span class="nc" id="L194">        LOGGER.error(e.toString());</span>
+<span class="nc" id="L195">      }</span>
+    }
+<span class="nc" id="L197">    return code;</span>
+  }
+
+
+  public int deleteAll(List&lt;String&gt; keyList) {
+<span class="nc" id="L202">    int code = Code.INTERNAL_ERROR;</span>
+<span class="nc" id="L203">    CacheTransactionManager txManager = ClientCacheService.getInstance()</span>
+<span class="nc" id="L204">        .getCacheTransactionManager();</span>
+<span class="nc" id="L205">    boolean retryTransaction = false;</span>
+<span class="nc" id="L206">    int retryTime = 0;</span>
+    do {
+      try {
+<span class="nc" id="L209">        retryTime++;</span>
+<span class="nc bnc" id="L210" title="All 2 branches missed.">        if (retryTime &gt; 3) {</span>
+          break;
+        }
+<span class="nc" id="L213">        txManager.begin();</span>
+<span class="nc" id="L214">        region.removeAll(keyList);</span>
+<span class="nc" id="L215">        LOGGER.debug(</span>
+            &quot;Region Item is deleted successfully by keys = &quot; + keyList + LOG_2 + region_name);
+<span class="nc" id="L217">        txManager.commit();</span>
+<span class="nc" id="L218">        retryTransaction = false;</span>
+<span class="nc" id="L219">        code = Code.SUCCESS;</span>
+<span class="nc" id="L220">      } catch (CommitConflictException e) {</span>
+<span class="nc" id="L221">        LOGGER.error(e.toString());</span>
+<span class="nc" id="L222">        LOGGER.error(</span>
+            &quot;Transaction commit failed, delete keys &quot; + keyList + &quot; to region &quot; + region_name
+                + &quot; failed&quot;);
+<span class="nc" id="L225">        retryTransaction = true;</span>
+<span class="nc" id="L226">      } catch (Exception e) {</span>
+<span class="nc" id="L227">        LOGGER.error(e.toString());</span>
+      } finally {
+<span class="nc bnc" id="L229" title="All 2 branches missed.">        if (txManager.exists()) {</span>
+<span class="nc" id="L230">          txManager.rollback();</span>
+        }
+      }
+<span class="nc bnc" id="L233" title="All 2 branches missed.">    } while (retryTransaction);</span>
+<span class="nc" id="L234">    return code;</span>
+  }
+
+  public ExecutionResult getByID(Object regionKey) {
+<span class="nc" id="L238">    int code = Code.SUCCESS;</span>
+    try {
+<span class="nc" id="L240">      Object object = region.get(regionKey);</span>
+<span class="nc bnc" id="L241" title="All 2 branches missed.">      if (null == object) {</span>
+<span class="nc" id="L242">        code = Code.DATA_NOT_EXIST;</span>
+      } else {
+<span class="nc" id="L244">        SearchResult searchResult = new SearchResult(false);</span>
+<span class="nc" id="L245">        searchResult.add(object);</span>
+<span class="nc" id="L246">        return searchResult;</span>
+      }
+<span class="nc" id="L248">    } catch (NullPointerException | IllegalArgumentException e) {</span>
+<span class="nc" id="L249">      LOGGER.error(e.toString());</span>
+<span class="nc" id="L250">      code = Code.INVALID_NF_INSTANCE_ID_NOT_SERIALIZABLE;</span>
+<span class="nc" id="L251">    } catch (LeaseExpiredException | TimeoutException | CacheLoaderException e) {</span>
+<span class="nc" id="L252">      LOGGER.error(e.toString());</span>
+<span class="nc" id="L253">      code = Code.INTERNAL_ERROR;</span>
+<span class="nc" id="L254">    } catch (Exception e) {</span>
+<span class="nc" id="L255">      LOGGER.error(e.toString());</span>
+<span class="nc" id="L256">      code = Code.INTERNAL_ERROR;</span>
+<span class="nc" id="L257">    }</span>
+
+<span class="nc" id="L259">    return new ExecutionResult(code);</span>
+  }
+
+  public ExecutionResult getAllByID(List&lt;Long&gt; idList) {
+<span class="nc" id="L263">    int code = Code.SUCCESS;</span>
+    try {
+<span class="nc" id="L265">      Object object = region.getAll(idList);</span>
+<span class="nc bnc" id="L266" title="All 2 branches missed.">      if (null == object) {</span>
+<span class="nc" id="L267">        code = Code.DATA_NOT_EXIST;</span>
+      } else {
+<span class="nc" id="L269">        SearchResult searchResult = new SearchResult(false);</span>
+<span class="nc" id="L270">        searchResult.add(object);</span>
+<span class="nc" id="L271">        return searchResult;</span>
+      }
+<span class="nc" id="L273">    } catch (NullPointerException | IllegalArgumentException e) {</span>
+<span class="nc" id="L274">      LOGGER.error(e.toString());</span>
+<span class="nc" id="L275">      code = Code.INVALID_NF_INSTANCE_ID_NOT_SERIALIZABLE;</span>
+<span class="nc" id="L276">    } catch (LeaseExpiredException | TimeoutException | CacheLoaderException e) {</span>
+<span class="nc" id="L277">      LOGGER.error(e.toString());</span>
+<span class="nc" id="L278">      code = Code.INTERNAL_ERROR;</span>
+<span class="nc" id="L279">    } catch (Exception e) {</span>
+<span class="nc" id="L280">      LOGGER.error(e.toString());</span>
+<span class="nc" id="L281">      code = Code.INTERNAL_ERROR;</span>
+<span class="nc" id="L282">    }</span>
+
+<span class="nc" id="L284">    return new ExecutionResult(code);</span>
+  }
+
+  public ExecutionResult getByFilter(String regionName, String queryString) {
+<span class="nc" id="L288">    LOGGER.trace(&quot;OQL = &quot; + queryString);</span>
+<span class="nc" id="L289">    int code = Code.SUCCESS;</span>
+    try {
+<span class="nc" id="L291">      SelectResults&lt;Object&gt; results = (SelectResults&lt;Object&gt;) region.getRegionService()</span>
+<span class="nc" id="L292">          .getQueryService().newQuery(queryString).execute();</span>
+<span class="nc bnc" id="L293" title="All 2 branches missed.">      if (results.size() &lt;= 0) {</span>
+<span class="nc" id="L294">        code = Code.DATA_NOT_EXIST;</span>
+<span class="nc bnc" id="L295" title="All 2 branches missed.">      } else if (FragmentUtil.isNeedFragment(regionName, results)) {</span>
+<span class="nc" id="L296">        LOGGER.trace(&quot;result byte bigger than 3MB, need to transmit fragment&quot;);</span>
+<span class="nc" id="L297">        FragmentResult fragmentResult = new FragmentResult();</span>
+<span class="nc bnc" id="L298" title="All 2 branches missed.">        for (Object object : results) {</span>
+<span class="nc" id="L299">          fragmentResult.add(object);</span>
+<span class="nc" id="L300">        }</span>
+<span class="nc" id="L301">        return fragmentResult;</span>
+      } else {
+<span class="nc" id="L303">        LOGGER.trace(&quot;result byte smaller than 3MB, can transmit one time&quot;);</span>
+<span class="nc" id="L304">        SearchResult searchResult = new SearchResult(false);</span>
+<span class="nc bnc" id="L305" title="All 2 branches missed.">        for (Object object : results) {</span>
+<span class="nc" id="L306">          searchResult.add(object);</span>
+<span class="nc" id="L307">        }</span>
+<span class="nc" id="L308">        return searchResult;</span>
+      }
+<span class="nc" id="L310">    } catch (FunctionDomainException | TypeMismatchException | NameResolutionException | QueryInvocationTargetException e) {</span>
+<span class="nc" id="L311">      LOGGER.error(e.toString());</span>
+<span class="nc" id="L312">      code = Code.INTERNAL_ERROR;</span>
+<span class="nc" id="L313">    } catch (Exception e) {</span>
+<span class="nc" id="L314">      LOGGER.error(e.toString());</span>
+<span class="nc" id="L315">      code = Code.INTERNAL_ERROR;</span>
+<span class="nc" id="L316">    }</span>
+
+<span class="nc" id="L318">    return new ExecutionResult(code);</span>
+  }
+
+  public ExecutionResult getByCountFilter(String queryString) {
+<span class="nc" id="L322">    LOGGER.trace(&quot;OQL = &quot; + queryString);</span>
+<span class="nc" id="L323">    int code = Code.SUCCESS;</span>
+    try {
+<span class="nc" id="L325">      SelectResults resultsTest = (SelectResults) region.getRegionService().getQueryService()</span>
+<span class="nc" id="L326">          .newQuery(queryString).execute();</span>
+<span class="nc" id="L327">      List&lt;Integer&gt; results = resultsTest.asList();</span>
+<span class="nc bnc" id="L328" title="All 2 branches missed.">      if (results.size() &lt;= 0) {</span>
+<span class="nc" id="L329">        code = Code.DATA_NOT_EXIST;</span>
+      } else {
+<span class="nc" id="L331">        LOGGER.trace(&quot;The count value is &quot; + results.get(0));</span>
+<span class="nc" id="L332">        SearchResult searchResult = new SearchResult(false);</span>
+<span class="nc bnc" id="L333" title="All 2 branches missed.">        for (Object object : results) {</span>
+<span class="nc" id="L334">          searchResult.add(object);</span>
+<span class="nc" id="L335">        }</span>
+<span class="nc" id="L336">        return searchResult;</span>
+      }
+<span class="nc" id="L338">    } catch (FunctionDomainException | TypeMismatchException | NameResolutionException | QueryInvocationTargetException e) {</span>
+<span class="nc" id="L339">      LOGGER.error(e.toString());</span>
+<span class="nc" id="L340">      code = Code.INTERNAL_ERROR;</span>
+<span class="nc" id="L341">    } catch (Exception e) {</span>
+<span class="nc" id="L342">      LOGGER.error(e.toString());</span>
+<span class="nc" id="L343">      code = Code.INTERNAL_ERROR;</span>
+<span class="nc" id="L344">    }</span>
+
+<span class="nc" id="L346">    return new ExecutionResult(code);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

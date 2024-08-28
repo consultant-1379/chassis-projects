@@ -1,0 +1,86 @@
+<?xml version="1.0" ?> 
+<config xmlns="http://tail-f.com/ns/config/1.0">   
+<!-- ericsson-abc-fm-instances 1.0.0 -->
+<!-- modified: 2018-06-28 --> 
+<!-- Copyright (c) 2017 Ericsson AB. All rights reserved.     -->   
+  <fm xmlns="urn:rdns:com:ericsson:oammodel:ericsson-fm">    
+    <alarm-model>
+      <id>eric-nrf-nnrf-nfm</id>
+      <alarm-type>
+        <id>nrfMngtNrfConnectionFailure</id>
+        <major-type>193</major-type>
+        <minor-type>7929857</minor-type>
+        <specific-problem>NRF eric-nrf-nnrf-nfm Failed to Connect to NRF</specific-problem>
+        <event-type>communications-alarm</event-type>
+        <probable-cause>connection-establishment-error</probable-cause>
+        <is-stateful>true</is-stateful>
+        <additional-text/>
+        <configured-severity/>
+        <default-severity>major</default-severity>
+      </alarm-type>
+	  <alarm-type>
+        <id>nrfMngtServiceOverloaded</id>
+        <major-type>193</major-type>
+        <minor-type>7929858</minor-type>
+        <specific-problem>NRF eric-nrf-nnrf-nfm Service Overloaded</specific-problem>
+        <event-type>quality-of-service-alarm</event-type>
+        <probable-cause>system-resources-overload</probable-cause>
+        <is-stateful>true</is-stateful>
+        <additional-text/>
+        <configured-severity/>
+        <default-severity>major</default-severity>
+      </alarm-type>
+	  <alarm-type>
+        <id>nrfDataReplicationConnectionFailure</id>
+        <major-type>193</major-type>
+        <minor-type>7929859</minor-type>
+        <specific-problem>NRF eric-nrf-nnrf-nfm Failed to Connect to replication NRF</specific-problem>
+        <event-type>communications-alarm</event-type>
+        <probable-cause>connection-establishment-error</probable-cause>
+        <is-stateful>true</is-stateful>
+        <additional-text/>
+        <configured-severity/>
+        <default-severity>major</default-severity>
+      </alarm-type>
+	  <alarm-type>
+        <id>nrfMngtDatabaseConnectionFailure</id>
+        <major-type>193</major-type>
+        <minor-type>7929860</minor-type>
+        <specific-problem>NRF eric-nrf-nnrf-nfm Failed to Connect to Database</specific-problem>
+        <event-type>communications-alarm</event-type>
+        <probable-cause>connection-establishment-error</probable-cause>
+        <is-stateful>true</is-stateful>
+        <additional-text/>
+        <configured-severity/>
+        <default-severity>critical</default-severity>
+      </alarm-type>
+    </alarm-model>
+    <alarm-model>
+      <id>eric-nrf-nnrf-disc</id>
+      <alarm-type>
+        <id>nrfDiscNrfConnectionFailure</id>
+        <major-type>193</major-type>
+        <minor-type>7930112</minor-type>
+        <specific-problem>NRF eric-nrf-nnrf-disc Failed to Connect to NRF</specific-problem>
+        <event-type>communications-alarm</event-type>
+        <probable-cause>connection-establishment-error</probable-cause>
+        <is-stateful>true</is-stateful>
+        <additional-text/>
+        <configured-severity/>
+        <default-severity>major</default-severity>
+      </alarm-type>
+	  <alarm-type>
+        <id>nrfDiscDatabaseConnectionFailure</id>
+        <major-type>193</major-type>
+        <minor-type>7930113</minor-type>
+        <specific-problem>NRF eric-nrf-nnrf-disc Failed to Connect to Database</specific-problem>
+        <event-type>communications-alarm</event-type>
+        <probable-cause>connection-establishment-error</probable-cause>
+        <is-stateful>true</is-stateful>
+        <additional-text/>
+        <configured-severity/>
+        <default-severity>critical</default-severity>
+      </alarm-type>
+    </alarm-model>		
+  </fm>
+</config>

@@ -1,0 +1,764 @@
+module ericsson-5gcudmpol-common {
+    yang-version 1.1;
+    namespace urn:rdns:com:ericsson:oammodel:ericsson-5gcudmpol-common;
+    prefix udmp5gce;
+    import ericsson-yang-extensions {
+        prefix yexte;
+    }
+
+    import ietf-yang-types {
+  	    prefix yang;
+    }
+
+    import ietf-inet-types {
+        prefix inet;
+    }   
+	
+    organization
+      "Ericsson AB";
+    contact
+      "Ericsson first line support via email";
+    description
+      "The module defines the data model of common configuration 
+       for UDM and Policy 5GC NFs.       
+       Copyright (c) 2018 Ericsson AB. All rights reserved.";
+
+    revision 2019-04-01 {
+        description
+          "mandatory statement removed for type leaf at nf-profile grouping.
+		   config false statement added to api-prefix leaf definition at nf-service grouping.";
+        yexte:version 0;
+        yexte:release 1;
+        yexte:correction 4;
+    }
+
+    revision 2019-03-28 {
+        description
+          "Align with UDM&P solution study.";
+        yexte:version 0;
+        yexte:release 1;
+        yexte:correction 3;
+    }
+
+    revision 2019-03-21 {
+        description
+          "Align with UDM&P solution study.";
+        yexte:version 0;
+        yexte:release 1;
+        yexte:correction 2;
+    }
+
+    revision 2019-01-16 {
+        description
+          "Align with 29.510 15.2.0 version,
+           Move NRFAgent configuration to separate module.";
+        reference
+          "RFC 7950: The YANG 1.1 Data Modeling Language";
+        yexte:version 0;
+        yexte:release 1;
+        yexte:correction 1;
+    }
+
+    revision 2018-11-02 {
+        description
+          "Initial revision.";
+        reference
+          "RFC 7950: The YANG 1.1 Data Modeling Language";
+        yexte:version 0;
+        yexte:release 1;
+        yexte:correction 0;
+    }
+
+
+    typedef nf-type {
+        type enumeration {
+            enum "nrf" {
+                value 1;
+                description  "NRF";
+            }
+            enum "udm" {
+                value 2;
+                description  "UDM";
+            }
+            enum "amf" {
+                value 3;
+                description  "AMF";
+            }
+            enum "smf" {
+                value 4;
+                description  "SMF";
+            }
+            enum "ausf" {
+                value 5;
+                description  "AUSF";
+            }
+            enum "nef" {
+                value 6;
+                description  "NEF";
+            }
+            enum "pcf" {
+                value 7;
+                description  "PCF";
+            }
+            enum "smsf" {
+                value 8;
+                description  "SMSF";
+            }
+            enum "nssf" {
+                value 9;
+                description  "NSSF";
+            }
+			enum "udr" {
+                value 10;
+                description "UDR";
+            }				
+            enum "lmf" {
+                value 11;
+                description "LMF";
+            }
+            enum "gmlc" {
+                value 12;
+                description  "GMLC";
+            }
+            enum "5g-eir" {
+                value 13;
+                description "5G_EIR";
+            }
+            enum "sepp" {
+                value 14;
+                description "SEPP";
+            }
+            enum "upf" {
+                value 15;
+                description "UPF";
+            }
+            enum "n3iwf" {
+                value 16;
+                description "N3IWF";
+            }
+            enum "af" {
+                value 17;
+                description "AF";
+            }
+            enum "udsf" {
+                value 18;
+                description "UDSF";
+            }
+            enum "bsf" {
+                value 19;
+                description "BSF";
+            }
+            enum "chf" {
+                value 20;
+                description "CHF";
+            }
+            enum "nwdaf" {
+                value 21;
+                description "NWDAF";
+            }	            					
+        }
+    }
+
+    typedef nf-status {
+        type enumeration {
+            enum "registered" {
+                value 1;
+                description
+                  "REGISTERED";
+            }
+            enum "suspended" {
+                value 2;
+                description
+                  "SUSPENDED";
+            }
+            enum "deregistered" {
+                value 3;
+                description
+                  "DEREGISTERED";
+            }
+        }
+    }
+
+    typedef nf-service-status {
+        type enumeration {
+            enum "registered" {
+                value 1;
+                description
+                  "REGISTERED";
+            }
+            enum "suspended" {
+                value 2;
+                description
+                  "SUSPENDED";
+            }
+        }
+    }	
+	
+    typedef transport-protocol{
+        type enumeration {
+            enum "tcp" {
+                value 1;
+                description
+                  "TCP";
+            }
+        }	
+	}
+	
+    grouping plmn-id {
+        leaf mcc {
+            mandatory true;
+            type string {
+                pattern '^[0-9]{3}$';
+            }
+        }
+        leaf mnc {
+            mandatory true;
+            type string {
+                pattern '^[0-9]{2,3}$';
+            }
+        }
+    }
+
+    grouping s-nssai {
+        leaf sst {
+            mandatory true;
+            type uint8 {
+			    range "0 .. 255";
+            }
+        }
+        leaf sd {
+            type string {
+			    pattern '^[A-Fa-f0-9]{6}$';
+            }
+        }
+    }
+
+    grouping ip-endpoint {
+		choice address {
+				leaf ipv4-address {
+					type inet:ipv4-address;
+				}
+				leaf ipv6-address {
+					type inet:ipv6-address;	    		
+				}
+		}
+        leaf transport {
+		    type transport-protocol;
+        }
+        leaf port {
+            type inet:port-number {
+            }
+        }
+    }
+
+   typedef supported-features {
+  	   type string {
+  		    pattern '[A-Fa-f0-9]*';
+  	   }
+    }
+	
+    grouping supi-range {
+        choice supi {
+            case start-end-format {
+                leaf supi-start {
+                    type string {
+                        pattern '^[0-9]+$';
+                    }
+                }
+                leaf supi-end {
+                    type string {
+                        pattern '^[0-9]+$';
+                    }
+                }
+            }
+            case pattern-format {
+                leaf supi-pattern {
+                    type string {
+                    }
+                }
+            }
+        }
+    }
+
+    grouping identity-range {
+        choice identity-range {
+            case start-end-format {
+                leaf identity-start {
+                    type string {
+                        pattern '^[0-9]+$';
+                    }
+                }
+                leaf identity-end {
+                    type string {
+                        pattern '^[0-9]+$';
+                    }
+                }
+            }
+            case pattern-format {
+                leaf identity-pattern {
+                    type string {
+                    }
+                }
+            }
+        }
+    }
+
+    typedef dataset-id {
+        type enumeration {
+            enum "subscription" {
+                value 1;
+                description
+                  "SUBSCRIPTION";
+            }
+            enum "policy" {
+                value 2;
+                description
+                  "POLICY";
+            }
+            enum "exposure" {
+                value 3;
+                description
+                  "EXPOSURE";
+            }
+            enum "application" {
+                value 4;
+                description
+                  "APPLICATION";
+            }
+        }
+    }
+
+    grouping guami {
+		container plmn-id { uses plmn-id; }
+        leaf amf-id {
+            type string {
+                pattern
+                  '^[A-Fa-f0-9]{6}$';
+            }
+        }
+    }
+
+    grouping tai {
+		container plmn-id { uses plmn-id; }
+        leaf tac {
+            type string {
+                pattern '(^[A-Fa-f0-9]{4}$)|(^[A-Fa-f0-9]{6}$)';
+            }
+        }
+    }
+
+    grouping ipv4address-range {
+        leaf ipv4addr-start {
+            type inet:ipv4-address;
+        }
+        leaf ipv4addr-end {
+            type inet:ipv4-address;
+        }
+    }
+	
+	grouping nf-service-version {     
+        leaf api-version-in-uri {
+            type  string { 
+		    }
+        }
+        leaf api-full-version {
+            type string {
+		    }
+	    }
+        leaf expiry {
+            type yang:date-and-time;
+        }
+    }
+
+    typedef notification-type {
+        type enumeration {
+            enum "n1-messages" {
+                value 1;
+                description
+                  "N1_MESSAGES";
+            }
+            enum "n2-information" {
+                value 2;
+                description
+                  "N2_INFORMATION";
+            }
+            enum "location-notification" {
+                value 3;
+                description
+                  "LOCATION_NOTIFICATION";
+            }
+            enum "data-removal-notification" {
+                value 4;
+                description
+                  "DATA_REMOVAL_NOTIFICATION";
+            }
+            enum "data-change-notification" {
+                value 5;
+                description
+                  "DATA_CHANGE_NOTIFICATION";
+            }            
+        }        
+    }
+
+    typedef n1-message-class {
+        type enumeration {
+            enum "5gmm" {
+                value 1;
+                description
+                  "5GMM";
+            }
+            enum "sm" {
+                value 2;
+                description
+                  "SM";
+            }
+            enum "lpp" {
+                value 3;
+                description
+                  "LPP";
+            }
+            enum "sms" {
+                value 4;
+                description
+                  "SMS";
+            }
+            enum "updp" {
+                value 5;
+                description
+                  "UPDP";
+            }            
+        }        
+    }
+
+    typedef n2-information-class {
+        type enumeration {
+            enum "sm" {
+                value 1;
+                description
+                  "SM";
+            }
+            enum "nrppa" {
+                value 2;
+                description
+                  "NRPPa";
+            }
+            enum "pws" {
+                value 3;
+                description
+                  "PWS";
+            }
+            enum "pws-bcal" {
+                value 4;
+                description
+                  "PWS-BCAL";
+            }
+            enum "pws-rf" {
+                value 5;
+                description
+                  "PWS-RF";
+            } 
+            enum "ran" {
+                value 6;
+                description
+                  "RAN";
+            }                         
+        }        
+    }    
+    grouping default-notification-subscription {
+            leaf notification-type {
+                mandatory true;
+                type notification-type {
+                }
+            }
+            leaf callback-uri {
+                 type inet:uri;
+                 mandatory true;
+            }
+            leaf n1-message-class {
+                type n1-message-class;
+            }
+            leaf n2-information-class {
+                type n2-information-class;
+            }
+    }	
+
+    grouping nf-profile {
+           leaf instance-id {
+                mandatory true;
+                type yang:uuid {
+                }
+            }
+            leaf type {
+                config false;
+                type nf-type {
+                }
+            }
+            leaf status {
+                mandatory true;
+                type nf-status {
+                }
+            }
+			leaf requested-heartbeat-timer {
+			    type uint16;
+			}
+            list plmn-id {
+                key "mcc mnc";
+                uses plmn-id;
+            }
+            list snssai {
+                key "id";
+                leaf id { type uint32 ; }
+                uses s-nssai;
+            }
+            leaf-list nsi {
+                type string {
+                }
+            }
+            leaf fqdn {
+                type string {
+                }
+            }
+            leaf inter-plmn-fqdn {
+                type string {
+                }
+            }
+            leaf-list ipv4-address {
+                type inet:ipv4-address {
+                }
+            }
+            leaf-list ipv6-address {
+                type inet:ipv6-address {
+                }
+            }
+            list allowed-plmn {
+                key "mcc mnc";
+                uses plmn-id;
+            }
+            leaf-list allowed-nf-type {
+                type nf-type {
+                }
+            }
+            leaf-list allowed-nf-domain {
+               type string {
+                }
+            }
+            list allowed-nssai {
+                key "id";
+                leaf id { type uint32 ; }
+                uses s-nssai;
+            }
+            leaf priority {
+                type uint16 {
+                    range "0 .. 65535";
+                }
+            }
+            leaf capacity {
+                type uint16 {
+                    range "0 .. 65535";
+                }
+            }	
+            leaf locality {
+                type string {
+                }
+            }
+            leaf recovery-time {
+                type yang:date-and-time;
+            }
+            leaf service-persistence {
+			    config false;
+                type boolean;             
+            }
+    }
+
+    grouping nf-service{
+               leaf instance-id {
+                    mandatory true;
+                    type string {
+                    }
+                }
+                leaf name {
+                    mandatory true;
+                    type string {
+                    }
+                }
+                list version {
+                    key "api-version-in-uri";
+                    uses nf-service-version;
+                    min-elements 1;
+                }
+                leaf scheme {
+                    mandatory true;
+                    type string {
+                    }
+                }
+                leaf status {
+                    mandatory true;
+                    type nf-service-status {
+                    }
+                }
+                leaf fqdn {
+                    type string {
+                    }
+                }
+                leaf inter-plmn-fqdn {
+                    type string {
+                    }
+                }
+                list ip-endpoint {
+                    key "id";
+                    leaf id {
+                        type uint32;
+                    }
+                    uses ip-endpoint;
+                }
+                leaf api-prefix {
+                    config false;
+                    type string {
+                    }
+                }
+                list default-notification-subscription {
+                    key "notification-type callback-uri";
+                    uses default-notification-subscription;
+                }				
+                list allowed-plmn {
+                    key "mcc mnc";
+                    uses plmn-id;
+                }
+                leaf-list allowed-nf-type {
+                    type nf-type {
+                    }
+                }
+                leaf-list allowed-nf-domain {
+                    type string {
+                    }
+                }
+                list allowed-nssai {
+                    key "id";
+                    leaf id { type uint32 ; }
+                    uses s-nssai;
+                }
+                leaf priority {
+                    type uint16 {
+                        range "0 .. 65535";
+                    }
+                }
+                leaf capacity {
+                    type uint16 {
+                        range "0 .. 65535";
+                    }
+                }				
+                leaf recovery-time {
+                    type yang:date-and-time;
+                }
+                leaf supported-features {
+				    config false;
+                    type supported-features;
+                }
+    }
+
+    grouping ausf-info {
+               leaf group-id {
+                    type string {
+                    }
+                }
+                list supi-range {
+                    key "id";
+                    leaf id {
+                        type uint32;
+                    }
+                    uses supi-range;
+                }
+                leaf-list routing-indicator {
+                    type string {
+                    }
+                }
+    }
+	
+    grouping udr-info {
+               leaf group-id {
+                    type string {
+                    }
+                }
+                list supi-range {
+                    key "id";
+                    leaf id {
+                        type uint32;
+                    }
+                    uses supi-range;
+                }
+                list gpsi-range {
+                    key "id";
+                    leaf id {
+                        type uint32;
+                    }
+                    uses identity-range;
+                }
+                list external-group-identifiers-range {
+                    key "id";
+                    leaf id {
+                        type uint32;
+                    }
+                    uses identity-range;
+                }                              
+                leaf-list supported-data-set {
+                    type dataset-id {
+                    }
+                }
+    }
+    grouping udm-info {
+               leaf group-id {
+                    type string {
+                    }
+                }
+                list supi-range {
+                    key "id";
+                    leaf id {
+                        type uint32;
+                    }
+                    uses supi-range;
+                }
+                list gpsi-range {
+                    key "id";
+                    leaf id {
+                        type uint32;
+                    }
+                    uses identity-range;
+                }
+                list external-group-identifiers-range {
+                    key "id";
+                    leaf id {
+                        type uint32;
+                    }
+                    uses identity-range;
+                }				
+                leaf-list routing-indicator {
+                    type string {
+                    }
+                }
+    }  
+
+    grouping pcf-info {
+               leaf-list dnn {
+                    type string {
+                    }
+                }
+                list supi-range {
+                    key "id";
+                    leaf id {
+                        type uint32;
+                    }
+                    uses supi-range;
+                }
+                leaf rx-diam-host {
+                    type string {
+                        pattern '^([A-Za-z0-9]+(-[A-Za-z0-9]+).)+[a-z]{2,}$';
+                    }                    
+                }
+                leaf rx-diam-realm {
+                    type string {
+                        pattern '^([A-Za-z0-9]+(-[A-Za-z0-9]+).)+[a-z]{2,}$';
+                    }                    
+                }
+    }      	
+
+}

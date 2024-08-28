@@ -1,0 +1,9 @@
+The directory 'expiry' is a java gradle project.
+It is used to build a custom expiry jar(expiry-1.0.jar) which is used in geode region "ericsson-nrf-cachenfprofile",
+it will mark every entry's expiration time in the region
+usage:
+    "--enable-statistics=true --entry-time-to-live-expiration-action=DESTROY --entry-time-to-live-custom-expiry=com.ericsson.geode.expiry.MyCustomExpiry"
+
+
+Use "./gradle clean" to clean the old build directory
+Use "./gradle build" to generate the jar file in path "./build/libs/expiry-1.0.jar"

@@ -1,0 +1,23 @@
+# ########################################################################### #
+# Deployment Tags, select which NRF Agent microservice would like to deploy   #
+#                                                                             #
+# ########################################################################### #
+tags:
+  eric-nrfagent-common: true
+  eric-nrf-register-agent: true
+  eric-nrf-notify-discovery-agent: true
+  
+
+global:
+  nf_instance_name: eric
+  ingressSecret: istio-ingress-certs
+
+  kafka_connection: eric-data-message-bus-kf:9092
+  cm_uri_prefix: http://eric-cm-mediator:5003/cm/api/v1.1
+
+  imageCredentials:
+    repository: armdocker.rnd.ericsson.se/proj-ipworks
+
+  serviceAccountName: nrfagent-service-account
+
+

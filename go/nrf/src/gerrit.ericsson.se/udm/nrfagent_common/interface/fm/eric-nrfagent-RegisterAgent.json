@@ -1,0 +1,11 @@
+[
+  {
+     "faultName": "nrfagentNrfmngtConnectionFailure",
+     "createAlarm": true,
+     "defaultDescription": "NRFAgent Failed to Connect to NRF Management Service",
+     "defaultExpiration": 600,
+     "defaultSeverity": "Major",
+     "vendor": 193,
+     "code": 8060929
+  }
+]

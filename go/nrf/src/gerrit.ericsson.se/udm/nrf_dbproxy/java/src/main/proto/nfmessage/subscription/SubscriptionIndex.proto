@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+// Language Dependent Statement Start
+option java_package = "ericsson.core.nrf.dbproxy.grpc.nfmessage.subscription";
+option java_outer_classname = "SubscriptionIndexProto";
+option go_package = "com/dbproxy/nfmessage/subscription";
+package grpc;
+// Language Dependent Statement End
+
+message SubscriptionPutIndex {
+    string noCond                  = 1;
+    string nfStatusNotificationUri = 2;
+    string nfInstanceId            = 3;
+    string nfType                  = 4;
+    string serviceName             = 5;
+    
+    SubKeyStruct amfCond           = 6;
+	
+    repeated SubKeyStruct guamiList   = 7;
+    repeated SubKeyStruct snssaiList  = 8;
+  
+    repeated string nsiList        = 9;
+
+    SubKeyStruct nfGroupCond       = 10;
+
+    uint64 validityTime             = 11;
+}
+
+message SubscriptionGetIndex {
+    string noCond                  = 1;
+    string nfStatusNotificationUri = 2;
+    string nfInstanceId            = 3;
+    string nfType                  = 4;
+    
+    repeated string serviceNames    = 5;
+
+    repeated SubKeyStruct amfConds   = 6;
+    repeated SubKeyStruct guamiList  = 7;
+    repeated SubKeyStruct snssaiList = 8;
+
+    repeated string nsiList        = 9;
+    SubKeyStruct nfGroupCond       = 10;
+
+    uint64 startValidityTime       = 11;
+    uint64 endValidityTime         = 12;
+}
+
+message SubKeyStruct {
+    string sub_key1          = 1;
+    string sub_key2          = 2;
+    string sub_key3          = 3;
+    string sub_key4          = 4;
+    string sub_key5          = 5;
+}
+

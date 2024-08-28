@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+// Language Dependent Statements Start
+option java_package = "ericsson.core.nrf.dbproxy.grpc.nfmessage.nrfaddress";
+option java_outer_classname = "NRFAddressGetRequestProto";
+option go_package = "com/dbproxy/nfmessage/nrfaddress";
+package grpc;
+import "nfmessage/nrfaddress/NRFAddressFilter.proto";
+// Language Dependent Statements End
+
+message NRFAddressGetRequest {
+    oneof data {
+	string nrf_address_id       = 1;
+        NRFAddressFilter filter     = 2;
+    }
+}

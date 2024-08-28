@@ -1,0 +1,713 @@
+openapi: 3.0.0
+info:
+  version: '1.PreR15.0.0'
+  title: 'NRF Discovery Agent Service'
+  description: 'NRF Discovery Agent Service'
+servers:
+  - url: http://{apiRoot}/nrf-discovery-agent/v1
+    variables:
+      apiRoot:
+        default: demohost.com
+        description: address of accessing to NRF Discovery Agent 
+paths:
+  /nf-instances:
+    get:
+      summary: Search a collection of NF Instances
+      operationId: SearchNFInstances
+      tags:
+        - NF Instances (Store)
+      parameters:
+        - name: service-names
+          in: query
+          description: Name of the service offered by the NF
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+        - name: target-nf-type
+          in: query
+          description: Type of the target NF
+          required: true
+          schema:
+            $ref: '#/components/schemas/NFType'
+        - name: requester-nf-type
+          in: query
+          description: Type of the requester NF
+          required: true
+          schema:
+            $ref: '#/components/schemas/NFType'
+        - name: requester-nf-instance-fqdn
+          in: query
+          description: FQDN of the requester NF
+          required: true
+          schema:
+            $ref: '#/components/schemas/Fqdn'
+        - name: target-plmn
+          in: query
+          description: Id of the PLMN where the target NF is located
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlmnId'
+        - name: requester-plmn
+          in: query
+          description: Id of the PLMN where the NF issuing the Discovery request is located
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlmnId'
+        - name: dnn
+          in: query
+          description: Dnn supported by the SMF
+          schema:
+            $ref: '#/components/schemas/Dnn'
+        - name: smf-serving-area
+          in: query
+          schema:
+            type: string
+        - name: supi
+          in: query
+          description: SUPI of the user
+          schema:
+            $ref: '#/components/schemas/Supi'
+        - name: routing-indicator
+          in: query
+          description: routing indicator in SUCI
+          schema:
+            type: string
+        - name: supported-features
+          in: query
+          description: Features required to be supported by the target NF
+          schema:
+            $ref: '#/components/schemas/SupportedFeatures'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in IETF RFC 7232, 3.2 
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResult'
+          headers:
+            Cache-Control:
+              description: Cache-Control containing max-age, described in IETF RFC 7234, 5.2
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag containing a strong validator, described in IETF RFC 7232, 2.3 
+              schema:
+                type: string
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+components:
+  schemas:
+    SearchResult:
+      type: object
+      properties:
+        validityPeriod:
+          type: integer
+        nfInstances:
+          type: array
+          items:
+            $ref: '#/components/schemas/NFProfile'
+    NFProfile:
+      type: object
+      required:
+        - nfInstanceId
+        - nfType
+      properties:
+        nfInstanceId:
+          $ref: '#/components/schemas/NfInstanceId'
+        nfType:
+          $ref: '#/components/schemas/NFType'
+        plmn:
+          $ref: '#/components/schemas/PlmnId'
+        sNssais:
+          type: array
+          items:
+            $ref: '#/components/schemas/Snssai'
+        nsiList:
+          type: array
+          items:
+            type: string
+        fqdn:
+          $ref: '#/components/schemas/Fqdn'
+        ipv4Address:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ipv4Addr'
+        ipv6Address:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ipv6Addr'
+        ipv6Prefix:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ipv6Prefix'
+        capacity:
+          type: integer
+        load:
+          type: integer
+          minimum: 0
+          maximum: 100
+        locality:
+          type: string
+        priority:
+          type: integer
+        udrInfo:
+          $ref: '#/components/schemas/UdrInfo'
+        udmInfo:
+          $ref: '#/components/schemas/UdmInfo'
+        ausfInfo:
+          $ref: '#/components/schemas/AusfInfo'
+        amfInfo:
+          $ref: '#/components/schemas/AmfInfo'
+        smfInfo:
+          $ref: '#/components/schemas/SmfInfo'
+        upfInfo:
+          $ref: '#/components/schemas/UpfInfo'
+        pcfInfo:
+          $ref: '#/components/schemas/PcfInfo'
+        bsfInfo:
+          $ref: '#/components/schemas/BsfInfo'
+        nfServices:
+          type: array
+          items:
+            $ref: '#/components/schemas/NFService'
+    NFService:
+      type: object
+      required:
+        - serviceInstanceId
+        - serviceName
+        - version
+        - schema
+      properties:
+        serviceInstanceId:
+          type: string
+        serviceName:
+          type: string
+        version:
+          type: array
+          items:
+            $ref: '#/components/schemas/NFServiceVersion'
+        schema:
+          type: string
+        fqdn:
+          $ref: '#/components/schemas/Fqdn'
+        ipEndPoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/IpEndPoint'
+        apiPrefix:
+          type: string
+        defaultNotificationSubscriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/DefaultNotificationSubscription'
+        capacity:
+          type: integer
+        load:
+          type: integer
+          minimum: 0
+          maximum: 100
+        priority:
+          type: integer
+        supportedFeatures:
+          $ref: '#/components/schemas/SupportedFeatures'
+          
+    NFType:
+      anyOf:
+        - type: string
+          enum:
+            - NRF
+            - UDM
+            - AMF
+            - SMF
+            - AUSF
+            - NEF
+            - PCF
+            - SMSF
+            - NSSF
+            - UDR
+            - LMF
+            - GMLC
+            - 5G_EIR
+            - SEPP
+            - UPF
+            - N3IWF
+            - AF
+            - UDSF
+            - BSF
+            - CHF
+        - type: string
+    Fqdn:
+      type: string
+
+
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/Uri'
+        title:
+          type: string
+        status:
+          type: integer
+        instance:
+          $ref: '#/components/schemas/Uri'
+        cause:
+          type: string
+        invalidParams:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvalidParam'
+          minItems: 0
+      
+    NFServiceVersion:
+      type: object
+      required:
+        - apiVersionInUri
+        - apiFullVersion
+      properties:
+        apiVersionInUri:
+          type: string
+        apiFullVersion:
+          type: string
+        expiry:
+          $ref: '#/components/schemas/DateTime'
+    IpEndPoint:
+      type: object
+      properties:
+        ipv4Address:
+          $ref: '#/components/schemas/Ipv4Addr'
+        ipv6Address:
+          $ref: '#/components/schemas/Ipv6Addr'
+        ipv6Prefix:
+          $ref: '#/components/schemas/Ipv6Prefix'
+        transport:
+          $ref: '#/components/schemas/TransportProtocol'
+        port:
+          type: integer  
+    DefaultNotificationSubscription:
+      type: object
+      required:
+        - notificationType
+        - callbackUri
+      properties:
+        notificationType:
+          $ref: '#/components/schemas/NotificationType'
+        callbackUri:
+          $ref: '#/components/schemas/Uri'
+        n1MessageClass:
+          $ref: '#/components/schemas/N1MessageClass'
+        n2InformationClass:
+          $ref: '#/components/schemas/N2InformationClass'
+    NotificationType:
+      anyOf:
+        - type: string
+          enum:
+            - N1_MESSAGES
+            - N2_INFORMATION
+            - LOCATION_NOTIFICATION
+        - type: string
+    N1MessageClass:
+      anyOf:
+      - type: string
+        enum:
+          - "5GMM"
+          - "SM"
+          - "LPP"
+          - "SMS"
+      - type: string
+
+    N2InformationClass:
+      anyOf:
+      - type: string
+        enum:
+          - "SM"
+          - "NRPPa"
+          - "PWS"
+          - "PWS-BCAL"
+          - "PWS-RF"
+      - type: string
+    
+    TransportProtocol:
+      anyOf:
+        - type: string
+          enum:
+            - TCP
+        - type: string
+    InvalidParam:
+      type: object
+      properties:
+        param:
+          type: string
+        reason:
+          type: string
+      required:
+        - param
+    
+    UdrInfo:
+      type: object
+      properties:
+        groupId:
+          type: string
+        supiRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupiRange'
+        gpsiRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityRange'
+        externalGroupIdentityfiersRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityRange'
+        supportedDataSets:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataSetId'
+            
+    DataSetId:
+      anyOf:
+        - type: string
+          enum:
+            - SUBSCRIPTION
+            - POLICY
+            - EXPOSURE
+            - APPLICATION
+        - type: string    
+    
+    SupiRange:
+      type: object
+      properties:
+        start:
+          type: string
+        end:
+          type: string
+        pattern:
+          type: string
+    IdentityRange:
+      type: object
+      properties:
+        start:
+          type: string
+        end:
+          type: string
+        pattern:
+          type: string
+    UdmInfo:
+      type: object
+      properties:
+        groupId:
+          type: string
+        supiRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupiRange'
+        gpsiRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityRange'
+        externalGroupIdentityfiersRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityRange'
+        routingIndicator:
+          type: string
+    AusfInfo:
+      type: object
+      properties:
+        groupId:
+          type: string
+        supiRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupiRange'
+        routingIndicator:
+          type: string
+    AmfInfo:
+      type: object
+      required:
+        - amfSetId
+        - amfRegionId
+        - guamiList
+      properties:
+        amfSetId:
+          type: string
+        amfRegionId:
+          type: string
+        guamiList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Guami'
+        taiList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tai'
+        backupInfoAmfFailure:
+          type: array
+          items:
+            $ref: '#/components/schemas/Guami'
+        backupInfoAmfRemoval:
+          type: array
+          items:
+            $ref: '#/components/schemas/Guami'
+    
+    SmfInfo:
+      type: object
+      required:
+        - dnnList
+      properties:
+        dnnList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Dnn'
+        taiList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tai'
+        pgwFqdn:
+          $ref: '#/components/schemas/Fqdn'
+    UpfInfo:
+      type: object
+      required:
+        - sNssaiUpfInfoList
+      properties:
+        sNssaiUpfInfoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/SnssaiUpfInfoItem'
+          minItems: 1
+        smfServingArea:
+          type: array
+          items:
+            type: string
+        interfaceUpfInfoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterfaceUpfInfoItem'
+    SnssaiUpfInfoItem:
+      type: object
+      required:
+        - sNssai
+        - dnnUpfInfoList
+      properties:
+        sNssai:
+          $ref: '#/components/schemas/Snssai'
+        dnnUpfInfoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/DnnUpfInfoItem'
+          minItems: 1
+    DnnUpfInfoItem:
+      type: object
+      required:
+        - dnn
+      properties:
+        dnn:
+          $ref: '#/components/schemas/Dnn'
+    InterfaceUpfInfoItem:
+      type: object
+      required:
+        - interfaceType
+      properties:
+        interfaceType:
+          $ref: '#/components/schemas/UPInterfaceType'
+        ipv4EndpointAddress:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ipv4Addr'
+        ipv6EndpointAddress:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ipv6Addr'
+        ipv6EndpointPrefix:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ipv6Prefix'
+        endpointFqdn:
+            $ref: '#/components/schemas/Fqdn'
+        networkInstance:
+          type: string
+    UPInterfaceType:
+      anyOf:
+        - type: string
+          enum:
+            - N3
+            - N6
+            - N9
+        - type: string
+    PcfInfo:
+      type: object
+      properties:
+        dnnList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Dnn'
+    BsfInfo:
+      type: object
+      properties:
+        ipv4AdddressRanges:
+          type: array
+          items: 
+            $ref: '#/components/schemas/Ipv4AddressRange'
+        Ipv6PrefixRanges:
+          type: array
+          items: 
+            $ref: '#/components/schemas/Ipv6PrefixRange'
+    
+    Ipv4AddressRange:
+      type: object
+      properties:
+        start:
+            $ref: '#/components/schemas/Ipv4Addr'
+        end:
+            $ref: '#/components/schemas/Ipv4Addr'
+    Ipv6PrefixRange:
+      type: object
+      properties:
+        start:
+            $ref: '#/components/schemas/Ipv6Prefix'
+        end:
+            $ref: '#/components/schemas/Ipv6Prefix'
+    
+#
+# STRUCTURED DATA TYPES
+#
+    Guami:
+      type: object
+      properties:
+        plmnId:
+          $ref: '#/components/schemas/PlmnId'
+        amfId:
+          $ref: '#/components/schemas/AmfId'
+      required:
+        - plmnId
+        - amfId
+# 
+# Data Types related to 5G Network as defined in subclause 5.4
+#
+# SIMPLE DATA TYPES
+#
+
+    Mcc:
+      type: string
+      pattern: '^\d{3}$'
+    Mnc:
+      type: string
+      pattern: '^\d{2,3}$'
+    Tac:
+      type: string
+      pattern: '(^[A-Fa-f0-9]{4}$)|(^[A-Fa-f0-9]{6}$)'
+
+#
+# Enumerations
+#
+      anyOf:
+      - type: string
+        enum:
+          - IPV4V6
+          - IPV4
+          - IPV6
+          - UNSTR
+          - ETHER
+      - type: string
+    Snssai:
+      type: object
+      properties:
+        sst:
+          $ref: '#/components/schemas/Uinteger'
+          minimum: 0
+          maximum: 255
+        sd:
+          type: string
+      required:
+        - sst
+    PlmnId:
+      type: object
+      properties:
+        mcc:
+          $ref: '#/components/schemas/Mcc'
+        mnc:
+          $ref: '#/components/schemas/Mnc'
+      required:
+        - mcc
+        - mnc
+    Tai:
+      type: object
+      properties:
+        plmnId:
+          $ref: '#/components/schemas/PlmnId'
+        tac:
+          $ref: '#/components/schemas/Tac'
+      required:
+        - plmnId
+        - tac
+#
+# Data Types related to Subscription, Identification and Numbering as defined in subclause 5.3
+#
+# SIMPLE DATA TYPES
+#
+    Dnn:
+      type: string
+    Supi:
+      format: Supi
+      type: string
+      pattern: '^(imsi-[0-9]{5,15}|nai-.+|.+)$'
+    NfInstanceId:
+      type: string
+      format: uuid
+    AmfId:
+      type: string
+      pattern: '^[A-Fa-f0-9]{6}$'
+# Common Data Types for  Generic usage definitiones as defined in subclause 5.2
+#
+# COMMON SIMPLE DATA TYPES
+#   
+    DateTime:
+      format: date-time
+      type: string
+    Ipv4Addr:
+      type: string
+    Ipv6Addr:
+      type: string
+    Ipv6Prefix:
+      type: string
+    SupportedFeatures:
+      type: string
+      pattern: '^[A-Fa-f0-9]*$'
+    Uinteger:
+      type: integer
+      minimum: 0
+    Uri:
+      type: string
+

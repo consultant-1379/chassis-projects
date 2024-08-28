@@ -1,0 +1,63 @@
+{
+  "name": "ericsson-nrf-agent",
+  "title": "ericsson nrf agent CM configuration",
+  "data": {
+    "ericsson-nrf-agent:nrf-agent": {
+        "notification-address": {
+          "ipv4-address": "0.0.0.0",
+          "port": 0,
+          "transport": "tcp"
+        },
+        "nrf": {
+          "mode": "active-standby",
+          "profile": [
+            {
+              "id": "nrf-server-0",
+              "ipv4-address": [],
+              "priority": 0,
+              "service": [
+                {
+                  "id": 0,
+                  "name": "nnrf-nfm",
+                  "scheme": "http",
+                  "priority": 0,
+                  "version": [
+                    {
+                      "api-version-in-uri": "v1"
+                    }
+                  ],
+                  "ip-endpoint": [
+                    {
+                      "id": 0,
+                      "ipv4-address": "0.0.0.0",
+                      "port": 0,
+                      "transport": "tcp"
+                    }
+                  ]
+                },
+                {
+                  "id": 1,
+                  "name": "nnrf-disc",
+                  "scheme": "http",
+                  "priority": 0,
+                  "version": [
+                    {
+                      "api-version-in-uri": "v1"
+                    }
+                  ],
+                  "ip-endpoint": [
+                    {
+                      "id": 0,
+                      "ipv4-address": "0.0.0.0",
+                      "port": 0,
+                      "transport": "tcp"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+    }
+  }
+}

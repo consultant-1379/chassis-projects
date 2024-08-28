@@ -1,0 +1,155 @@
+def Mason2 = library("PipelineGlobalLibrary").com.ericsson.ci.mason.Mason2
+
+
+String dockerImageTag = ""
+String cfg_branch = "master"
+String cfg_refspec = "master"
+String cfg_patchset_revision = ""
+Boolean cfg_release = false
+String microservice_name = "nrf_common"
+String cfg_repository = "5gcicd/chassis-projects"
+String cfg_project_name = "${microservice_name}"
+String sonar_project = "${cfg_project_name}-mason2"
+Boolean manual_exec = false
+String cfg_version_strategy = "PATCH"
+def armUsername = common.getUserPassFromCredential('userpwd-adp', "username") 
+def armPassword = common.getUserPassFromCredential('userpwd-adp', "password")
+
+def repoDocker = "armdocker.rnd.ericsson.se/proj-cicd5g-test-internal2"
+String cfg_event = ""
+def cfg_repository_encoded = cfg_repository.replaceAll("/", "%2F")
+def next_job_name = "spinnake-trigger-egaowei"
+
+if ( System.getenv("JENKINS_HOME")) { // Jenkins execution
+    cfg_branch =  GERRIT_PATCHSET_REVISION
+    cfg_patchset_revision = GERRIT_PATCHSET_REVISION
+    cfg_refspec = GERRIT_REFSPEC
+    cfg_event = GERRIT_EVENT_TYPE
+    dockerImageTag = "0.1.0-" + GERRIT_PATCHSET_REVISION[0..6]
+    if(cfg_event == "comment-added"){
+        if( GERRIT_EVENT_COMMENT_TEXT.contains("release")){
+        cfg_release = true
+        }else{
+            cfg_release = false
+        }
+        if( GERRIT_EVENT_COMMENT_TEXT.contains("PATCH")){
+            cfg_version_strategy = "PATCH"
+        }else if( GERRIT_EVENT_COMMENT_TEXT.contains("MINOR")){
+            cfg_version_strategy = "MINOR"
+        }else if( GERRIT_EVENT_COMMENT_TEXT.contains("MAJOR")){
+            cfg_version_strategy = "MAJOR"
+        }
+    }
+}
+
+println ("repoDocker:            [${repoDocker}]")
+println ("cfg_branch:            [${cfg_branch}]")
+println ("cfg_patchset_revision: [${cfg_patchset_revision}]")
+println ("cfg_refspec:           [${cfg_refspec}]")
+println ("cfg_event:           [${cfg_event}]")
+println ("dockerImageTag:        [${dockerImageTag}]")
+
+def result = Mason2.ciPipeline(this) {
+    cloud("eccd-udm00144")
+    parallel(false)
+    unit("spinnint")
+    checkout {
+        gerrit ('checkout_vendor') {
+            project('udm/vendor')
+            credentials('userpwd-ipworks')
+            branch('dev')
+            refspec('')
+            // dir('integration')
+            checkoutdir {
+                subdir = 'vendor'
+            }
+        }
+        gerrit ('checkout_common') {
+            project('udm/common')
+            credentials('userpwd-ipworks')
+            branch('dev')
+            refspec('')
+            // dir('integration')
+            checkoutdir {
+                subdir = 'common'
+            }
+        }
+        gerrit("checkout") {
+            project(cfg_repository)
+            dir('chassis-projects')
+            url('https://gerrit.ericsson.se/a')
+            credentials("userpwd-adp")
+            branch(cfg_branch)
+            refspec(cfg_refspec)
+            cleanbeforecheckout()
+            advancedcheckout {
+                timeout(40)
+            }
+            wipeoutrepo()
+        }
+    }
+    script {
+        shell('get-rid-off-git-repos') {
+            cmd('cd vendor && rm -rf .git && rm -rf .gitignore; cd ../common && rm -rf .git && rm -rf .gitignore; cd .. && cp -rf vendor chassis-projects/integration/vendor && cp -rf common chassis-projects/integration/common;')
+        }
+    }
+    build {
+        docker ('docker-build-pmjobloader-build') {
+            workspace('../../..')
+            dockerfile('./Dockerfile.pmloaderbuild')
+            dir("chassis-projects/integration/${cfg_project_name}/build/pmjobLoader")
+            name('pmjobloader-builder')
+            abortOnError(true)
+        }
+        docker ('docker-build-pmjobloader') {
+            dockerfile('./Dockerfile.pmjobloader')
+            dir("chassis-projects/integration/${cfg_project_name}/build/pmjobLoader")
+            credentials('userpwd-adp')
+            name('nrfpmjobloader')
+            abortOnError(true)
+            push(repoDocker)
+        }
+        docker ('docker-build-nrfcommon') {
+            dockerfile('./Dockerfile.runtime')
+            dir("chassis-projects/integration/${cfg_project_name}/build/nrfcommon")
+            credentials('userpwd-adp')
+            name('nrfcommon')
+            abortOnError(true)
+            push(repoDocker)
+        }
+        helm("helm-test") {
+            dir("chassis-projects/integration/${cfg_project_name}")
+            chart("helm/eric-nrf-common/Chart.yaml")
+            replace(['images:nrfCommon:tag':dockerImageTag,'eric-nrf-pm-job:images:pmJob:tag':dockerImageTag,'imageCredentials:repoPath':'proj-ipworks/precommit','eric-nrf-pm-job:imageCredentials:repoPath':'proj-ipworks/precommit'])
+            credentials("userpwd-adp")
+            gerritEvent(cfg_event)
+            release(cfg_release)
+            push("https://arm.lmera.ericsson.se/artifactory/proj-cicd5g-test-drop-helm")
+            versionStrategy(cfg_version_strategy)
+            envVars(GERRIT_USERNAME: armUsername, GERRIT_PASSWORD: armPassword,
+            GIT_REPO_URL: "https://esdccci@gerrit.ericsson.se/a/5gcicd/chassis-projects",
+            GERRIT_REFSPEC: cfg_refspec)
+        }
+    }
+}
+
+// Call Spinnaker_testing
+stage("Call ${next_job_name}") {
+    if(GERRIT_EVENT_TYPE=="comment-added"){
+        call_job {
+            job_name = next_job_name
+            wait = false
+            job_params = [
+                "CHART_NAME":         result["helm-test"]['CHART_NAME'],
+                "CHART_VERSION":         result["helm-test"]['CHART_VERSION'],
+                "CHART_REPO":            result["helm-test"]['CHART_REPO'],
+                "GERRIT_REFSPEC" : "",
+                "GERRIT_BRANCH" : "master",
+            ]
+        }
+    }
+}
+
+dateStr = new Date().format('HH:MM:ss').toString()
+println ("FIN DATE:              [${dateStr}]")
+println("Result: [${result}]")

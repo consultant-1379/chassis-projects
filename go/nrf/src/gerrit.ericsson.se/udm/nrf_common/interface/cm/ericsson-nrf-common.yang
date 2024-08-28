@@ -1,0 +1,265 @@
+module ericsson-nrf-common {
+    yang-version 1.1;
+    namespace urn:rdns:com:ericsson:oammodel:ericsson-nrf-common;
+    prefix nrfcomtypese;
+
+    import ietf-inet-types {
+        prefix inet;
+    }
+	import ericsson-yang-extensions { 
+		prefix yexte;
+	}	
+    import ericsson-5gcudmpol-common {
+	    prefix comtypese;
+    }
+    organization
+      "Ericsson AB";
+    contact
+      "Ericsson first line support via email"; 
+    description
+      "The module defines the data model for NRF.          
+       Copyright (c) 2018 Ericsson AB. All rights reserved.";
+
+	revision "2019-04-08" {
+	  	description "Update nrf-server-profile";
+	    yexte:version 0;
+		yexte:release 1;
+		yexte:correction 5; 
+	}
+
+	revision "2019-03-28" {
+	  	description "align with ericsson-5gcudmpol-common 0.1.2";
+	    yexte:version 0;
+		yexte:release 1;
+		yexte:correction 4; 
+	}	
+
+	revision "2019-01-14" {
+	  	description "Update to align 29.510 version 15.2.0";
+	    yexte:version 0;
+		yexte:release 1;
+		yexte:correction 3; 
+	}	
+
+	revision "2018-11-08" {
+	  	description "Move common type to ericsson-5gcudmpol-common module and align version 15.1.0";
+	    yexte:version 0;
+		yexte:release 1;
+		yexte:correction 2; 
+	}	
+
+	revision "2018-09-03" {
+	  	description "Update name convention; add nrf_server_profile";
+	    yexte:version 0;
+		yexte:release 1;
+		yexte:correction 1; 
+	}	
+    		  
+	revision "2018-07-31" {
+	  	description "Initial version. YANG modeling of common types";
+	    yexte:version 0;
+		yexte:release 1;
+		yexte:correction 0; 
+	}		  
+
+    
+    typedef log-severity {
+        status current {
+            yexte:preliminary; 
+        }     
+        type enumeration {
+            enum EMERGENCY {
+                value 0;
+                description
+                  "EMERGENCY type events.";
+            }
+
+            enum ALERT {
+                value 1;
+                description
+                  "ALERT type events.";
+            }
+
+            enum CRITICAL {
+                value 2;
+                description
+                  "CRITICAL type events.";
+            }
+
+            enum ERROR {
+                value 3;
+                description
+                  "ERROR type events.";
+            }
+
+            enum WARNING {
+                value 4;
+                description
+                  "WARNING type events.";
+            }
+
+            enum NOTICE {
+                value 5;
+                description
+                  "NOTICE type events.";
+            }
+
+            enum INFO {
+                value 6;
+                description
+                  "INFO type events.";
+            }
+
+            enum DEBUG {
+                value 7;
+                description
+                  "DEBUG type events.";
+            }
+
+            enum INHERIT {
+                value 8;
+                description
+                  "Log type inherited from parent.";
+            }
+        }
+
+        description
+          "Severity levels on log entries";
+        reference
+          "RFC 5424: The Syslog Protocol";
+    }
+
+  
+
+    grouping nrf-server-profile {
+	    leaf id {
+             type string {
+            }
+            mandatory true;
+            description "Unique ID represents the NRF.";
+                         
+        }
+
+        leaf fqdn {
+            type string {
+            }
+            description "FQDN of the NRF.";
+        }
+
+        leaf-list ipv4-address {
+            type inet:ipv4-address {
+            }
+            description "IPv4 address(es) of the the NRF.";
+        }
+
+        leaf-list ipv6-address {
+            type inet:ipv6-address {
+            }
+            description "IPv6 address(es) of the the NRF.";
+        }        
+		 
+		leaf priority { 
+             type uint16  {
+                 range "0 .. 65535";
+             }
+			 description "Priority of this NRF compared to the set of NRF in redundancy mode;lower values indicate a higher priority
+			              If priority is also present in the service parameters, those will have precedence over this value.";
+        }
+
+        leaf capacity { 
+             type uint16  {
+                 range "0 .. 65535";
+             }
+            description "Static capacity information in the range of 0-65535, expressed as a weight relative to other NRF,
+                         If priority is also present in the service parameters, those will have precedence over this value.";
+        }
+
+        leaf locality {
+            type string {
+            }
+            description "Location of the NF instance";
+        } 
+			
+		list service {
+            key id;
+            leaf id { 
+                    type uint32 {
+                    }
+			     description "Unique ID represents the NRF service.";}
+
+            leaf name {
+                type string {
+                }
+                mandatory true;
+            }
+            list version {
+                 key "api-version-in-uri";
+                 uses comtypese:nf-service-version;
+				 min-elements 1;
+                 description "Versions of the service instance to be used in the URI for accessing the API";                    
+            }
+
+            leaf scheme { 
+                    type string {
+                    }
+                    mandatory true;
+                    description "Protocol scheme.";
+            }
+            leaf fqdn { 
+                    type string {
+                    }
+                    description "FQDN of the service instance.";
+			              
+            }
+            list ip-endpoint { 
+                key "id";
+                leaf id { type uint32 ; }
+                uses comtypese:ip-endpoint;
+                description "IP address(es) and port information where the service is listening for incoming service requests.";  
+			                                                       
+            }
+            leaf priority { 
+                type uint16  {
+                    range "0 .. 65535";
+                }
+                description "Priority to be used for NF Service selection.";
+            }
+
+            leaf capacity { 
+                type uint16  {
+                    range "0 .. 65535";
+                }
+                description "Static capacity information in the range of 0-65535, expressed as a weight relative to other services of 
+                the same type.";
+                            
+            }                            
+            leaf api-prefix { 
+                type string {
+                }
+                description "Optional path segment(s) used to construct the {apiRoot} variable of the different API URIs.";
+            }           
+            leaf supported-features { 
+                type comtypese:supported-features;
+                description "Supported Features of the NF Service instance.";
+            }                
+		}
+	}
+
+    typedef load-balance-mode {
+        type enumeration {
+            enum active-standby {
+                value 1;
+				description  "activeStandby";
+            }
+            enum load-balance {
+                value 2;
+				description  "loadBalance";
+            }
+        }
+        description
+          "Define the mode: loadBalance or activeStandby .";
+    }      
+
+ 
+    
+}

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JSONUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.dbproxy_client</a> &gt; <span class="el_source">JSONUtil.java</span></div><h1>JSONUtil.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.dbproxy_client;
+
+import java.io.File;
+import org.apache.commons.io.FileUtils;
+import org.apache.geode.pdx.JSONFormatter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
+
+public class JSONUtil {
+
+<span class="nc" id="L12">  private static final Logger LOGGER = LogManager.getLogger(JSONUtil.class);</span>
+
+  private JSONUtil() {
+  }
+
+  public static String[] readFile(String path) {
+<span class="nc" id="L18">    String[] json = {&quot;&quot;, &quot;&quot;};</span>
+    try {
+<span class="nc" id="L20">      String content = FileUtils.readFileToString(new File(path), &quot;UTF-8&quot;);</span>
+<span class="nc" id="L21">      JSONObject jsonObject = new JSONObject(content);</span>
+
+<span class="nc" id="L23">      json[0] = jsonObject.getString(&quot;nfInstanceId&quot;);</span>
+<span class="nc" id="L24">      json[1] = content;</span>
+
+<span class="nc" id="L26">      String jsonCustomer = &quot;{Age: 10}&quot;;</span>
+<span class="nc" id="L27">      JSONFormatter.fromJSON(jsonCustomer);</span>
+<span class="nc" id="L28">    } catch (Exception e) {</span>
+<span class="nc" id="L29">      LOGGER.error(e.toString());</span>
+<span class="nc" id="L30">    }</span>
+<span class="nc" id="L31">    return json;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

@@ -1,0 +1,753 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NFDataManagementServiceGrpc.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.grpc</a> &gt; <span class="el_source">NFDataManagementServiceGrpc.java</span></div><h1>NFDataManagementServiceGrpc.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.grpc;
+
+import static io.grpc.MethodDescriptor.generateFullMethodName;
+import static io.grpc.stub.ClientCalls.asyncBidiStreamingCall;
+import static io.grpc.stub.ClientCalls.asyncClientStreamingCall;
+import static io.grpc.stub.ClientCalls.asyncServerStreamingCall;
+import static io.grpc.stub.ClientCalls.asyncUnaryCall;
+import static io.grpc.stub.ClientCalls.blockingServerStreamingCall;
+import static io.grpc.stub.ClientCalls.blockingUnaryCall;
+import static io.grpc.stub.ClientCalls.futureUnaryCall;
+import static io.grpc.stub.ServerCalls.asyncBidiStreamingCall;
+import static io.grpc.stub.ServerCalls.asyncClientStreamingCall;
+import static io.grpc.stub.ServerCalls.asyncServerStreamingCall;
+import static io.grpc.stub.ServerCalls.asyncUnaryCall;
+import static io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall;
+import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
+
+/**
+ */
+@javax.annotation.Generated(
+    value = &quot;by gRPC proto compiler (version 1.11.0)&quot;,
+    comments = &quot;Source: NFDataManagementService.proto&quot;)
+public final class NFDataManagementServiceGrpc {
+
+  private NFDataManagementServiceGrpc() {}
+
+  public static final String SERVICE_NAME = &quot;grpc.NFDataManagementService&quot;;
+
+  // Static method descriptors that strictly reflect the proto.
+  @io.grpc.ExperimentalApi(&quot;https://github.com/grpc/grpc-java/issues/1901&quot;)
+  @java.lang.Deprecated // Use {@link #getExecuteMethod()} instead. 
+  public static final io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage,
+<span class="nc" id="L33">      ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage&gt; METHOD_EXECUTE = getExecuteMethodHelper();</span>
+
+  private static volatile io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage,
+      ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage&gt; getExecuteMethod;
+
+  @io.grpc.ExperimentalApi(&quot;https://github.com/grpc/grpc-java/issues/1901&quot;)
+  public static io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage,
+      ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage&gt; getExecuteMethod() {
+<span class="nc" id="L41">    return getExecuteMethodHelper();</span>
+  }
+
+  private static io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage,
+      ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage&gt; getExecuteMethodHelper() {
+    io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage, ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage&gt; getExecuteMethod;
+<span class="nc bnc" id="L47" title="All 2 branches missed.">    if ((getExecuteMethod = NFDataManagementServiceGrpc.getExecuteMethod) == null) {</span>
+<span class="nc" id="L48">      synchronized (NFDataManagementServiceGrpc.class) {</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">        if ((getExecuteMethod = NFDataManagementServiceGrpc.getExecuteMethod) == null) {</span>
+          NFDataManagementServiceGrpc.getExecuteMethod = getExecuteMethod = 
+<span class="nc" id="L51">              io.grpc.MethodDescriptor.&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage, ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage&gt;newBuilder()</span>
+<span class="nc" id="L52">              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)</span>
+<span class="nc" id="L53">              .setFullMethodName(generateFullMethodName(</span>
+                  &quot;grpc.NFDataManagementService&quot;, &quot;execute&quot;))
+<span class="nc" id="L55">              .setSampledToLocalTracing(true)</span>
+<span class="nc" id="L56">              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(</span>
+<span class="nc" id="L57">                  ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage.getDefaultInstance()))</span>
+<span class="nc" id="L58">              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(</span>
+<span class="nc" id="L59">                  ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage.getDefaultInstance()))</span>
+<span class="nc" id="L60">                  .setSchemaDescriptor(new NFDataManagementServiceMethodDescriptorSupplier(&quot;execute&quot;))</span>
+<span class="nc" id="L61">                  .build();</span>
+          }
+<span class="nc" id="L63">        }</span>
+     }
+<span class="nc" id="L65">     return getExecuteMethod;</span>
+  }
+  @io.grpc.ExperimentalApi(&quot;https://github.com/grpc/grpc-java/issues/1901&quot;)
+  @java.lang.Deprecated // Use {@link #getInsertMethod()} instead. 
+  public static final io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.InsertRequest,
+<span class="nc" id="L70">      ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.InsertResponse&gt; METHOD_INSERT = getInsertMethodHelper();</span>
+
+  private static volatile io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.InsertRequest,
+      ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.InsertResponse&gt; getInsertMethod;
+
+  @io.grpc.ExperimentalApi(&quot;https://github.com/grpc/grpc-java/issues/1901&quot;)
+  public static io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.InsertRequest,
+      ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.InsertResponse&gt; getInsertMethod() {
+<span class="nc" id="L78">    return getInsertMethodHelper();</span>
+  }
+
+  private static io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.InsertRequest,
+      ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.InsertResponse&gt; getInsertMethodHelper() {
+    io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.InsertRequest, ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.InsertResponse&gt; getInsertMethod;
+<span class="nc bnc" id="L84" title="All 2 branches missed.">    if ((getInsertMethod = NFDataManagementServiceGrpc.getInsertMethod) == null) {</span>
+<span class="nc" id="L85">      synchronized (NFDataManagementServiceGrpc.class) {</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">        if ((getInsertMethod = NFDataManagementServiceGrpc.getInsertMethod) == null) {</span>
+          NFDataManagementServiceGrpc.getInsertMethod = getInsertMethod = 
+<span class="nc" id="L88">              io.grpc.MethodDescriptor.&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.InsertRequest, ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.InsertResponse&gt;newBuilder()</span>
+<span class="nc" id="L89">              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)</span>
+<span class="nc" id="L90">              .setFullMethodName(generateFullMethodName(</span>
+                  &quot;grpc.NFDataManagementService&quot;, &quot;insert&quot;))
+<span class="nc" id="L92">              .setSampledToLocalTracing(true)</span>
+<span class="nc" id="L93">              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(</span>
+<span class="nc" id="L94">                  ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.InsertRequest.getDefaultInstance()))</span>
+<span class="nc" id="L95">              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(</span>
+<span class="nc" id="L96">                  ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.InsertResponse.getDefaultInstance()))</span>
+<span class="nc" id="L97">                  .setSchemaDescriptor(new NFDataManagementServiceMethodDescriptorSupplier(&quot;insert&quot;))</span>
+<span class="nc" id="L98">                  .build();</span>
+          }
+<span class="nc" id="L100">        }</span>
+     }
+<span class="nc" id="L102">     return getInsertMethod;</span>
+  }
+  @io.grpc.ExperimentalApi(&quot;https://github.com/grpc/grpc-java/issues/1901&quot;)
+  @java.lang.Deprecated // Use {@link #getRemoveMethod()} instead. 
+  public static final io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.RemoveRequest,
+<span class="nc" id="L107">      ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.RemoveResponse&gt; METHOD_REMOVE = getRemoveMethodHelper();</span>
+
+  private static volatile io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.RemoveRequest,
+      ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.RemoveResponse&gt; getRemoveMethod;
+
+  @io.grpc.ExperimentalApi(&quot;https://github.com/grpc/grpc-java/issues/1901&quot;)
+  public static io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.RemoveRequest,
+      ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.RemoveResponse&gt; getRemoveMethod() {
+<span class="nc" id="L115">    return getRemoveMethodHelper();</span>
+  }
+
+  private static io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.RemoveRequest,
+      ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.RemoveResponse&gt; getRemoveMethodHelper() {
+    io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.RemoveRequest, ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.RemoveResponse&gt; getRemoveMethod;
+<span class="nc bnc" id="L121" title="All 2 branches missed.">    if ((getRemoveMethod = NFDataManagementServiceGrpc.getRemoveMethod) == null) {</span>
+<span class="nc" id="L122">      synchronized (NFDataManagementServiceGrpc.class) {</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">        if ((getRemoveMethod = NFDataManagementServiceGrpc.getRemoveMethod) == null) {</span>
+          NFDataManagementServiceGrpc.getRemoveMethod = getRemoveMethod = 
+<span class="nc" id="L125">              io.grpc.MethodDescriptor.&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.RemoveRequest, ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.RemoveResponse&gt;newBuilder()</span>
+<span class="nc" id="L126">              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)</span>
+<span class="nc" id="L127">              .setFullMethodName(generateFullMethodName(</span>
+                  &quot;grpc.NFDataManagementService&quot;, &quot;remove&quot;))
+<span class="nc" id="L129">              .setSampledToLocalTracing(true)</span>
+<span class="nc" id="L130">              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(</span>
+<span class="nc" id="L131">                  ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.RemoveRequest.getDefaultInstance()))</span>
+<span class="nc" id="L132">              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(</span>
+<span class="nc" id="L133">                  ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.RemoveResponse.getDefaultInstance()))</span>
+<span class="nc" id="L134">                  .setSchemaDescriptor(new NFDataManagementServiceMethodDescriptorSupplier(&quot;remove&quot;))</span>
+<span class="nc" id="L135">                  .build();</span>
+          }
+<span class="nc" id="L137">        }</span>
+     }
+<span class="nc" id="L139">     return getRemoveMethod;</span>
+  }
+  @io.grpc.ExperimentalApi(&quot;https://github.com/grpc/grpc-java/issues/1901&quot;)
+  @java.lang.Deprecated // Use {@link #getQueryByKeyMethod()} instead. 
+  public static final io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryRequest,
+<span class="nc" id="L144">      ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryResponse&gt; METHOD_QUERY_BY_KEY = getQueryByKeyMethodHelper();</span>
+
+  private static volatile io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryRequest,
+      ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryResponse&gt; getQueryByKeyMethod;
+
+  @io.grpc.ExperimentalApi(&quot;https://github.com/grpc/grpc-java/issues/1901&quot;)
+  public static io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryRequest,
+      ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryResponse&gt; getQueryByKeyMethod() {
+<span class="nc" id="L152">    return getQueryByKeyMethodHelper();</span>
+  }
+
+  private static io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryRequest,
+      ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryResponse&gt; getQueryByKeyMethodHelper() {
+    io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryRequest, ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryResponse&gt; getQueryByKeyMethod;
+<span class="nc bnc" id="L158" title="All 2 branches missed.">    if ((getQueryByKeyMethod = NFDataManagementServiceGrpc.getQueryByKeyMethod) == null) {</span>
+<span class="nc" id="L159">      synchronized (NFDataManagementServiceGrpc.class) {</span>
+<span class="nc bnc" id="L160" title="All 2 branches missed.">        if ((getQueryByKeyMethod = NFDataManagementServiceGrpc.getQueryByKeyMethod) == null) {</span>
+          NFDataManagementServiceGrpc.getQueryByKeyMethod = getQueryByKeyMethod = 
+<span class="nc" id="L162">              io.grpc.MethodDescriptor.&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryRequest, ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryResponse&gt;newBuilder()</span>
+<span class="nc" id="L163">              .setType(io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)</span>
+<span class="nc" id="L164">              .setFullMethodName(generateFullMethodName(</span>
+                  &quot;grpc.NFDataManagementService&quot;, &quot;queryByKey&quot;))
+<span class="nc" id="L166">              .setSampledToLocalTracing(true)</span>
+<span class="nc" id="L167">              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(</span>
+<span class="nc" id="L168">                  ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryRequest.getDefaultInstance()))</span>
+<span class="nc" id="L169">              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(</span>
+<span class="nc" id="L170">                  ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryResponse.getDefaultInstance()))</span>
+<span class="nc" id="L171">                  .setSchemaDescriptor(new NFDataManagementServiceMethodDescriptorSupplier(&quot;queryByKey&quot;))</span>
+<span class="nc" id="L172">                  .build();</span>
+          }
+<span class="nc" id="L174">        }</span>
+     }
+<span class="nc" id="L176">     return getQueryByKeyMethod;</span>
+  }
+  @io.grpc.ExperimentalApi(&quot;https://github.com/grpc/grpc-java/issues/1901&quot;)
+  @java.lang.Deprecated // Use {@link #getQueryByFilterMethod()} instead. 
+  public static final io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryRequest,
+<span class="nc" id="L181">      ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryResponse&gt; METHOD_QUERY_BY_FILTER = getQueryByFilterMethodHelper();</span>
+
+  private static volatile io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryRequest,
+      ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryResponse&gt; getQueryByFilterMethod;
+
+  @io.grpc.ExperimentalApi(&quot;https://github.com/grpc/grpc-java/issues/1901&quot;)
+  public static io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryRequest,
+      ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryResponse&gt; getQueryByFilterMethod() {
+<span class="nc" id="L189">    return getQueryByFilterMethodHelper();</span>
+  }
+
+  private static io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryRequest,
+      ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryResponse&gt; getQueryByFilterMethodHelper() {
+    io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryRequest, ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryResponse&gt; getQueryByFilterMethod;
+<span class="nc bnc" id="L195" title="All 2 branches missed.">    if ((getQueryByFilterMethod = NFDataManagementServiceGrpc.getQueryByFilterMethod) == null) {</span>
+<span class="nc" id="L196">      synchronized (NFDataManagementServiceGrpc.class) {</span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">        if ((getQueryByFilterMethod = NFDataManagementServiceGrpc.getQueryByFilterMethod) == null) {</span>
+          NFDataManagementServiceGrpc.getQueryByFilterMethod = getQueryByFilterMethod = 
+<span class="nc" id="L199">              io.grpc.MethodDescriptor.&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryRequest, ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryResponse&gt;newBuilder()</span>
+<span class="nc" id="L200">              .setType(io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)</span>
+<span class="nc" id="L201">              .setFullMethodName(generateFullMethodName(</span>
+                  &quot;grpc.NFDataManagementService&quot;, &quot;queryByFilter&quot;))
+<span class="nc" id="L203">              .setSampledToLocalTracing(true)</span>
+<span class="nc" id="L204">              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(</span>
+<span class="nc" id="L205">                  ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryRequest.getDefaultInstance()))</span>
+<span class="nc" id="L206">              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(</span>
+<span class="nc" id="L207">                  ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryResponse.getDefaultInstance()))</span>
+<span class="nc" id="L208">                  .setSchemaDescriptor(new NFDataManagementServiceMethodDescriptorSupplier(&quot;queryByFilter&quot;))</span>
+<span class="nc" id="L209">                  .build();</span>
+          }
+<span class="nc" id="L211">        }</span>
+     }
+<span class="nc" id="L213">     return getQueryByFilterMethod;</span>
+  }
+  @io.grpc.ExperimentalApi(&quot;https://github.com/grpc/grpc-java/issues/1901&quot;)
+  @java.lang.Deprecated // Use {@link #getTransferParameterMethod()} instead. 
+  public static final io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.ParaRequest,
+<span class="nc" id="L218">      ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.ParaResponse&gt; METHOD_TRANSFER_PARAMETER = getTransferParameterMethodHelper();</span>
+
+  private static volatile io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.ParaRequest,
+      ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.ParaResponse&gt; getTransferParameterMethod;
+
+  @io.grpc.ExperimentalApi(&quot;https://github.com/grpc/grpc-java/issues/1901&quot;)
+  public static io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.ParaRequest,
+      ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.ParaResponse&gt; getTransferParameterMethod() {
+<span class="nc" id="L226">    return getTransferParameterMethodHelper();</span>
+  }
+
+  private static io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.ParaRequest,
+      ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.ParaResponse&gt; getTransferParameterMethodHelper() {
+    io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.ParaRequest, ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.ParaResponse&gt; getTransferParameterMethod;
+<span class="nc bnc" id="L232" title="All 2 branches missed.">    if ((getTransferParameterMethod = NFDataManagementServiceGrpc.getTransferParameterMethod) == null) {</span>
+<span class="nc" id="L233">      synchronized (NFDataManagementServiceGrpc.class) {</span>
+<span class="nc bnc" id="L234" title="All 2 branches missed.">        if ((getTransferParameterMethod = NFDataManagementServiceGrpc.getTransferParameterMethod) == null) {</span>
+          NFDataManagementServiceGrpc.getTransferParameterMethod = getTransferParameterMethod = 
+<span class="nc" id="L236">              io.grpc.MethodDescriptor.&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.ParaRequest, ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.ParaResponse&gt;newBuilder()</span>
+<span class="nc" id="L237">              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)</span>
+<span class="nc" id="L238">              .setFullMethodName(generateFullMethodName(</span>
+                  &quot;grpc.NFDataManagementService&quot;, &quot;transferParameter&quot;))
+<span class="nc" id="L240">              .setSampledToLocalTracing(true)</span>
+<span class="nc" id="L241">              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(</span>
+<span class="nc" id="L242">                  ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.ParaRequest.getDefaultInstance()))</span>
+<span class="nc" id="L243">              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(</span>
+<span class="nc" id="L244">                  ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.ParaResponse.getDefaultInstance()))</span>
+<span class="nc" id="L245">                  .setSchemaDescriptor(new NFDataManagementServiceMethodDescriptorSupplier(&quot;transferParameter&quot;))</span>
+<span class="nc" id="L246">                  .build();</span>
+          }
+<span class="nc" id="L248">        }</span>
+     }
+<span class="nc" id="L250">     return getTransferParameterMethod;</span>
+  }
+  @io.grpc.ExperimentalApi(&quot;https://github.com/grpc/grpc-java/issues/1901&quot;)
+  @java.lang.Deprecated // Use {@link #getPatchNrfProfileMethod()} instead. 
+  public static final io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchRequest,
+<span class="nc" id="L255">      ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchResponse&gt; METHOD_PATCH_NRF_PROFILE = getPatchNrfProfileMethodHelper();</span>
+
+  private static volatile io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchRequest,
+      ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchResponse&gt; getPatchNrfProfileMethod;
+
+  @io.grpc.ExperimentalApi(&quot;https://github.com/grpc/grpc-java/issues/1901&quot;)
+  public static io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchRequest,
+      ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchResponse&gt; getPatchNrfProfileMethod() {
+<span class="nc" id="L263">    return getPatchNrfProfileMethodHelper();</span>
+  }
+
+  private static io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchRequest,
+      ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchResponse&gt; getPatchNrfProfileMethodHelper() {
+    io.grpc.MethodDescriptor&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchRequest, ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchResponse&gt; getPatchNrfProfileMethod;
+<span class="nc bnc" id="L269" title="All 2 branches missed.">    if ((getPatchNrfProfileMethod = NFDataManagementServiceGrpc.getPatchNrfProfileMethod) == null) {</span>
+<span class="nc" id="L270">      synchronized (NFDataManagementServiceGrpc.class) {</span>
+<span class="nc bnc" id="L271" title="All 2 branches missed.">        if ((getPatchNrfProfileMethod = NFDataManagementServiceGrpc.getPatchNrfProfileMethod) == null) {</span>
+          NFDataManagementServiceGrpc.getPatchNrfProfileMethod = getPatchNrfProfileMethod = 
+<span class="nc" id="L273">              io.grpc.MethodDescriptor.&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchRequest, ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchResponse&gt;newBuilder()</span>
+<span class="nc" id="L274">              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)</span>
+<span class="nc" id="L275">              .setFullMethodName(generateFullMethodName(</span>
+                  &quot;grpc.NFDataManagementService&quot;, &quot;patchNrfProfile&quot;))
+<span class="nc" id="L277">              .setSampledToLocalTracing(true)</span>
+<span class="nc" id="L278">              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(</span>
+<span class="nc" id="L279">                  ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchRequest.getDefaultInstance()))</span>
+<span class="nc" id="L280">              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(</span>
+<span class="nc" id="L281">                  ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchResponse.getDefaultInstance()))</span>
+<span class="nc" id="L282">                  .setSchemaDescriptor(new NFDataManagementServiceMethodDescriptorSupplier(&quot;patchNrfProfile&quot;))</span>
+<span class="nc" id="L283">                  .build();</span>
+          }
+<span class="nc" id="L285">        }</span>
+     }
+<span class="nc" id="L287">     return getPatchNrfProfileMethod;</span>
+  }
+
+  /**
+   * Creates a new async stub that supports all call types for the service
+   */
+  public static NFDataManagementServiceStub newStub(io.grpc.Channel channel) {
+<span class="nc" id="L294">    return new NFDataManagementServiceStub(channel);</span>
+  }
+
+  /**
+   * Creates a new blocking-style stub that supports unary and streaming output calls on the service
+   */
+  public static NFDataManagementServiceBlockingStub newBlockingStub(
+      io.grpc.Channel channel) {
+<span class="nc" id="L302">    return new NFDataManagementServiceBlockingStub(channel);</span>
+  }
+
+  /**
+   * Creates a new ListenableFuture-style stub that supports unary calls on the service
+   */
+  public static NFDataManagementServiceFutureStub newFutureStub(
+      io.grpc.Channel channel) {
+<span class="nc" id="L310">    return new NFDataManagementServiceFutureStub(channel);</span>
+  }
+
+  /**
+   */
+<span class="nc" id="L315">  public static abstract class NFDataManagementServiceImplBase implements io.grpc.BindableService {</span>
+
+    /**
+     */
+    public void execute(ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage request,
+        io.grpc.stub.StreamObserver&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage&gt; responseObserver) {
+<span class="nc" id="L321">      asyncUnimplementedUnaryCall(getExecuteMethodHelper(), responseObserver);</span>
+<span class="nc" id="L322">    }</span>
+
+    /**
+     */
+    public void insert(ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.InsertRequest request,
+        io.grpc.stub.StreamObserver&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.InsertResponse&gt; responseObserver) {
+<span class="nc" id="L328">      asyncUnimplementedUnaryCall(getInsertMethodHelper(), responseObserver);</span>
+<span class="nc" id="L329">    }</span>
+
+    /**
+     */
+    public void remove(ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.RemoveRequest request,
+        io.grpc.stub.StreamObserver&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.RemoveResponse&gt; responseObserver) {
+<span class="nc" id="L335">      asyncUnimplementedUnaryCall(getRemoveMethodHelper(), responseObserver);</span>
+<span class="nc" id="L336">    }</span>
+
+    /**
+     */
+    public void queryByKey(ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryRequest request,
+        io.grpc.stub.StreamObserver&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryResponse&gt; responseObserver) {
+<span class="nc" id="L342">      asyncUnimplementedUnaryCall(getQueryByKeyMethodHelper(), responseObserver);</span>
+<span class="nc" id="L343">    }</span>
+
+    /**
+     */
+    public void queryByFilter(ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryRequest request,
+        io.grpc.stub.StreamObserver&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryResponse&gt; responseObserver) {
+<span class="nc" id="L349">      asyncUnimplementedUnaryCall(getQueryByFilterMethodHelper(), responseObserver);</span>
+<span class="nc" id="L350">    }</span>
+
+    /**
+     */
+    public void transferParameter(ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.ParaRequest request,
+        io.grpc.stub.StreamObserver&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.ParaResponse&gt; responseObserver) {
+<span class="nc" id="L356">      asyncUnimplementedUnaryCall(getTransferParameterMethodHelper(), responseObserver);</span>
+<span class="nc" id="L357">    }</span>
+
+    /**
+     */
+    public void patchNrfProfile(ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchRequest request,
+        io.grpc.stub.StreamObserver&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchResponse&gt; responseObserver) {
+<span class="nc" id="L363">      asyncUnimplementedUnaryCall(getPatchNrfProfileMethodHelper(), responseObserver);</span>
+<span class="nc" id="L364">    }</span>
+
+    @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
+<span class="nc" id="L367">      return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())</span>
+<span class="nc" id="L368">          .addMethod(</span>
+<span class="nc" id="L369">            getExecuteMethodHelper(),</span>
+<span class="nc" id="L370">            asyncUnaryCall(</span>
+              new MethodHandlers&lt;
+                ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage,
+                ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage&gt;(
+                  this, METHODID_EXECUTE)))
+<span class="nc" id="L375">          .addMethod(</span>
+<span class="nc" id="L376">            getInsertMethodHelper(),</span>
+<span class="nc" id="L377">            asyncUnaryCall(</span>
+              new MethodHandlers&lt;
+                ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.InsertRequest,
+                ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.InsertResponse&gt;(
+                  this, METHODID_INSERT)))
+<span class="nc" id="L382">          .addMethod(</span>
+<span class="nc" id="L383">            getRemoveMethodHelper(),</span>
+<span class="nc" id="L384">            asyncUnaryCall(</span>
+              new MethodHandlers&lt;
+                ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.RemoveRequest,
+                ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.RemoveResponse&gt;(
+                  this, METHODID_REMOVE)))
+<span class="nc" id="L389">          .addMethod(</span>
+<span class="nc" id="L390">            getQueryByKeyMethodHelper(),</span>
+<span class="nc" id="L391">            asyncServerStreamingCall(</span>
+              new MethodHandlers&lt;
+                ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryRequest,
+                ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryResponse&gt;(
+                  this, METHODID_QUERY_BY_KEY)))
+<span class="nc" id="L396">          .addMethod(</span>
+<span class="nc" id="L397">            getQueryByFilterMethodHelper(),</span>
+<span class="nc" id="L398">            asyncServerStreamingCall(</span>
+              new MethodHandlers&lt;
+                ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryRequest,
+                ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryResponse&gt;(
+                  this, METHODID_QUERY_BY_FILTER)))
+<span class="nc" id="L403">          .addMethod(</span>
+<span class="nc" id="L404">            getTransferParameterMethodHelper(),</span>
+<span class="nc" id="L405">            asyncUnaryCall(</span>
+              new MethodHandlers&lt;
+                ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.ParaRequest,
+                ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.ParaResponse&gt;(
+                  this, METHODID_TRANSFER_PARAMETER)))
+<span class="nc" id="L410">          .addMethod(</span>
+<span class="nc" id="L411">            getPatchNrfProfileMethodHelper(),</span>
+<span class="nc" id="L412">            asyncUnaryCall(</span>
+              new MethodHandlers&lt;
+                ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchRequest,
+                ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchResponse&gt;(
+                  this, METHODID_PATCH_NRF_PROFILE)))
+<span class="nc" id="L417">          .build();</span>
+    }
+  }
+
+  /**
+   */
+  public static final class NFDataManagementServiceStub extends io.grpc.stub.AbstractStub&lt;NFDataManagementServiceStub&gt; {
+    private NFDataManagementServiceStub(io.grpc.Channel channel) {
+<span class="nc" id="L425">      super(channel);</span>
+<span class="nc" id="L426">    }</span>
+
+    private NFDataManagementServiceStub(io.grpc.Channel channel,
+        io.grpc.CallOptions callOptions) {
+<span class="nc" id="L430">      super(channel, callOptions);</span>
+<span class="nc" id="L431">    }</span>
+
+    @java.lang.Override
+    protected NFDataManagementServiceStub build(io.grpc.Channel channel,
+        io.grpc.CallOptions callOptions) {
+<span class="nc" id="L436">      return new NFDataManagementServiceStub(channel, callOptions);</span>
+    }
+
+    /**
+     */
+    public void execute(ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage request,
+        io.grpc.stub.StreamObserver&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage&gt; responseObserver) {
+<span class="nc" id="L443">      asyncUnaryCall(</span>
+<span class="nc" id="L444">          getChannel().newCall(getExecuteMethodHelper(), getCallOptions()), request, responseObserver);</span>
+<span class="nc" id="L445">    }</span>
+
+    /**
+     */
+    public void insert(ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.InsertRequest request,
+        io.grpc.stub.StreamObserver&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.InsertResponse&gt; responseObserver) {
+<span class="nc" id="L451">      asyncUnaryCall(</span>
+<span class="nc" id="L452">          getChannel().newCall(getInsertMethodHelper(), getCallOptions()), request, responseObserver);</span>
+<span class="nc" id="L453">    }</span>
+
+    /**
+     */
+    public void remove(ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.RemoveRequest request,
+        io.grpc.stub.StreamObserver&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.RemoveResponse&gt; responseObserver) {
+<span class="nc" id="L459">      asyncUnaryCall(</span>
+<span class="nc" id="L460">          getChannel().newCall(getRemoveMethodHelper(), getCallOptions()), request, responseObserver);</span>
+<span class="nc" id="L461">    }</span>
+
+    /**
+     */
+    public void queryByKey(ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryRequest request,
+        io.grpc.stub.StreamObserver&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryResponse&gt; responseObserver) {
+<span class="nc" id="L467">      asyncServerStreamingCall(</span>
+<span class="nc" id="L468">          getChannel().newCall(getQueryByKeyMethodHelper(), getCallOptions()), request, responseObserver);</span>
+<span class="nc" id="L469">    }</span>
+
+    /**
+     */
+    public void queryByFilter(ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryRequest request,
+        io.grpc.stub.StreamObserver&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryResponse&gt; responseObserver) {
+<span class="nc" id="L475">      asyncServerStreamingCall(</span>
+<span class="nc" id="L476">          getChannel().newCall(getQueryByFilterMethodHelper(), getCallOptions()), request, responseObserver);</span>
+<span class="nc" id="L477">    }</span>
+
+    /**
+     */
+    public void transferParameter(ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.ParaRequest request,
+        io.grpc.stub.StreamObserver&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.ParaResponse&gt; responseObserver) {
+<span class="nc" id="L483">      asyncUnaryCall(</span>
+<span class="nc" id="L484">          getChannel().newCall(getTransferParameterMethodHelper(), getCallOptions()), request, responseObserver);</span>
+<span class="nc" id="L485">    }</span>
+
+    /**
+     */
+    public void patchNrfProfile(ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchRequest request,
+        io.grpc.stub.StreamObserver&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchResponse&gt; responseObserver) {
+<span class="nc" id="L491">      asyncUnaryCall(</span>
+<span class="nc" id="L492">          getChannel().newCall(getPatchNrfProfileMethodHelper(), getCallOptions()), request, responseObserver);</span>
+<span class="nc" id="L493">    }</span>
+  }
+
+  /**
+   */
+  public static final class NFDataManagementServiceBlockingStub extends io.grpc.stub.AbstractStub&lt;NFDataManagementServiceBlockingStub&gt; {
+    private NFDataManagementServiceBlockingStub(io.grpc.Channel channel) {
+<span class="nc" id="L500">      super(channel);</span>
+<span class="nc" id="L501">    }</span>
+
+    private NFDataManagementServiceBlockingStub(io.grpc.Channel channel,
+        io.grpc.CallOptions callOptions) {
+<span class="nc" id="L505">      super(channel, callOptions);</span>
+<span class="nc" id="L506">    }</span>
+
+    @java.lang.Override
+    protected NFDataManagementServiceBlockingStub build(io.grpc.Channel channel,
+        io.grpc.CallOptions callOptions) {
+<span class="nc" id="L511">      return new NFDataManagementServiceBlockingStub(channel, callOptions);</span>
+    }
+
+    /**
+     */
+    public ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage execute(ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage request) {
+<span class="nc" id="L517">      return blockingUnaryCall(</span>
+<span class="nc" id="L518">          getChannel(), getExecuteMethodHelper(), getCallOptions(), request);</span>
+    }
+
+    /**
+     */
+    public ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.InsertResponse insert(ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.InsertRequest request) {
+<span class="nc" id="L524">      return blockingUnaryCall(</span>
+<span class="nc" id="L525">          getChannel(), getInsertMethodHelper(), getCallOptions(), request);</span>
+    }
+
+    /**
+     */
+    public ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.RemoveResponse remove(ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.RemoveRequest request) {
+<span class="nc" id="L531">      return blockingUnaryCall(</span>
+<span class="nc" id="L532">          getChannel(), getRemoveMethodHelper(), getCallOptions(), request);</span>
+    }
+
+    /**
+     */
+    public java.util.Iterator&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryResponse&gt; queryByKey(
+        ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryRequest request) {
+<span class="nc" id="L539">      return blockingServerStreamingCall(</span>
+<span class="nc" id="L540">          getChannel(), getQueryByKeyMethodHelper(), getCallOptions(), request);</span>
+    }
+
+    /**
+     */
+    public java.util.Iterator&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryResponse&gt; queryByFilter(
+        ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryRequest request) {
+<span class="nc" id="L547">      return blockingServerStreamingCall(</span>
+<span class="nc" id="L548">          getChannel(), getQueryByFilterMethodHelper(), getCallOptions(), request);</span>
+    }
+
+    /**
+     */
+    public ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.ParaResponse transferParameter(ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.ParaRequest request) {
+<span class="nc" id="L554">      return blockingUnaryCall(</span>
+<span class="nc" id="L555">          getChannel(), getTransferParameterMethodHelper(), getCallOptions(), request);</span>
+    }
+
+    /**
+     */
+    public ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchResponse patchNrfProfile(ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchRequest request) {
+<span class="nc" id="L561">      return blockingUnaryCall(</span>
+<span class="nc" id="L562">          getChannel(), getPatchNrfProfileMethodHelper(), getCallOptions(), request);</span>
+    }
+  }
+
+  /**
+   */
+  public static final class NFDataManagementServiceFutureStub extends io.grpc.stub.AbstractStub&lt;NFDataManagementServiceFutureStub&gt; {
+    private NFDataManagementServiceFutureStub(io.grpc.Channel channel) {
+<span class="nc" id="L570">      super(channel);</span>
+<span class="nc" id="L571">    }</span>
+
+    private NFDataManagementServiceFutureStub(io.grpc.Channel channel,
+        io.grpc.CallOptions callOptions) {
+<span class="nc" id="L575">      super(channel, callOptions);</span>
+<span class="nc" id="L576">    }</span>
+
+    @java.lang.Override
+    protected NFDataManagementServiceFutureStub build(io.grpc.Channel channel,
+        io.grpc.CallOptions callOptions) {
+<span class="nc" id="L581">      return new NFDataManagementServiceFutureStub(channel, callOptions);</span>
+    }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage&gt; execute(
+        ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage request) {
+<span class="nc" id="L588">      return futureUnaryCall(</span>
+<span class="nc" id="L589">          getChannel().newCall(getExecuteMethodHelper(), getCallOptions()), request);</span>
+    }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.InsertResponse&gt; insert(
+        ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.InsertRequest request) {
+<span class="nc" id="L596">      return futureUnaryCall(</span>
+<span class="nc" id="L597">          getChannel().newCall(getInsertMethodHelper(), getCallOptions()), request);</span>
+    }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.RemoveResponse&gt; remove(
+        ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.RemoveRequest request) {
+<span class="nc" id="L604">      return futureUnaryCall(</span>
+<span class="nc" id="L605">          getChannel().newCall(getRemoveMethodHelper(), getCallOptions()), request);</span>
+    }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.ParaResponse&gt; transferParameter(
+        ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.ParaRequest request) {
+<span class="nc" id="L612">      return futureUnaryCall(</span>
+<span class="nc" id="L613">          getChannel().newCall(getTransferParameterMethodHelper(), getCallOptions()), request);</span>
+    }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchResponse&gt; patchNrfProfile(
+        ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchRequest request) {
+<span class="nc" id="L620">      return futureUnaryCall(</span>
+<span class="nc" id="L621">          getChannel().newCall(getPatchNrfProfileMethodHelper(), getCallOptions()), request);</span>
+    }
+  }
+
+  private static final int METHODID_EXECUTE = 0;
+  private static final int METHODID_INSERT = 1;
+  private static final int METHODID_REMOVE = 2;
+  private static final int METHODID_QUERY_BY_KEY = 3;
+  private static final int METHODID_QUERY_BY_FILTER = 4;
+  private static final int METHODID_TRANSFER_PARAMETER = 5;
+  private static final int METHODID_PATCH_NRF_PROFILE = 6;
+
+  private static final class MethodHandlers&lt;Req, Resp&gt; implements
+      io.grpc.stub.ServerCalls.UnaryMethod&lt;Req, Resp&gt;,
+      io.grpc.stub.ServerCalls.ServerStreamingMethod&lt;Req, Resp&gt;,
+      io.grpc.stub.ServerCalls.ClientStreamingMethod&lt;Req, Resp&gt;,
+      io.grpc.stub.ServerCalls.BidiStreamingMethod&lt;Req, Resp&gt; {
+    private final NFDataManagementServiceImplBase serviceImpl;
+    private final int methodId;
+
+<span class="nc" id="L641">    MethodHandlers(NFDataManagementServiceImplBase serviceImpl, int methodId) {</span>
+<span class="nc" id="L642">      this.serviceImpl = serviceImpl;</span>
+<span class="nc" id="L643">      this.methodId = methodId;</span>
+<span class="nc" id="L644">    }</span>
+
+    @java.lang.Override
+    @java.lang.SuppressWarnings(&quot;unchecked&quot;)
+    public void invoke(Req request, io.grpc.stub.StreamObserver&lt;Resp&gt; responseObserver) {
+<span class="nc bnc" id="L649" title="All 8 branches missed.">      switch (methodId) {</span>
+        case METHODID_EXECUTE:
+<span class="nc" id="L651">          serviceImpl.execute((ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage) request,</span>
+              (io.grpc.stub.StreamObserver&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage&gt;) responseObserver);
+<span class="nc" id="L653">          break;</span>
+        case METHODID_INSERT:
+<span class="nc" id="L655">          serviceImpl.insert((ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.InsertRequest) request,</span>
+              (io.grpc.stub.StreamObserver&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.InsertResponse&gt;) responseObserver);
+<span class="nc" id="L657">          break;</span>
+        case METHODID_REMOVE:
+<span class="nc" id="L659">          serviceImpl.remove((ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.RemoveRequest) request,</span>
+              (io.grpc.stub.StreamObserver&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.RemoveResponse&gt;) responseObserver);
+<span class="nc" id="L661">          break;</span>
+        case METHODID_QUERY_BY_KEY:
+<span class="nc" id="L663">          serviceImpl.queryByKey((ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryRequest) request,</span>
+              (io.grpc.stub.StreamObserver&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryResponse&gt;) responseObserver);
+<span class="nc" id="L665">          break;</span>
+        case METHODID_QUERY_BY_FILTER:
+<span class="nc" id="L667">          serviceImpl.queryByFilter((ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryRequest) request,</span>
+              (io.grpc.stub.StreamObserver&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryResponse&gt;) responseObserver);
+<span class="nc" id="L669">          break;</span>
+        case METHODID_TRANSFER_PARAMETER:
+<span class="nc" id="L671">          serviceImpl.transferParameter((ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.ParaRequest) request,</span>
+              (io.grpc.stub.StreamObserver&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.ParaResponse&gt;) responseObserver);
+<span class="nc" id="L673">          break;</span>
+        case METHODID_PATCH_NRF_PROFILE:
+<span class="nc" id="L675">          serviceImpl.patchNrfProfile((ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchRequest) request,</span>
+              (io.grpc.stub.StreamObserver&lt;ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchResponse&gt;) responseObserver);
+<span class="nc" id="L677">          break;</span>
+        default:
+<span class="nc" id="L679">          throw new AssertionError();</span>
+      }
+<span class="nc" id="L681">    }</span>
+
+    @java.lang.Override
+    @java.lang.SuppressWarnings(&quot;unchecked&quot;)
+    public io.grpc.stub.StreamObserver&lt;Req&gt; invoke(
+        io.grpc.stub.StreamObserver&lt;Resp&gt; responseObserver) {
+<span class="nc" id="L687">      switch (methodId) {</span>
+        default:
+<span class="nc" id="L689">          throw new AssertionError();</span>
+      }
+    }
+  }
+
+  private static abstract class NFDataManagementServiceBaseDescriptorSupplier
+      implements io.grpc.protobuf.ProtoFileDescriptorSupplier, io.grpc.protobuf.ProtoServiceDescriptorSupplier {
+<span class="nc" id="L696">    NFDataManagementServiceBaseDescriptorSupplier() {}</span>
+
+    @java.lang.Override
+    public com.google.protobuf.Descriptors.FileDescriptor getFileDescriptor() {
+<span class="nc" id="L700">      return ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.getDescriptor();</span>
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Descriptors.ServiceDescriptor getServiceDescriptor() {
+<span class="nc" id="L705">      return getFileDescriptor().findServiceByName(&quot;NFDataManagementService&quot;);</span>
+    }
+  }
+
+  private static final class NFDataManagementServiceFileDescriptorSupplier
+      extends NFDataManagementServiceBaseDescriptorSupplier {
+<span class="nc" id="L711">    NFDataManagementServiceFileDescriptorSupplier() {}</span>
+  }
+
+  private static final class NFDataManagementServiceMethodDescriptorSupplier
+      extends NFDataManagementServiceBaseDescriptorSupplier
+      implements io.grpc.protobuf.ProtoMethodDescriptorSupplier {
+    private final String methodName;
+
+<span class="nc" id="L719">    NFDataManagementServiceMethodDescriptorSupplier(String methodName) {</span>
+<span class="nc" id="L720">      this.methodName = methodName;</span>
+<span class="nc" id="L721">    }</span>
+
+    @java.lang.Override
+    public com.google.protobuf.Descriptors.MethodDescriptor getMethodDescriptor() {
+<span class="nc" id="L725">      return getServiceDescriptor().findMethodByName(methodName);</span>
+    }
+  }
+
+  private static volatile io.grpc.ServiceDescriptor serviceDescriptor;
+
+  public static io.grpc.ServiceDescriptor getServiceDescriptor() {
+<span class="nc" id="L732">    io.grpc.ServiceDescriptor result = serviceDescriptor;</span>
+<span class="nc bnc" id="L733" title="All 2 branches missed.">    if (result == null) {</span>
+<span class="nc" id="L734">      synchronized (NFDataManagementServiceGrpc.class) {</span>
+<span class="nc" id="L735">        result = serviceDescriptor;</span>
+<span class="nc bnc" id="L736" title="All 2 branches missed.">        if (result == null) {</span>
+<span class="nc" id="L737">          serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)</span>
+<span class="nc" id="L738">              .setSchemaDescriptor(new NFDataManagementServiceFileDescriptorSupplier())</span>
+<span class="nc" id="L739">              .addMethod(getExecuteMethodHelper())</span>
+<span class="nc" id="L740">              .addMethod(getInsertMethodHelper())</span>
+<span class="nc" id="L741">              .addMethod(getRemoveMethodHelper())</span>
+<span class="nc" id="L742">              .addMethod(getQueryByKeyMethodHelper())</span>
+<span class="nc" id="L743">              .addMethod(getQueryByFilterMethodHelper())</span>
+<span class="nc" id="L744">              .addMethod(getTransferParameterMethodHelper())</span>
+<span class="nc" id="L745">              .addMethod(getPatchNrfProfileMethodHelper())</span>
+<span class="nc" id="L746">              .build();</span>
+        }
+<span class="nc" id="L748">      }</span>
+    }
+<span class="nc" id="L750">    return result;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

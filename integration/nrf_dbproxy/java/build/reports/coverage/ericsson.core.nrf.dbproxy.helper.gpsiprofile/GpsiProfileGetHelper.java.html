@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GpsiProfileGetHelper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.helper.gpsiprofile</a> &gt; <span class="el_source">GpsiProfileGetHelper.java</span></div><h1>GpsiProfileGetHelper.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.helper.gpsiprofile;
+
+import com.google.protobuf.ByteString;
+import ericsson.core.nrf.dbproxy.clientcache.schema.GpsiProfile;
+import ericsson.core.nrf.dbproxy.common.Code;
+import ericsson.core.nrf.dbproxy.common.ExecutionResult;
+import ericsson.core.nrf.dbproxy.common.FragmentResult;
+import ericsson.core.nrf.dbproxy.common.FragmentSessionManagement;
+import ericsson.core.nrf.dbproxy.common.FragmentUtil;
+import ericsson.core.nrf.dbproxy.common.SearchResult;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.GetResponse;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.common.FragmentInfoProto.FragmentInfo;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.gpsiprofile.GpsiProfileGetRequestProto.GpsiProfileGetRequest;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.gpsiprofile.GpsiProfileGetRequestProto.GpsiProfileGetRequest.DataCase;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.gpsiprofile.GpsiProfileGetResponseProto.GpsiProfileGetResponse;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.gpsiprofile.GpsiProfileGetResponseProto.GpsiProfileInfo;
+import ericsson.core.nrf.dbproxy.helper.Helper;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class GpsiProfileGetHelper extends Helper {
+
+<span class="fc" id="L26">  private static final Logger LOGGER = LogManager.getLogger(GpsiProfileGetHelper.class);</span>
+
+  private static GpsiProfileGetHelper instance;
+
+  private GpsiProfileGetHelper() {
+  }
+
+  public static synchronized GpsiProfileGetHelper getInstance() {
+<span class="fc bfc" id="L34" title="All 2 branches covered.">    if (null == instance) {</span>
+<span class="fc" id="L35">      instance = new GpsiProfileGetHelper();</span>
+    }
+<span class="fc" id="L37">    return instance;</span>
+  }
+
+  public int validate(NFMessage message) {
+
+<span class="fc" id="L42">    GpsiProfileGetRequest request = message.getRequest().getGetRequest().getGpsiProfileGetRequest();</span>
+<span class="fc" id="L43">    DataCase dataCase = request.getDataCase();</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">    if (dataCase == DataCase.GPSI_PROFILE_ID) {</span>
+
+<span class="fc" id="L46">      String gpsiProfileId = request.getGpsiProfileId();</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">      if (gpsiProfileId.isEmpty()) {</span>
+<span class="fc" id="L48">        LOGGER.error(&quot;Empty gpsiProfileId is set in GpsiProfileGetRequest&quot;);</span>
+<span class="fc" id="L49">        return Code.EMPTY_GPSI_PROFILE_ID;</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">      } else if (gpsiProfileId.length() &gt; Code.KEY_MAX_LENGTH) {</span>
+<span class="fc" id="L51">        LOGGER.error(&quot;gpsiProfileId length {} is too large, max length is {}&quot;,</span>
+<span class="fc" id="L52">            gpsiProfileId.length(), Code.KEY_MAX_LENGTH);</span>
+<span class="fc" id="L53">        return Code.GPSI_PROFILE_ID_LENGTH_EXCEED_MAX;</span>
+      }
+<span class="fc bfc" id="L55" title="All 2 branches covered.">    } else if (dataCase == DataCase.FILTER) {</span>
+
+<span class="fc bfc" id="L57" title="All 2 branches covered.">      if (request.getFilter().getIndex().getNfTypeList().isEmpty() &amp;&amp;</span>
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">          request.getFilter().getIndex().getGroupIndexList().isEmpty() &amp;&amp;</span>
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">          request.getFilter().getIndex().getProfileType() == Code.PROFILE_TYPE_EMPTY) {</span>
+<span class="fc" id="L60">        LOGGER.error(&quot;Empty GpsiProfileFilter is set in filter of GpsiProfileGetRequest&quot;);</span>
+<span class="fc" id="L61">        return Code.EMPTY_GPSI_PROFILE_FILTER;</span>
+      }
+<span class="fc bfc" id="L63" title="All 2 branches covered.">    } else if (dataCase == DataCase.FRAGMENT_SESSION_ID) {</span>
+
+<span class="fc" id="L65">      String fragmentSessionId = request.getFragmentSessionId();</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">      if (fragmentSessionId.isEmpty()) {</span>
+<span class="fc" id="L67">        LOGGER.error(&quot;Empty fragmentSessionId is set in NFProfileGetRequest&quot;);</span>
+<span class="fc" id="L68">        return Code.EMPTY_FRAGMENT_SESSION_ID;</span>
+      }
+<span class="fc" id="L70">    } else {</span>
+<span class="fc" id="L71">      LOGGER.error(&quot;Empty GpsiProfileGetRequest is received&quot;);</span>
+<span class="fc" id="L72">      return Code.NFMESSAGE_PROTOCOL_ERROR;</span>
+    }
+
+<span class="fc" id="L75">    return Code.VALID;</span>
+  }
+
+  public NFMessage createResponse(int code) {
+
+<span class="fc" id="L80">    GpsiProfileGetResponse gpsiProfileGetResponse = GpsiProfileGetResponse.newBuilder()</span>
+<span class="fc" id="L81">        .setCode(code).build();</span>
+<span class="fc" id="L82">    GetResponse getResponse = GetResponse.newBuilder()</span>
+<span class="fc" id="L83">        .setGpsiProfileGetResponse(gpsiProfileGetResponse).build();</span>
+<span class="fc" id="L84">    return createNFMessage(getResponse);</span>
+  }
+
+  @Override
+  public NFMessage createResponse(ExecutionResult executionResult) {
+<span class="pc bpc" id="L89" title="1 of 2 branches missed.">    if (executionResult.getCode() != Code.SUCCESS) {</span>
+<span class="nc" id="L90">      return createResponse(executionResult.getCode());</span>
+    } else {
+<span class="fc" id="L92">      SearchResult searchResult = (SearchResult) executionResult;</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">      if (searchResult.isFragmented()) {</span>
+<span class="fc" id="L94">        FragmentResult fragmentResult = (FragmentResult) searchResult;</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">        if (fragmentResult.getFragmentSessionID().isEmpty()) {</span>
+<span class="fc" id="L96">          int firstTransmitNum = FragmentUtil</span>
+<span class="fc" id="L97">              .transmitNumPerTime(fragmentResult, Code.GPSIPROFILE_INDICE);</span>
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">          if (FragmentSessionManagement.getInstance().put(fragmentResult, firstTransmitNum)) {</span>
+<span class="fc" id="L99">            FragmentResult item = new FragmentResult();</span>
+<span class="fc" id="L100">            item.addAll(fragmentResult.getItems().subList(0, firstTransmitNum));</span>
+<span class="fc" id="L101">            item.setFragmentSessionID(fragmentResult.getFragmentSessionID());</span>
+<span class="fc" id="L102">            item.setTotalNumber(fragmentResult.getTotalNumber());</span>
+<span class="fc" id="L103">            item.setTransmittedNumber(fragmentResult.getTransmittedNumber());</span>
+<span class="fc" id="L104">            return createResponse(item);</span>
+          } else {
+<span class="nc" id="L106">            return createResponse(Code.INTERNAL_ERROR);</span>
+          }
+        } else {
+<span class="fc" id="L109">          List&lt;GpsiProfileInfo&gt; gpsiProfileInfo = getGpsiProfileInfo(fragmentResult.getItems());</span>
+
+<span class="fc" id="L111">          String fragmentSessionId = fragmentResult.getFragmentSessionID();</span>
+<span class="fc" id="L112">          int totalNumber = fragmentResult.getTotalNumber();</span>
+<span class="fc" id="L113">          int transmittedNumber = fragmentResult.getTransmittedNumber();</span>
+<span class="fc" id="L114">          FragmentInfo fragmentInfo = FragmentInfo.newBuilder()</span>
+<span class="fc" id="L115">              .setFragmentSessionId(fragmentSessionId).setTotalNumber(totalNumber)</span>
+<span class="fc" id="L116">              .setTransmittedNumber(transmittedNumber).build();</span>
+<span class="fc" id="L117">          GpsiProfileGetResponse gpsiProfileGetResponse = GpsiProfileGetResponse.newBuilder()</span>
+<span class="fc" id="L118">              .setCode(searchResult.getCode()).addAllGpsiProfileInfo(gpsiProfileInfo)</span>
+<span class="fc" id="L119">              .setFragmentInfo(fragmentInfo).build();</span>
+<span class="fc" id="L120">          GetResponse getResponse = GetResponse.newBuilder()</span>
+<span class="fc" id="L121">              .setGpsiProfileGetResponse(gpsiProfileGetResponse).build();</span>
+<span class="fc" id="L122">          return createNFMessage(getResponse);</span>
+        }
+      } else {
+<span class="fc" id="L125">        List&lt;GpsiProfileInfo&gt; gpsiProfileInfo = getGpsiProfileInfo(searchResult.getItems());</span>
+<span class="fc" id="L126">        GpsiProfileGetResponse gpsiProfileGetResponse = GpsiProfileGetResponse.newBuilder()</span>
+<span class="fc" id="L127">            .setCode(searchResult.getCode()).addAllGpsiProfileInfo(gpsiProfileInfo).build();</span>
+<span class="fc" id="L128">        GetResponse getResponse = GetResponse.newBuilder()</span>
+<span class="fc" id="L129">            .setGpsiProfileGetResponse(gpsiProfileGetResponse).build();</span>
+<span class="fc" id="L130">        return createNFMessage(getResponse);</span>
+      }
+    }
+  }
+
+  private List&lt;GpsiProfileInfo&gt; getGpsiProfileInfo(List&lt;Object&gt; items) {
+
+<span class="fc" id="L137">    List&lt;GpsiProfileInfo&gt; gpsiProfileInfoList = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">    for (Object obj : items) {</span>
+<span class="fc" id="L139">      GpsiProfile item = (GpsiProfile) obj;</span>
+<span class="fc" id="L140">      ByteString data = item.getData();</span>
+<span class="fc" id="L141">      String gpsiProfileId = item.getGpsiProfileID();</span>
+<span class="fc" id="L142">      Long gpsiVersion = item.getGpsiVersion();</span>
+<span class="fc" id="L143">      GpsiProfileInfo gpsiProfileInfo = GpsiProfileInfo.newBuilder()</span>
+<span class="fc" id="L144">          .setGpsiProfileId(gpsiProfileId).setGpsiVersion(gpsiVersion).setGpsiProfileData(data)</span>
+<span class="fc" id="L145">          .build();</span>
+<span class="fc" id="L146">      gpsiProfileInfoList.add(gpsiProfileInfo);</span>
+<span class="fc" id="L147">    }</span>
+<span class="fc" id="L148">    return gpsiProfileInfoList;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NRFProfilePutExecutor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.executor.nrfprofile</a> &gt; <span class="el_source">NRFProfilePutExecutor.java</span></div><h1>NRFProfilePutExecutor.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.executor.nrfprofile;
+
+import ericsson.core.nrf.dbproxy.clientcache.ClientCacheService;
+import ericsson.core.nrf.dbproxy.clientcache.schema.KeyAggregation;
+import ericsson.core.nrf.dbproxy.clientcache.schema.NRFProfile;
+import ericsson.core.nrf.dbproxy.common.Code;
+import ericsson.core.nrf.dbproxy.common.ExecutionResult;
+import ericsson.core.nrf.dbproxy.executor.Executor;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.nrfprofile.NRFProfileIndexProto.NRFKeyStruct;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.nrfprofile.NRFProfilePutRequestProto.NRFProfilePutRequest;
+import ericsson.core.nrf.dbproxy.helper.nrfprofile.NRFProfilePutHelper;
+import java.util.HashMap;
+import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class NRFProfilePutExecutor extends Executor {
+
+<span class="nc" id="L20">  private static final Logger LOGGER = LogManager.getLogger(NRFProfilePutExecutor.class);</span>
+
+  private static NRFProfilePutExecutor instance;
+
+  static {
+<span class="nc" id="L25">    instance = null;</span>
+<span class="nc" id="L26">  }</span>
+
+  private NRFProfilePutExecutor() {
+<span class="nc" id="L29">    super(NRFProfilePutHelper.getInstance());</span>
+<span class="nc" id="L30">  }</span>
+
+  public static synchronized NRFProfilePutExecutor getInstance() {
+<span class="nc bnc" id="L33" title="All 2 branches missed.">    if (null == instance) {</span>
+<span class="nc" id="L34">      instance = new NRFProfilePutExecutor();</span>
+    }
+
+<span class="nc" id="L37">    return instance;</span>
+  }
+
+  protected ExecutionResult execute(NFMessage request) {
+<span class="nc" id="L41">    NRFProfilePutRequest putRequest = request.getRequest().getPutRequest()</span>
+<span class="nc" id="L42">        .getNrfProfilePutRequest();</span>
+<span class="nc" id="L43">    String nrfInstanceId = putRequest.getNrfInstanceId();</span>
+<span class="nc" id="L44">    NRFProfile nrfProfile = createNRFProfile(putRequest);</span>
+<span class="nc" id="L45">    int code = ClientCacheService.getInstance()</span>
+<span class="nc" id="L46">        .put(Code.NRFPROFILE_INDICE, nrfInstanceId, nrfProfile);</span>
+<span class="nc" id="L47">    return new ExecutionResult(code);</span>
+  }
+
+  private NRFProfile createNRFProfile(NRFProfilePutRequest request) {
+<span class="nc" id="L51">    NRFProfile nrfProfile = new NRFProfile();</span>
+<span class="nc" id="L52">    nrfProfile.setRaw_data(request.getRawNrfProfile());</span>
+
+<span class="nc" id="L54">    nrfProfile.setAMFKey1(processNRFKeyStructList(request.getIndex().getAmfKey1List()));</span>
+<span class="nc" id="L55">    nrfProfile.setAMFKey2(processNRFKeyStructList(request.getIndex().getAmfKey2List()));</span>
+<span class="nc" id="L56">    nrfProfile.setAMFKey3(processNRFKeyStructList(request.getIndex().getAmfKey3List()));</span>
+<span class="nc" id="L57">    nrfProfile.setAMFKey4(processNRFKeyStructList(request.getIndex().getAmfKey4List()));</span>
+
+<span class="nc" id="L59">    nrfProfile.setSMFKey1(processNRFKeyStructList(request.getIndex().getSmfKey1List()));</span>
+<span class="nc" id="L60">    nrfProfile.setSMFKey2(processNRFKeyStructList(request.getIndex().getSmfKey2List()));</span>
+<span class="nc" id="L61">    nrfProfile.setSMFKey3(processNRFKeyStructList(request.getIndex().getSmfKey3List()));</span>
+
+<span class="nc" id="L63">    nrfProfile.setUDMKey1(processNRFKeyStructList(request.getIndex().getUdmKey1List()));</span>
+<span class="nc" id="L64">    nrfProfile.setUDMKey2(processNRFKeyStructList(request.getIndex().getUdmKey2List()));</span>
+
+<span class="nc" id="L66">    nrfProfile.setAUSFKey1(processNRFKeyStructList(request.getIndex().getAusfKey1List()));</span>
+<span class="nc" id="L67">    nrfProfile.setAUSFKey2(processNRFKeyStructList(request.getIndex().getAusfKey2List()));</span>
+
+<span class="nc" id="L69">    nrfProfile.setPCFKey1(processNRFKeyStructList(request.getIndex().getPcfKey1List()));</span>
+<span class="nc" id="L70">    nrfProfile.setPCFKey2(processNRFKeyStructList(request.getIndex().getPcfKey2List()));</span>
+
+<span class="nc" id="L72">    nrfProfile.setKey1(request.getIndex().getKey1());</span>
+<span class="nc" id="L73">    nrfProfile.setKey3(request.getIndex().getKey3());</span>
+
+<span class="nc" id="L75">    LOGGER.trace(&quot;NRF Profile : {}&quot;, nrfProfile.toString());</span>
+
+<span class="nc" id="L77">    return nrfProfile;</span>
+  }
+
+  private HashMap processNRFKeyStructList(List&lt;NRFKeyStruct&gt; nrfKeyStructs) {
+<span class="nc" id="L81">    HashMap result = new HashMap();</span>
+<span class="nc" id="L82">    int id = 0;</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">    for (NRFKeyStruct nks : nrfKeyStructs) {</span>
+
+<span class="nc" id="L85">      KeyAggregation ka = new KeyAggregation();</span>
+<span class="nc" id="L86">      ka.setSubKey1(nks.getSubKey1());</span>
+<span class="nc" id="L87">      ka.setSubKey2(nks.getSubKey2());</span>
+<span class="nc" id="L88">      ka.setSubKey3(nks.getSubKey3());</span>
+<span class="nc" id="L89">      ka.setSubKey4(nks.getSubKey4());</span>
+<span class="nc" id="L90">      ka.setSubKey5(nks.getSubKey5());</span>
+
+<span class="nc" id="L92">      result.put(id, ka);</span>
+<span class="nc" id="L93">      id++;</span>
+<span class="nc" id="L94">    }</span>
+<span class="nc" id="L95">    return result;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

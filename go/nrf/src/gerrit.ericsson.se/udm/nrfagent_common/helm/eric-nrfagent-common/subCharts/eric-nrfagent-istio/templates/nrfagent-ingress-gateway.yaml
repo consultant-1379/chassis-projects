@@ -1,0 +1,24 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: {{ .Values.istio.gatewayName }}
+spec:
+  selector:
+    istio: {{ .Values.istio.ingressGatewayName }} # use Istio default gateway implementation
+  servers:
+  - port:
+      number: {{ .Values.port.number }}
+      name: {{ .Values.port.name }}
+      protocol: {{ .Values.port.protocol }}
+    hosts:
+    - "*"
+  # - port:
+  #     number: 443
+  #     name: https
+  #     protocol: HTTPS
+  #   hosts:
+  #   - "*"
+  #   tls:
+  #     mode: SIMPLE #enables HTTPS on this port
+  #     serverCertificate: /etc/istio/ingressgateway-certs/servercert.pem
+  #     privateKey: /etc/certs/istio/ingressgateway-certs/privatekey.pem

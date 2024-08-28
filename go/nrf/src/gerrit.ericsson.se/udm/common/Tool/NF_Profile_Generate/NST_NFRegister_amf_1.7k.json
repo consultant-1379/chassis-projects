@@ -1,0 +1,87 @@
+{
+  "nfInstanceId": "12345678-abcd-ef12-1000-000000000004",
+  "nfType": "AMF",
+  "nfStatus": "REGISTERED",
+  "plmn": {
+    "mcc": "460",
+    "mnc": "00"
+  },
+  "sNssais": [
+    {
+      "sst": 0,
+      "sd": "0"
+    },
+    {
+      "sst": 1,
+      "sd": "1"
+    }   
+  ], 
+  "nsiList": [
+    "111111",
+    "222222",
+    "333333"
+  ],
+  "fqdn": "seliius03692.seli.gic.ericsson.se",
+  "capacity": 100,
+  "amfInfo":{
+     "amfSetId":"5012345",
+     "amfRegionId": "401234",
+     "guamiList": [
+      {
+        "plmnId": {
+          "mcc": "460",
+          "mnc": "000"
+        },
+        "amfId": "AAff00"
+      }
+    ],
+    "taiList": [
+      {
+        "plmnId": {
+          "mcc": "310",
+          "mnc": "010"
+        },
+        "tac": "Bc11"
+      } 
+  ]
+  },
+  "nfServices": [
+    {
+      "serviceInstanceId": "namf-auth-01",
+      "serviceName": "namf-comm",
+      "version": [{
+        "apiVersionInUri":"v1",
+        "apiFullVersion": "1.R15.1.1 " ,
+        "expiry":"2020-07-06T02:54:32Z"}],
+      "schema": "https",
+      "fqdn": "seliius03696.seli.gic.ericsson.se",
+      "ipEndPoints":[
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30088
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30089
+        },
+        {
+          
+          "transport": "TCP",
+          "port": 30090
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30089
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30089
+        }
+      ]
+    }
+  ]
+}

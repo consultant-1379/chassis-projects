@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+// Language Dependent Statements Start
+option java_package = "ericsson.core.nrf.dbproxy.grpc.nfmessage.subscription";
+option java_outer_classname = "SubscriptionDelRequestProto";
+option go_package = "com/dbproxy/nfmessage/subscription";
+package grpc;
+// Language Dependent Statements End
+
+message SubscriptionDelRequest {
+    string subscription_id = 1;
+}
+

@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+// Language Dependent Statements Start
+option java_package = "ericsson.core.nrf.dbproxy.grpc.nfmessage.gpsiprefixprofile";
+option java_outer_classname = "GpsiprefixProfileGetRequestProto";
+option go_package = "com/dbproxy/nfmessage/gpsiprefixprofile";
+package grpc;
+// Language Dependent Statements End
+
+message GpsiprefixProfileGetRequest {
+	    uint64 search_gpsi       = 1;
+}

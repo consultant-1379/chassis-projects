@@ -1,0 +1,13 @@
+global:
+  prefix: eric
+
+services:
+  name_nef_traffic_influence: nef-trafficinfluence
+  name_nef_evex: nef-evex
+  name_nef_bdt: nef-bdt
+  name_nef_cp: nef-cp
+
+istio:
+  gatewayName: eric-nef-traffic-gateway
+  ingressGatewayName: eric-nef-traffic
+  ingressGatewayPort: 86

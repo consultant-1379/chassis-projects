@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SearchResult.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.common</a> &gt; <span class="el_source">SearchResult.java</span></div><h1>SearchResult.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.common;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class SearchResult extends ExecutionResult {
+
+  protected List&lt;Object&gt; items;
+  protected boolean isFragmented;
+
+  public SearchResult(boolean isFragmented) {
+<span class="fc" id="L12">    super(Code.SUCCESS);</span>
+<span class="fc" id="L13">    items = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L14">    this.isFragmented = isFragmented;</span>
+<span class="fc" id="L15">  }</span>
+
+  public void add(Object object) {
+<span class="fc" id="L18">    items.add(object);</span>
+<span class="fc" id="L19">  }</span>
+
+  public void addAll(List&lt;Object&gt; objs) {
+<span class="fc" id="L22">    items.addAll(objs);</span>
+<span class="fc" id="L23">  }</span>
+
+  public List&lt;Object&gt; getItems() {
+<span class="fc" id="L26">    return items;</span>
+  }
+
+  public boolean isFragmented() {
+<span class="fc" id="L30">    return isFragmented;</span>
+  }
+
+  @Override
+  public String toString() {
+<span class="nc" id="L35">    StringBuilder sb = new StringBuilder(&quot;&quot;);</span>
+<span class="nc" id="L36">    sb.append(&quot;code = &quot; + Integer.toString(code) + &quot;,&quot;);</span>
+<span class="nc" id="L37">    sb.append(&quot;isFragmented = &quot; + isFragmented + &quot;,&quot;);</span>
+<span class="nc" id="L38">    sb.append(&quot;result size = &quot; + Integer.toString(items.size()));</span>
+<span class="nc" id="L39">    return sb.toString();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

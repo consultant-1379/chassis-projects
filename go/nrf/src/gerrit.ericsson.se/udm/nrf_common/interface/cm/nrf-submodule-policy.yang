@@ -1,0 +1,73 @@
+submodule nrf-submodule-policy {
+	yang-version "1.1";
+ 
+  // module identification
+    belongs-to ericsson-nrf {
+        prefix "nrfe";
+    }
+
+ // linkage statements
+	import ericsson-yang-extensions { 
+		prefix yexte;
+	}
+
+    import ericsson-5gcudmpol-common {
+	    prefix udmp5gce;
+    }        	
+
+	organization "Ericsson AB";
+	contact "Ericsson first line support via email";
+	description "NRF DNS service submodel.
+			     Copyright (c) 2018 Ericsson AB. All rights reserved.";
+
+    revision "2019-04-03" {
+	  	description "align design rule";
+	    yexte:version 0;
+		yexte:release 1;
+		yexte:correction 2; 
+	}
+
+	revision "2019-03-28" {
+	  	description "align with ericsson-5gcudmpol-common 0.1.2";
+	    yexte:version 0;
+		yexte:release 1;
+		yexte:correction 1; 
+	}
+	 
+	revision "2019-01-15" {
+	  	description "Creation";
+	    yexte:version 0;
+		yexte:release 1;
+		yexte:correction 0; 
+	}
+	
+	
+    // module definitions
+    grouping nrf-policy {
+        container management-service {
+                container subscription {
+                    description "The subscription policy";
+                    list allowed-subscription-to-all-nfs {
+					    description "Policy for subscriptions to all NFs without subscrCond in SubscriptionData.
+                        Set allowed-nf-type alone, or set it together with allowed-nf-domains to configure the subscription policy for the NFs which are allowed to subscribe to all NFs.
+                        By default, NRF rejects subscriptions to all NFs.";
+                        key "id";
+                        leaf id { type uint32 ; }
+                        leaf allowed-nf-type {
+                            type udmp5gce:nf-type;
+							mandatory true;
+                            description "The type of NF which is allowed to subscribe to all NFs.";
+                        }
+						leaf allowed-nf-domains {
+							type string {
+							}
+							description "Pattern(regular expression) representing the NF domain names allowed to subscribe to all NFs.
+							If present, NRF allows those subscriptions whose reqNfFqdn matches the defined pattern to subscribe to all NFs.";
+						}                   
+                    }
+                }
+        }
+   }
+
+}
+

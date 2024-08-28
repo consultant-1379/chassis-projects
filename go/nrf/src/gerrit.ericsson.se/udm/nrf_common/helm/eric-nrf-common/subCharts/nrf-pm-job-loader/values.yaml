@@ -1,0 +1,14 @@
+pmJob:
+
+  nf_type: "NRF"
+  loader_name: "eric-nrf-pm-job-loader"
+  unloader_name: "eric-nrf-pm-job-unloader"
+  pm_br_schema_name: "adp-gs-pm-br"
+  pm_br_conf_name: "adp-gs-pm-br"
+  pm_br_skeleton_file: "/pm_br_config_skeleton.json"
+  pm_br_service_file: "/pm_br_config_eric_nrf.json"
+
+  image:
+    name: "nrfpmjobloader"
+    tag: latest
+    pullPolicy: IfNotPresent

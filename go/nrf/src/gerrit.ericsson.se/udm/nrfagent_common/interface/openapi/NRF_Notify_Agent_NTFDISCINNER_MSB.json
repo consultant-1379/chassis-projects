@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "required": [
+     "event",
+     "nfInstanceId",
+     "agentProducerId"
+  ],
+  "properties": {
+    "event": {
+      "properties": {
+        "type": {
+          "enum": [
+            "NF_PROFILE_CHANGED"
+          ]
+        }
+      }
+    },
+    "nfType":{
+      "type": "string"
+    },
+     "reqNfType":{
+      "type": "string"
+    },
+    "nfInstanceId": {
+      "type": "string"
+    },
+    "agentProducerId": {
+      "type": "string"
+    },
+    "messageBody": {
+      "type": "Array",
+      "items": {
+        "type": "object",
+        "required": [
+          "op",
+          "path"
+        ],
+        "properties": {
+           "op": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "from": {
+            "type": "string"
+          },
+          "origValue": {
+            "nullable": true
+          },
+          "newValue": {
+            "nullable": true
+          } 
+        }
+      }
+    }
+  }
+}
+

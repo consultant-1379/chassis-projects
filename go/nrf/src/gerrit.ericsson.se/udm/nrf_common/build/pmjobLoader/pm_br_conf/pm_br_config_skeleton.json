@@ -1,0 +1,11 @@
+{
+  "title": "ADP-GS PM Bulk Reporter Configuration",
+  "name": "adp-gs-pm-br",
+  "data": {
+    "ericsson-pm:pm": {
+        "job":[],
+        "group":[]
+    }
+  }
+}
+

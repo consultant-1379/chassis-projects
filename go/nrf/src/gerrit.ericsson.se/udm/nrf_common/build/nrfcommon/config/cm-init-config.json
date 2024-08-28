@@ -1,0 +1,255 @@
+{
+  "name": "ericCmTempName0011",
+  "title": "ericsson nrf CM init configuration",
+  "data": {
+    "ericsson-nrf:nrf": {
+      "common": {
+        "role": "plmn-nrf",
+        "plmn-nrf": {
+          "mode": "active-standby",
+          "profile": [
+            {
+              "id": "plmn-nrf-profile1",
+              "fqdn": "",
+              "ipv4-address": [
+                "192.168.1.2"
+              ],
+              "ipv6-address": [
+                "1030::C9B4::FF12:48AA:1A2B"
+              ],
+              "priority": 5,
+              "capacity": 100,
+              "locality": "",
+              "service": [
+                {
+                  "id": 1,
+                  "name": "nnrf-nfm",
+                  "version": [
+                    {
+                      "api-full-version": "1.R15.1.1",
+                      "api-version-in-uri": "v1",
+                      "expiry": "2020-07-06T02:54:32Z"
+                    }
+                  ],
+                  "scheme": "",
+                  "fqdn": "",
+                  "ip-endpoint": [
+                    {
+                      "id": 1,
+                      "transport": "tcp",
+                      "ipv4-address": "192.168.1.3",
+                      "port": 0
+                    }
+                  ],
+                  "priority": 5,
+                  "capacity": 100,
+                  "api-prefix": "",
+                  "supported-features": ""
+                },
+                {
+                  "id": 2,
+                  "name": "nnrf-disc",
+                  "version": [
+                    {
+                      "api-full-version": "1.R15.1.1",
+                      "api-version-in-uri": "v1",
+                      "expiry": "2020-07-06T02:54:32Z"
+                    }
+                  ],
+                  "scheme": "",
+                  "fqdn": "",
+                  "ip-endpoint": [
+                    {
+                      "id": 1,
+                      "transport": "tcp",
+                      "ipv4-address": "192.168.1.4",
+                      "port": 0
+                    }
+                  ],
+                  "priority": 5,
+                  "capacity": 100,
+                  "api-prefix": "",
+                  "supported-features": ""
+                }
+              ]
+            }
+          ]
+        },
+        "remote-default-setting": {
+          "scheme": "https",
+          "port": 443
+        },
+        "geo-red": {
+          "keep-management-service": true,
+          "keep-discovery-service": true,
+          "witness-nf": {
+            "identity-type": "nf-instance-id",
+            "identity-value": ""
+          }
+        }
+      },
+      "nf-profile": {
+        "instance-id": "0c765084-9cc5-49c6-9876-ae2f5fa2a63f",
+        "type": "nrf",
+        "status": "registered",
+        "requested-heartbeat-timer": 120,
+        "plmn-id": [],
+        "snssai": [],
+        "nsi": [],
+        "fqdn": "",
+        "inter-plmn-fqdn": "",
+        "ipv4-address": [],
+        "ipv6-address": [],
+        "allowed-nf-domain": [],
+        "allowed-plmn": [],
+        "allowed-nf-type": [],
+        "allowed-nssai": [],
+        "priority": 10,
+        "capacity": 100,
+        "locality": "",
+        "service-persistence": false,
+        "service": [
+          {
+            "instance-id": "nnrf-nfm-01",
+            "name": "nnrf-nfm",
+            "version": [
+              {
+                "api-full-version": "1.R15.1.1",
+                "api-version-in-uri": "v1",
+                "expiry": "2020-07-06T02:54:32Z"
+              }
+            ],
+            "scheme": "",
+            "status": "registered",
+            "fqdn": "",
+            "inter-plmn-fqdn": "",
+            "ip-endpoint": [
+              {
+                "id": 1,
+                "transport": "tcp",
+                "ipv4-address": "192.168.1.5",
+                "port": 0
+              }
+            ],
+            "api-prefix": "",
+            "allowed-plmn": [],
+            "allowed-nf-type": [],
+            "allowed-nf-domain": [],
+            "allowed-nssai": [],
+            "priority": 5,
+            "capacity": 100,
+            "supported-features": ""
+          },
+          {
+            "instance-id": "nnrf-disc-01",
+            "name": "nnrf-disc",
+            "version": [
+              {
+                "api-full-version": "1.R15.1.1",
+                "api-version-in-uri": "v1",
+                "expiry": "2020-07-06T02:54:32Z"
+              }
+            ],
+            "scheme": "",
+            "status": "registered",
+            "fqdn": "",
+            "inter-plmn-fqdn": "",
+            "ip-endpoint": [
+              {
+                "id": 1,
+                "transport": "tcp",
+                "ipv4-address": "192.168.1.6",
+                "port": 0
+              }
+            ],
+            "api-prefix": "",
+            "allowed-plmn": [],
+            "allowed-nf-type": [],
+            "allowed-nf-domain": [],
+            "allowed-nssai": [],
+            "priority": 5,
+            "capacity": 100,
+            "supported-features": ""
+          }
+        ]
+      },
+      "management-service": {
+        "heartbeat": {
+          "default": 120,
+          "default-per-nftype": [
+            {
+              "nf-type": "nrf",
+              "value": 120
+            }
+          ],
+          "grace-period": 5
+        },
+        "subscription-expired-time": 604800
+      },
+      "discovery-service": {
+        "response-cache-time": 86400,
+        "hierarchy-mode": "forward",
+        "local-cache-enable": false,
+        "local-cache-capacity": 100,
+        "local-cache-timeout": 3000
+      },
+      "provisioning-service": {
+        "prov-address": [
+          {
+            "id": 1,
+            "scheme": "https",
+            "ipv4-address": "192.168.1.7",
+            "fqdn": "seliius03696.seli.gic.ericsson.se",
+            "port": 443,
+            "transport": "tcp"
+          }
+        ]
+      },
+      "policy": {
+        "management-service": {
+          "subscription": {
+            "allowed-subscription-to-all-nfs": [
+              {
+                "id": 1,
+                "allowed-nf-type": "nef",
+                "allowed-nf-domains": ""
+              }
+            ]
+          }
+        }
+      },
+      "nf-service-log": [
+        {
+          "severity": "WARNING",
+          "log-id": "nrf_mgmt",
+          "pod-log": [
+            {
+              "severity": "WARNING",
+              "pod-id": "eric-nrf-management-79f574ff6f-bnscg"
+            }
+          ]
+        },
+        {
+          "severity": "WARNING",
+          "log-id": "nrf_disc",
+          "pod-log": [
+            {
+              "severity": "WARNING",
+              "pod-id": "eric-nrf-discovery-77bb49b6bb-qftzt"
+            }
+          ]
+        },
+        {
+          "severity": "WARNING",
+          "log-id": "nrf_prov",
+          "pod-log": [
+            {
+              "severity": "WARNING",
+              "pod-id": "eric-nrf-provision-77f97695dd-mrzn2"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

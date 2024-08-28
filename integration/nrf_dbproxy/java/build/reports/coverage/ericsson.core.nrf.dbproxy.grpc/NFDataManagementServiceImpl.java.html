@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NFDataManagementServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.grpc</a> &gt; <span class="el_source">NFDataManagementServiceImpl.java</span></div><h1>NFDataManagementServiceImpl.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.grpc;
+
+import ericsson.core.nrf.dbproxy.clientcache.ClientCacheService;
+import ericsson.core.nrf.dbproxy.clientcache.schema.GpsiprefixProfiles;
+import ericsson.core.nrf.dbproxy.clientcache.schema.ImsiprefixProfiles;
+import ericsson.core.nrf.dbproxy.common.Code;
+import ericsson.core.nrf.dbproxy.common.FragmentUtil;
+import ericsson.core.nrf.dbproxy.executor.Executor;
+import ericsson.core.nrf.dbproxy.executor.ExecutorManager;
+import ericsson.core.nrf.dbproxy.executor.nrfprofile.NRFProfileProcesser;
+import ericsson.core.nrf.dbproxy.functionservice.RemoteCacheMonitorThread;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.InsertRequest;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.InsertResponse;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.KVItem;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.ParaRequest;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.ParaResponse;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchRequest;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchResponse;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryRequest;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryResponse;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.RemoveRequest;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.RemoveResponse;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.TraceInfo;
+import io.grpc.stub.StreamObserver;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import org.apache.geode.cache.Region;
+import org.apache.geode.cache.query.SelectResults;
+import org.apache.geode.cache.query.internal.StructImpl;
+import org.apache.geode.pdx.JSONFormatter;
+import org.apache.geode.pdx.PdxInstance;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+
+<span class="nc" id="L41">public class NFDataManagementServiceImpl extends</span>
+    NFDataManagementServiceGrpc.NFDataManagementServiceImplBase {
+
+<span class="nc" id="L44">  private static final Logger LOGGER = LogManager.getLogger(NFDataManagementServiceImpl.class);</span>
+
+  @Override
+  public void execute(NFMessage request, StreamObserver&lt;NFMessage&gt; responseObserver) {
+    NFMessage response;
+<span class="nc bnc" id="L49" title="All 2 branches missed.">    if (!ClientCacheService.getInstance().isAvailable()) {</span>
+<span class="nc" id="L50">      LOGGER.warn(&quot;ClientCacheService is NOT initialized, KVDB access is NOT available&quot;);</span>
+<span class="nc" id="L51">      response = request;</span>
+    } else {
+<span class="nc" id="L53">      Executor executor = ExecutorManager.getInstance().getExecutor(request);</span>
+<span class="nc" id="L54">      response = executor.process(request);</span>
+    }
+
+<span class="nc" id="L57">    responseObserver.onNext(response);</span>
+<span class="nc" id="L58">    responseObserver.onCompleted();</span>
+<span class="nc" id="L59">  }</span>
+
+  @Override
+  public void transferParameter(ParaRequest request,
+      StreamObserver&lt;ParaResponse&gt; responseObserver) {
+<span class="nc" id="L64">    long arrivalTime = System.currentTimeMillis();</span>
+<span class="nc" id="L65">    int code = Code.CREATED;</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">    if (request.getParameterValue().equals(&quot;&quot;)) {</span>
+<span class="nc" id="L67">      code = Code.BAD_REQUEST;</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">    } else if (request.getParameterName().equals(&quot;local-cache-capacity&quot;)) {</span>
+<span class="nc" id="L69">      String value = request.getParameterValue();</span>
+<span class="nc" id="L70">      RemoteCacheMonitorThread.getInstance().setCapacity(Integer.parseInt(value));</span>
+    }
+
+<span class="nc" id="L73">    long departureTime = System.currentTimeMillis();</span>
+<span class="nc" id="L74">    TraceInfo traceInfo = TraceInfo.newBuilder().setArrivalTime(arrivalTime)</span>
+<span class="nc" id="L75">        .setDepartureTime(departureTime).build();</span>
+
+    ParaResponse response;
+<span class="nc bnc" id="L78" title="All 2 branches missed.">    if (request.getTraceEnable()) {</span>
+<span class="nc" id="L79">      response = ParaResponse.newBuilder().setCode(code).setTraceInfo(traceInfo).build();</span>
+    } else {
+<span class="nc" id="L81">      response = ParaResponse.newBuilder().setCode(code).build();</span>
+    }
+
+<span class="nc" id="L84">    responseObserver.onNext(response);</span>
+<span class="nc" id="L85">    responseObserver.onCompleted();</span>
+<span class="nc" id="L86">  }</span>
+
+  @Override
+  public void insert(InsertRequest request, StreamObserver&lt;InsertResponse&gt; responseObserver) {
+<span class="nc" id="L90">    long arrivalTime = System.currentTimeMillis();</span>
+    int code;
+<span class="nc" id="L92">    String regionName = request.getRegionName();</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">    if (request.getItemCount() == 0) {</span>
+<span class="nc" id="L94">      code = Code.BAD_REQUEST;</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">    } else if (Code.NFPROFILE_INDICE.equals(regionName)) {</span>
+<span class="nc" id="L96">      LOGGER.error(&quot;inster infterface don't support region ericsson-nrf-nfprofiles&quot;);</span>
+<span class="nc" id="L97">      code = Code.INTERNAL_ERROR;</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">    } else if (Code.NRFPROFILE_INDICE.equals(regionName)) {</span>
+<span class="nc" id="L99">      List&lt;KVItem&gt; kvItems = request.getItemList();</span>
+      //just support put one nrfprofile now
+<span class="nc" id="L101">      code = NRFProfileProcesser.putNRFProfile(kvItems.get(0));</span>
+<span class="nc" id="L102">    } else {</span>
+<span class="nc" id="L103">      List&lt;KVItem&gt; kvItems = request.getItemList();</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">      if (kvItems.size() == 1) {</span>
+<span class="nc" id="L105">        code = ClientCacheService.getInstance()</span>
+<span class="nc" id="L106">            .put(regionName, kvItems.get(0).getKey(), kvItems.get(0).getValue());</span>
+      } else {
+<span class="nc" id="L108">        Map&lt;Object, Object&gt; kvMap = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        for (KVItem kvItem : kvItems) {</span>
+<span class="nc" id="L110">          LOGGER.debug(</span>
+<span class="nc" id="L111">              &quot;insert to region: &quot; + regionName + &quot; key: &quot; + kvItem.getKey() + &quot; value: &quot; + kvItem</span>
+<span class="nc" id="L112">                  .getValue());</span>
+<span class="nc" id="L113">          kvMap.put(kvItem.getKey(), kvItem.getValue());</span>
+<span class="nc" id="L114">        }</span>
+<span class="nc" id="L115">        code = ClientCacheService.getInstance().putAll(regionName, kvMap);</span>
+      }
+    }
+<span class="nc" id="L118">    long departureTime = System.currentTimeMillis();</span>
+<span class="nc" id="L119">    TraceInfo traceInfo = TraceInfo.newBuilder().setArrivalTime(arrivalTime)</span>
+<span class="nc" id="L120">        .setDepartureTime(departureTime).build();</span>
+
+<span class="nc" id="L122">    InsertResponse.Builder builder = InsertResponse.newBuilder().setCode(code);</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">    if (request.getTraceEnabled()) {</span>
+<span class="nc" id="L124">      builder.setTraceInfo(traceInfo);</span>
+    }
+
+<span class="nc" id="L127">    InsertResponse response = builder.build();</span>
+<span class="nc" id="L128">    responseObserver.onNext(response);</span>
+<span class="nc" id="L129">    responseObserver.onCompleted();</span>
+<span class="nc" id="L130">  }</span>
+
+  @Override
+  public void remove(RemoveRequest request, StreamObserver&lt;RemoveResponse&gt; responseObserver) {
+<span class="nc" id="L134">    long arrivalTime = System.currentTimeMillis();</span>
+<span class="nc" id="L135">    int code = Code.SUCCESS;</span>
+
+<span class="nc" id="L137">    List&lt;String&gt; keys = request.getKeyList();</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">    if (keys.size() == 0) {</span>
+<span class="nc" id="L139">      code = Code.BAD_REQUEST;</span>
+    } else {
+<span class="nc" id="L141">      String regionName = request.getRegionName();</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">      if (regionName.equals(Code.CACHENFPROFILE_INDICE)) {</span>
+        try {
+<span class="nc" id="L144">          Set&lt;String&gt; cakeyS = ClientCacheService.getInstance().getRegion(regionName)</span>
+<span class="nc" id="L145">              .keySetOnServer();</span>
+<span class="nc" id="L146">          Map&lt;String, Object&gt; caEntrys = ClientCacheService.getInstance().getRegion(regionName)</span>
+<span class="nc" id="L147">              .getAll(cakeyS);</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">          for (Map.Entry&lt;String, Object&gt; entry : caEntrys.entrySet()) {</span>
+<span class="nc" id="L149">            String key = entry.getKey();</span>
+<span class="nc" id="L150">            String from = (String) ((PdxInstance) entry.getValue()).getField(&quot;from&quot;);</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">            for (Iterator&lt;String&gt; it = keys.iterator(); it.hasNext();) {</span>
+<span class="nc bnc" id="L152" title="All 2 branches missed.">              if (from.equals(it.next().toString())) {</span>
+<span class="nc" id="L153">                ClientCacheService.getInstance().delete(regionName, key);</span>
+<span class="nc" id="L154">                break;</span>
+              }
+            }
+<span class="nc" id="L157">          }</span>
+<span class="nc" id="L158">        } catch (Exception e) {</span>
+<span class="nc" id="L159">          LOGGER.error(</span>
+<span class="nc" id="L160">              &quot;Remove CacheNFProfiles from : &quot; + keys.toString() + &quot;  fail.  &quot; + e.toString());</span>
+<span class="nc" id="L161">          code = Code.INTERNAL_ERROR;</span>
+<span class="nc" id="L162">        }</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">      } else if (Code.NRFPROFILE_INDICE.equals(regionName)) {</span>
+        //just support delete one nrfprofile one time
+<span class="nc" id="L165">        code = NRFProfileProcesser.deleteNRFProfile(keys.get(0));</span>
+      } else {
+<span class="nc bnc" id="L167" title="All 2 branches missed.">        if (keys.size() == 1) {</span>
+<span class="nc" id="L168">          code = ClientCacheService.getInstance().delete(regionName, keys.get(0));</span>
+        } else {
+<span class="nc" id="L170">          code = ClientCacheService.getInstance().deleteAll(regionName, keys);</span>
+        }
+      }
+    }
+
+<span class="nc" id="L175">    long departureTime = System.currentTimeMillis();</span>
+<span class="nc" id="L176">    TraceInfo traceInfo = TraceInfo.newBuilder().setArrivalTime(arrivalTime)</span>
+<span class="nc" id="L177">        .setDepartureTime(departureTime).build();</span>
+
+    RemoveResponse response;
+    RemoveResponse.Builder builder;
+<span class="nc bnc" id="L181" title="All 2 branches missed.">    if (request.getTraceEnabled()) {</span>
+<span class="nc" id="L182">      builder = RemoveResponse.newBuilder().setCode(code).setTraceInfo(traceInfo);</span>
+    } else {
+<span class="nc" id="L184">      builder = RemoveResponse.newBuilder().setCode(code);</span>
+    }
+
+<span class="nc" id="L187">    response = builder.build();</span>
+<span class="nc" id="L188">    responseObserver.onNext(response);</span>
+<span class="nc" id="L189">    responseObserver.onCompleted();</span>
+<span class="nc" id="L190">  }</span>
+
+  private List&lt;Long&gt; getSearchImsiprefixList(Long imsi) {
+<span class="nc" id="L193">    List&lt;Long&gt; imsiprefixList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L194">    imsiprefixList.add(imsi);</span>
+<span class="nc bnc" id="L195" title="All 2 branches missed.">    for (int i = 0; i &lt; 10; i++) {</span>
+<span class="nc" id="L196">      imsi = imsi / 10;</span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">      if (imsi &lt; 10000) {</span>
+<span class="nc" id="L198">        break;</span>
+      }
+<span class="nc" id="L200">      imsiprefixList.add(imsi);</span>
+    }
+<span class="nc" id="L202">    return imsiprefixList;</span>
+  }
+
+  private List&lt;Long&gt; getSearchGpsiprefixList(Long gpsi) {
+<span class="nc" id="L206">    List&lt;Long&gt; gpsiprefixList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L207">    gpsiprefixList.add(gpsi);</span>
+<span class="nc bnc" id="L208" title="All 2 branches missed.">    for (int i = 0; i &lt; 13; i++) {</span>
+<span class="nc" id="L209">      gpsi = gpsi / 10;</span>
+<span class="nc bnc" id="L210" title="All 2 branches missed.">      if (gpsi &lt; 10) {</span>
+<span class="nc" id="L211">        break;</span>
+      }
+<span class="nc" id="L213">      gpsiprefixList.add(gpsi);</span>
+    }
+<span class="nc" id="L215">    return gpsiprefixList;</span>
+  }
+
+  @Override
+  public void queryByKey(QueryRequest request, StreamObserver&lt;QueryResponse&gt; responseObserver) {
+<span class="nc" id="L220">    long arrivalTime = System.currentTimeMillis();</span>
+<span class="nc" id="L221">    int code = Code.SUCCESS;</span>
+
+<span class="nc" id="L223">    String regionName = request.getRegionName();</span>
+<span class="nc" id="L224">    List&lt;String&gt; keys = request.getQueryList();</span>
+<span class="nc" id="L225">    List&lt;String&gt; values = new ArrayList&lt;String&gt;();</span>
+<span class="nc bnc" id="L226" title="All 2 branches missed.">    if (keys.size() == 0) {</span>
+<span class="nc" id="L227">      code = Code.BAD_REQUEST;</span>
+    } else {
+<span class="nc bnc" id="L229" title="All 2 branches missed.">      if (regionName.equals(Code.GPSIPREFIXPROFILE_INDICE)) {</span>
+<span class="nc" id="L230">        List&lt;Long&gt; lkeys = getSearchGpsiprefixList(Long.parseLong(keys.get(0)));</span>
+        try {
+<span class="nc" id="L232">          Region region = ClientCacheService.getInstance().getRegion(regionName);</span>
+<span class="nc" id="L233">          Map&lt;String, Object&gt; kvs = region.getAll(lkeys);</span>
+<span class="nc bnc" id="L234" title="All 2 branches missed.">          for (Map.Entry&lt;String, Object&gt; kv : kvs.entrySet()) {</span>
+<span class="nc" id="L235">            GpsiprefixProfiles value = (GpsiprefixProfiles) kv.getValue();</span>
+<span class="nc bnc" id="L236" title="All 2 branches missed.">            if (value != null) {</span>
+<span class="nc" id="L237">              Iterator iter = value.getValueInfo().keySet().iterator();</span>
+<span class="nc bnc" id="L238" title="All 2 branches missed.">              while (iter.hasNext()) {</span>
+<span class="nc" id="L239">                String v = (String) (iter.next());</span>
+<span class="nc" id="L240">                values.add(v);</span>
+<span class="nc" id="L241">              }</span>
+            }
+<span class="nc" id="L243">          }</span>
+<span class="nc" id="L244">        } catch (Exception e) {</span>
+<span class="nc" id="L245">          LOGGER.error(e.toString());</span>
+<span class="nc" id="L246">          code = Code.INTERNAL_ERROR;</span>
+<span class="nc" id="L247">        }</span>
+<span class="nc bnc" id="L248" title="All 2 branches missed.">      } else if (regionName.equals(Code.IMSIPREFIXPROFILE_INDICE)) {</span>
+<span class="nc" id="L249">        List&lt;Long&gt; lkeys = getSearchImsiprefixList(Long.parseLong(keys.get(0)));</span>
+        try {
+<span class="nc" id="L251">          Region region = ClientCacheService.getInstance().getRegion(regionName);</span>
+<span class="nc" id="L252">          Map&lt;String, Object&gt; kvs = region.getAll(lkeys);</span>
+<span class="nc bnc" id="L253" title="All 2 branches missed.">          for (Map.Entry&lt;String, Object&gt; kv : kvs.entrySet()) {</span>
+<span class="nc" id="L254">            ImsiprefixProfiles value = (ImsiprefixProfiles) kv.getValue();</span>
+<span class="nc bnc" id="L255" title="All 2 branches missed.">            if (value != null) {</span>
+<span class="nc" id="L256">              Iterator iter = value.getValueInfo().keySet().iterator();</span>
+<span class="nc bnc" id="L257" title="All 2 branches missed.">              while (iter.hasNext()) {</span>
+<span class="nc" id="L258">                String v = (String) (iter.next());</span>
+<span class="nc" id="L259">                values.add(v);</span>
+<span class="nc" id="L260">              }</span>
+            }
+<span class="nc" id="L262">          }</span>
+<span class="nc" id="L263">        } catch (Exception e) {</span>
+<span class="nc" id="L264">          LOGGER.error(e.toString());</span>
+<span class="nc" id="L265">          code = Code.INTERNAL_ERROR;</span>
+<span class="nc" id="L266">        }</span>
+<span class="nc bnc" id="L267" title="All 2 branches missed.">      } else if (Code.NFPROFILE_INDICE.equals(regionName) || Code.NRFPROFILE_INDICE</span>
+<span class="nc bnc" id="L268" title="All 4 branches missed.">          .equals(regionName) || Code.REGIONNFINFO_INDICE.equals(regionName)) {</span>
+        try {
+<span class="nc" id="L270">          Region region = ClientCacheService.getInstance().getRegion(regionName);</span>
+<span class="nc" id="L271">          Map&lt;String, Object&gt; kvs = region.getAll(keys);</span>
+<span class="nc bnc" id="L272" title="All 2 branches missed.">          for (Map.Entry&lt;String, Object&gt; kv : kvs.entrySet()) {</span>
+<span class="nc" id="L273">            Object value = kv.getValue();</span>
+<span class="nc bnc" id="L274" title="All 4 branches missed.">            if (value != null &amp;&amp; value instanceof PdxInstance) {</span>
+<span class="nc" id="L275">              values.add(JSONFormatter.toJSON((PdxInstance) value));</span>
+            }
+<span class="nc" id="L277">          }</span>
+<span class="nc" id="L278">        } catch (Exception e) {</span>
+<span class="nc" id="L279">          LOGGER.error(e.toString());</span>
+<span class="nc" id="L280">          code = Code.INTERNAL_ERROR;</span>
+<span class="nc" id="L281">        }</span>
+      } else {
+        try {
+<span class="nc" id="L284">          Region region = ClientCacheService.getInstance().getRegion(regionName);</span>
+<span class="nc" id="L285">          Map&lt;String, Object&gt; kvs = region.getAll(keys);</span>
+<span class="nc bnc" id="L286" title="All 2 branches missed.">          for (Map.Entry&lt;String, Object&gt; kv : kvs.entrySet()) {</span>
+<span class="nc" id="L287">            Object value = kv.getValue();</span>
+<span class="nc bnc" id="L288" title="All 2 branches missed.">            if (value != null) {</span>
+<span class="nc" id="L289">              values.add((String) value);</span>
+            }
+<span class="nc" id="L291">          }</span>
+<span class="nc" id="L292">        } catch (Exception e) {</span>
+<span class="nc" id="L293">          LOGGER.error(e.toString());</span>
+<span class="nc" id="L294">          code = Code.INTERNAL_ERROR;</span>
+<span class="nc" id="L295">        }</span>
+      }
+    }
+<span class="nc bnc" id="L298" title="All 4 branches missed.">    if (values.size() &lt;= 0 &amp;&amp; code == Code.SUCCESS) {</span>
+<span class="nc" id="L299">      code = Code.DATA_NOT_EXIST;</span>
+    }
+<span class="nc" id="L301">    long departureTime = System.currentTimeMillis();</span>
+<span class="nc" id="L302">    TraceInfo traceInfo = TraceInfo.newBuilder().setArrivalTime(arrivalTime)</span>
+<span class="nc" id="L303">        .setDepartureTime(departureTime).build();</span>
+
+    QueryResponse response;
+<span class="nc bnc" id="L306" title="All 2 branches missed.">    if (code != Code.SUCCESS) {</span>
+<span class="nc bnc" id="L307" title="All 2 branches missed.">      if (request.getTraceEnabled()) {</span>
+<span class="nc" id="L308">        response = QueryResponse.newBuilder().setCode(code).setTraceInfo(traceInfo).build();</span>
+      } else {
+<span class="nc" id="L310">        response = QueryResponse.newBuilder().setCode(code).build();</span>
+      }
+<span class="nc" id="L312">      responseObserver.onNext(response);</span>
+    } else {
+<span class="nc bnc" id="L314" title="All 2 branches missed.">      if (FragmentUtil.isNeedFragment(values)) {</span>
+<span class="nc" id="L315">        List&lt;QueryResponse&gt; responseList = FragmentUtil</span>
+<span class="nc" id="L316">            .getFragmentResponse(code, request.getTraceEnabled(), traceInfo, values);</span>
+<span class="nc" id="L317">        LOGGER.debug(&quot;message is too large, need fragment, fragment size=&quot; + responseList.size());</span>
+<span class="nc bnc" id="L318" title="All 2 branches missed.">        for (int i = 0; i &lt; responseList.size(); i++) {</span>
+<span class="nc" id="L319">          responseObserver.onNext(responseList.get(i));</span>
+        }
+<span class="nc" id="L321">      } else {</span>
+<span class="nc bnc" id="L322" title="All 2 branches missed.">        if (request.getTraceEnabled()) {</span>
+<span class="nc" id="L323">          response = QueryResponse.newBuilder().setCode(code).addAllValue(values)</span>
+<span class="nc" id="L324">              .setTraceInfo(traceInfo).build();</span>
+        } else {
+<span class="nc" id="L326">          response = QueryResponse.newBuilder().setCode(code).addAllValue(values).build();</span>
+        }
+<span class="nc" id="L328">        responseObserver.onNext(response);</span>
+      }
+    }
+<span class="nc" id="L331">    responseObserver.onCompleted();</span>
+<span class="nc" id="L332">  }</span>
+
+  @Override
+  public void queryByFilter(QueryRequest request, StreamObserver&lt;QueryResponse&gt; responseObserver) {
+<span class="nc" id="L336">    long arrivalTime = System.currentTimeMillis();</span>
+<span class="nc" id="L337">    int code = Code.SUCCESS;</span>
+
+<span class="nc" id="L339">    String regionName = request.getRegionName();</span>
+<span class="nc" id="L340">    List&lt;String&gt; filters = request.getQueryList();</span>
+<span class="nc" id="L341">    List&lt;String&gt; values = new ArrayList&lt;String&gt;();</span>
+<span class="nc bnc" id="L342" title="All 2 branches missed.">    if (filters.size() == 0) {</span>
+<span class="nc" id="L343">      code = Code.BAD_REQUEST;</span>
+    } else {
+<span class="nc bnc" id="L345" title="All 2 branches missed.">      if (regionName.equals(Code.NRFPROFILE_INDICE+Code.REGIONNFINFO_INDICE)) {</span>
+<span class="nc" id="L346">        code = getMatchAllNRFProfile(filters, values);</span>
+      } else {
+        try {
+<span class="nc" id="L349">          Region region = ClientCacheService.getInstance().getRegion(regionName);</span>
+<span class="nc bnc" id="L350" title="All 2 branches missed.">          for (String query : filters) {</span>
+<span class="nc" id="L351">            LOGGER.debug(&quot;queryByFilter oql:&quot; + query);</span>
+
+<span class="nc" id="L353">            SelectResults&lt;Object&gt; results = (SelectResults&lt;Object&gt;) region.getRegionService()</span>
+<span class="nc" id="L354">                .getQueryService().newQuery(query).execute();</span>
+<span class="nc" id="L355">            parseSelectResult(results, values);</span>
+<span class="nc" id="L356">          }</span>
+<span class="nc" id="L357">        } catch (Exception e) {</span>
+<span class="nc" id="L358">          LOGGER.error(e.toString());</span>
+<span class="nc" id="L359">          code = Code.INTERNAL_ERROR;</span>
+<span class="nc" id="L360">        }</span>
+      }
+
+<span class="nc bnc" id="L363" title="All 4 branches missed.">      if (regionName.equals(Code.NFHELPER_INDICE) &amp;&amp; values.size() &gt; 0) {</span>
+<span class="nc" id="L364">        LOGGER.debug(</span>
+            &quot;It's a query nfhelper case, need to query from nfprofile region to get nfInstanceId/profileUpdateTime pair!&quot;);
+        try {
+<span class="nc" id="L367">          Region region = ClientCacheService.getInstance().getRegion(&quot;ericsson-nrf-nfprofiles&quot;);</span>
+<span class="nc" id="L368">          Map&lt;String, Object&gt; kvs = region.getAll(values);</span>
+<span class="nc" id="L369">          values.clear();</span>
+<span class="nc bnc" id="L370" title="All 2 branches missed.">          for (Map.Entry&lt;String, Object&gt; kv : kvs.entrySet()) {</span>
+<span class="nc" id="L371">            Object nfprofilePdxFormat = kv.getValue();</span>
+<span class="nc bnc" id="L372" title="All 4 branches missed.">            if (nfprofilePdxFormat == null || !(nfprofilePdxFormat instanceof PdxInstance)) {</span>
+<span class="nc" id="L373">              continue;</span>
+            }
+<span class="nc" id="L375">            String nfInstanceId = kv.getKey();</span>
+<span class="nc" id="L376">            Long profileUpdateTime = (Long) ((PdxInstance) nfprofilePdxFormat)</span>
+<span class="nc" id="L377">                .getField(&quot;profileUpdateTime&quot;);</span>
+<span class="nc" id="L378">            StringBuilder sb = new StringBuilder(&quot;{\&quot;nfInstanceId\&quot;:\&quot;&quot; + nfInstanceId + &quot;\&quot;,&quot;);</span>
+<span class="nc" id="L379">            sb.append(&quot;\&quot;profileUpdateTime\&quot;:\&quot;&quot; + Long.toString(profileUpdateTime) + &quot;\&quot;}&quot;);</span>
+<span class="nc" id="L380">            LOGGER.debug(&quot;The result is: &quot; + sb.toString());</span>
+<span class="nc" id="L381">            values.add(sb.toString());</span>
+<span class="nc" id="L382">          }</span>
+<span class="nc" id="L383">        } catch (Exception e) {</span>
+<span class="nc" id="L384">          LOGGER.error(e.toString());</span>
+<span class="nc" id="L385">          code = Code.INTERNAL_ERROR;</span>
+<span class="nc" id="L386">        }</span>
+      }
+    }
+
+<span class="nc" id="L390">    long departureTime = System.currentTimeMillis();</span>
+<span class="nc" id="L391">    TraceInfo traceInfo = TraceInfo.newBuilder().setArrivalTime(arrivalTime)</span>
+<span class="nc" id="L392">        .setDepartureTime(departureTime).build();</span>
+
+    QueryResponse response;
+<span class="nc bnc" id="L395" title="All 2 branches missed.">    if (code != Code.SUCCESS) {</span>
+<span class="nc bnc" id="L396" title="All 2 branches missed.">      if (request.getTraceEnabled()) {</span>
+<span class="nc" id="L397">        response = QueryResponse.newBuilder().setCode(code).setTraceInfo(traceInfo).build();</span>
+      } else {
+<span class="nc" id="L399">        response = QueryResponse.newBuilder().setCode(code).build();</span>
+      }
+<span class="nc" id="L401">      responseObserver.onNext(response);</span>
+    } else {
+<span class="nc bnc" id="L403" title="All 2 branches missed.">      if (FragmentUtil.isNeedFragment(values)) {</span>
+<span class="nc" id="L404">        List&lt;QueryResponse&gt; responseList = FragmentUtil</span>
+<span class="nc" id="L405">            .getFragmentResponse(code, request.getTraceEnabled(), traceInfo, values);</span>
+<span class="nc" id="L406">        LOGGER.debug(&quot;message is too large, need fragment, fragment size=&quot; + responseList.size());</span>
+<span class="nc bnc" id="L407" title="All 2 branches missed.">        for (int i = 0; i &lt; responseList.size(); i++) {</span>
+<span class="nc" id="L408">          responseObserver.onNext(responseList.get(i));</span>
+        }
+<span class="nc" id="L410">      } else {</span>
+<span class="nc bnc" id="L411" title="All 2 branches missed.">        if (request.getTraceEnabled()) {</span>
+<span class="nc" id="L412">          response = QueryResponse.newBuilder().setCode(code).addAllValue(values)</span>
+<span class="nc" id="L413">              .setTraceInfo(traceInfo).build();</span>
+        } else {
+<span class="nc" id="L415">          response = QueryResponse.newBuilder().setCode(code).addAllValue(values).build();</span>
+        }
+<span class="nc" id="L417">        responseObserver.onNext(response);</span>
+      }
+    }
+<span class="nc" id="L420">    responseObserver.onCompleted();</span>
+<span class="nc" id="L421">  }</span>
+
+  private int getMatchAllNRFProfile(List&lt;String&gt; filters, List&lt;String&gt; values) {
+    try {
+<span class="nc" id="L425">      Set&lt;String&gt; nrfInsts = ClientCacheService.getInstance().getRegion(Code.NRFPROFILE_INDICE).keySetOnServer();</span>
+<span class="nc" id="L426">      SelectResults&lt;Object&gt; regionNFInfo = (SelectResults&lt;Object&gt;) ClientCacheService.getInstance()</span>
+<span class="nc" id="L427">          .getRegion(Code.REGIONNFINFO_INDICE).getRegionService().getQueryService()</span>
+<span class="nc" id="L428">          .newQuery(filters.get(0)).execute();</span>
+<span class="nc" id="L429">      LOGGER.debug(&quot;Query OQL: &quot; + filters.get(0));</span>
+<span class="nc" id="L430">      List&lt;String&gt; keys = mergeSelectResult(nrfInsts, regionNFInfo);</span>
+<span class="nc bnc" id="L431" title="All 2 branches missed.">      if (keys.size() &gt; 0) {</span>
+<span class="nc" id="L432">        Map&lt;String, Object&gt; kvs = ClientCacheService.getInstance().getRegion(Code.NRFPROFILE_INDICE)</span>
+<span class="nc" id="L433">            .getAll(keys);</span>
+<span class="nc bnc" id="L434" title="All 2 branches missed.">        for (Map.Entry&lt;String, Object&gt; kv : kvs.entrySet()) {</span>
+<span class="nc" id="L435">          Object value = kv.getValue();</span>
+<span class="nc bnc" id="L436" title="All 4 branches missed.">          if (value != null &amp;&amp; value instanceof PdxInstance) {</span>
+<span class="nc" id="L437">            values.add(JSONFormatter.toJSON((PdxInstance) value));</span>
+          }
+<span class="nc" id="L439">        }</span>
+      }
+<span class="nc" id="L441">    } catch (Exception e) {</span>
+<span class="nc" id="L442">      LOGGER.debug(e.toString());</span>
+<span class="nc" id="L443">      return Code.INTERNAL_ERROR;</span>
+<span class="nc" id="L444">    }</span>
+
+<span class="nc" id="L446">    return Code.SUCCESS;</span>
+  }
+
+  private List&lt;String&gt; mergeSelectResult(Set&lt;String&gt; nrfInsts,
+      SelectResults&lt;Object&gt; regionNFInfo) {
+<span class="nc" id="L451">    LOGGER.debug(&quot;Query Resoult: &quot; + nrfInsts.toString() + &quot;  \n&quot; + regionNFInfo.toString());</span>
+<span class="nc" id="L452">    Map&lt;String, Boolean&gt; map = new HashMap&lt;String, Boolean&gt;();</span>
+<span class="nc bnc" id="L453" title="All 2 branches missed.">    for (String inst : nrfInsts) {</span>
+<span class="nc" id="L454">      map.put(inst, true);</span>
+<span class="nc" id="L455">    }</span>
+
+<span class="nc bnc" id="L457" title="All 2 branches missed.">    for (Object obj : regionNFInfo) {</span>
+<span class="nc" id="L458">      map.put((String) obj, false);</span>
+<span class="nc" id="L459">    }</span>
+<span class="nc" id="L460">    List&lt;String&gt; keys = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L461">    Iterator&lt;String&gt; it = map.keySet().iterator();</span>
+<span class="nc bnc" id="L462" title="All 2 branches missed.">    while (it.hasNext()) {</span>
+<span class="nc" id="L463">      String key = it.next();</span>
+<span class="nc" id="L464">      Boolean value = map.get(key);</span>
+<span class="nc bnc" id="L465" title="All 2 branches missed.">      if (value.booleanValue()) {</span>
+<span class="nc" id="L466">        keys.add(key);</span>
+      }
+<span class="nc" id="L468">    }</span>
+
+<span class="nc" id="L470">    return keys;</span>
+  }
+
+  private void parseSelectResult(SelectResults&lt;Object&gt; results, List&lt;String&gt; values) {
+<span class="nc bnc" id="L474" title="All 2 branches missed.">    for (Object obj : results) {</span>
+<span class="nc bnc" id="L475" title="All 2 branches missed.">      if (obj instanceof String) {</span>
+<span class="nc" id="L476">        values.add((String) obj);</span>
+<span class="nc bnc" id="L477" title="All 2 branches missed.">      } else if (obj instanceof PdxInstance) {</span>
+<span class="nc" id="L478">        values.add(JSONFormatter.toJSON((PdxInstance) obj));</span>
+<span class="nc bnc" id="L479" title="All 2 branches missed.">      } else if (obj instanceof StructImpl) {</span>
+<span class="nc" id="L480">        StringBuilder sb = new StringBuilder(&quot;{&quot;);</span>
+<span class="nc" id="L481">        int length = ((StructImpl) obj).getFieldNames().length;</span>
+<span class="nc" id="L482">        String[] names = ((StructImpl) obj).getFieldNames();</span>
+<span class="nc" id="L483">        Object[] objs = ((StructImpl) obj).getPdxFieldValues();</span>
+<span class="nc bnc" id="L484" title="All 2 branches missed.">        for (int i = 0; i &lt; length; i++) {</span>
+<span class="nc bnc" id="L485" title="All 2 branches missed.">          if (objs[i] instanceof PdxInstance) {</span>
+<span class="nc bnc" id="L486" title="All 2 branches missed.">            if (i &gt; 0) {</span>
+<span class="nc" id="L487">              sb.append(&quot;,\&quot;&quot; + names[i] + &quot;\&quot;:&quot; + JSONFormatter.toJSON((PdxInstance) objs[i]));</span>
+            } else {
+<span class="nc" id="L489">              sb.append(&quot;\&quot;&quot; + names[i] + &quot;\&quot;:&quot; + JSONFormatter.toJSON((PdxInstance) objs[i]));</span>
+            }
+
+          } else {
+<span class="nc bnc" id="L493" title="All 2 branches missed.">            if (i &gt; 0) {</span>
+<span class="nc" id="L494">              sb.append(&quot;,\&quot;&quot; + names[i] + &quot;\&quot;:\&quot;&quot; + objs[i].toString() + &quot;\&quot;&quot;);</span>
+            } else {
+<span class="nc" id="L496">              sb.append(&quot;\&quot;&quot; + names[i] + &quot;\&quot;:\&quot;&quot; + objs[i].toString() + &quot;\&quot;&quot;);</span>
+            }
+          }
+        }
+<span class="nc" id="L500">        sb.append(&quot;}&quot;);</span>
+<span class="nc" id="L501">        values.add(sb.toString());</span>
+<span class="nc bnc" id="L502" title="All 2 branches missed.">      } else if (obj instanceof Integer) {</span>
+<span class="nc" id="L503">        values.add(String.valueOf(obj));</span>
+      } else {
+<span class="nc" id="L505">        LOGGER.warn(&quot;no data type is matched&quot;);</span>
+      }
+<span class="nc" id="L507">    }</span>
+<span class="nc" id="L508">  }</span>
+
+  @Override
+  public void patchNrfProfile(PatchRequest request,
+      StreamObserver&lt;PatchResponse&gt; responseObserver) {
+    int code;
+<span class="nc bnc" id="L514" title="All 2 branches missed.">    if (!NRFProfileProcesser.validatePatchRequest(request)) {</span>
+<span class="nc" id="L515">      code = Code.BAD_REQUEST;</span>
+    } else {
+<span class="nc" id="L517">      code = NRFProfileProcesser.processPatchRequest(request);</span>
+    }
+<span class="nc" id="L519">    LOGGER.debug(&quot;patch nrfprofile return code ={}&quot;, code);</span>
+<span class="nc" id="L520">    PatchResponse.Builder builder = PatchResponse.newBuilder();</span>
+<span class="nc" id="L521">    builder.setCode(code);</span>
+<span class="nc" id="L522">    PatchResponse patchResponse = builder.build();</span>
+<span class="nc" id="L523">    responseObserver.onNext(patchResponse);</span>
+<span class="nc" id="L524">    responseObserver.onCompleted();</span>
+<span class="nc" id="L525">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

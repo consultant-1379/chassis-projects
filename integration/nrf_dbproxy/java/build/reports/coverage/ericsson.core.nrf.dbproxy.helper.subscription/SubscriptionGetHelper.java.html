@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SubscriptionGetHelper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.helper.subscription</a> &gt; <span class="el_source">SubscriptionGetHelper.java</span></div><h1>SubscriptionGetHelper.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.helper.subscription;
+
+import com.google.protobuf.ByteString;
+import ericsson.core.nrf.dbproxy.clientcache.schema.SubscriptionData;
+import ericsson.core.nrf.dbproxy.common.Code;
+import ericsson.core.nrf.dbproxy.common.ExecutionResult;
+import ericsson.core.nrf.dbproxy.common.SearchResult;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.GetResponse;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.subscription.SubscriptionFilterProto.SubscriptionFilter;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.subscription.SubscriptionGetRequestProto.SubscriptionGetRequest;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.subscription.SubscriptionGetResponseProto.SubscriptionDataList;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.subscription.SubscriptionGetResponseProto.SubscriptionGetResponse;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.subscription.SubscriptionGetResponseProto.SubscriptionIDList;
+import ericsson.core.nrf.dbproxy.helper.Helper;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class SubscriptionGetHelper extends Helper {
+
+<span class="nc" id="L23">  private static final Logger LOGGER = LogManager.getLogger(SubscriptionGetHelper.class);</span>
+
+  private static SubscriptionGetHelper instance;
+
+  private SubscriptionGetHelper() {
+  }
+
+  public static synchronized SubscriptionGetHelper getInstance() {
+<span class="nc bnc" id="L31" title="All 2 branches missed.">    if (null == instance) {</span>
+<span class="nc" id="L32">      instance = new SubscriptionGetHelper();</span>
+    }
+<span class="nc" id="L34">    return instance;</span>
+  }
+
+  public boolean validateFilter(SubscriptionFilter filter) {
+<span class="nc bnc" id="L38" title="All 2 branches missed.">    if (!filter.getIndex().getNoCond().isEmpty()) {</span>
+<span class="nc" id="L39">      return true;</span>
+    }
+
+<span class="nc bnc" id="L42" title="All 2 branches missed.">    if (!filter.getIndex().getNfStatusNotificationUri().isEmpty()) {</span>
+<span class="nc" id="L43">      return true;</span>
+    }
+
+<span class="nc bnc" id="L46" title="All 2 branches missed.">    if (!filter.getIndex().getNfInstanceId().isEmpty()) {</span>
+<span class="nc" id="L47">      return true;</span>
+    }
+
+<span class="nc bnc" id="L50" title="All 2 branches missed.">    if (!filter.getIndex().getNfType().isEmpty()) {</span>
+<span class="nc" id="L51">      return true;</span>
+    }
+
+<span class="nc bnc" id="L54" title="All 2 branches missed.">    if (filter.getIndex().getServiceNamesList().size() &gt; 0) {</span>
+<span class="nc" id="L55">      return true;</span>
+    }
+
+<span class="nc bnc" id="L58" title="All 2 branches missed.">    if (filter.getIndex().getAmfCondsList().size() &gt; 0) {</span>
+<span class="nc" id="L59">      return true;</span>
+    }
+
+<span class="nc bnc" id="L62" title="All 2 branches missed.">    if (filter.getIndex().getGuamiListList().size() &gt; 0) {</span>
+<span class="nc" id="L63">      return true;</span>
+    }
+
+<span class="nc bnc" id="L66" title="All 2 branches missed.">    if (filter.getIndex().getSnssaiListList().size() &gt; 0) {</span>
+<span class="nc" id="L67">      return true;</span>
+    }
+
+<span class="nc bnc" id="L70" title="All 2 branches missed.">    if (filter.getIndex().getStartValidityTime() &lt; filter.getIndex().getEndValidityTime()) {</span>
+<span class="nc" id="L71">      return true;</span>
+    }
+
+<span class="nc" id="L74">    return false;</span>
+  }
+
+  public int validate(NFMessage message) {
+
+<span class="nc" id="L79">    SubscriptionGetRequest request = message.getRequest().getGetRequest()</span>
+<span class="nc" id="L80">        .getSubscriptionGetRequest();</span>
+<span class="nc bnc" id="L81" title="All 3 branches missed.">    switch (request.getDataCase()) {</span>
+      case SUBSCRIPTION_ID:
+<span class="nc bnc" id="L83" title="All 2 branches missed.">        if (request.getSubscriptionId().isEmpty()) {</span>
+<span class="nc" id="L84">          LOGGER.error(&quot;Subscription ID is empty in SubscriptionGetRequest&quot;);</span>
+<span class="nc" id="L85">          return Code.EMPTY_SUBSCRIPTION_ID;</span>
+        }
+        break;
+      case FILTER:
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        if (!validateFilter(request.getFilter())) {</span>
+<span class="nc" id="L90">          LOGGER.error(&quot;Subscription Filter is empty in SubscriptionGetRequest&quot;);</span>
+<span class="nc" id="L91">          return Code.EMPTY_SUBSCRIPTION_FILTER;</span>
+        }
+        break;
+      default:
+<span class="nc" id="L95">        LOGGER.error(&quot;Empty SubscriptionGetRequest is received&quot;);</span>
+<span class="nc" id="L96">        return Code.NFMESSAGE_PROTOCOL_ERROR;</span>
+    }
+
+<span class="nc" id="L99">    return Code.VALID;</span>
+  }
+
+  public NFMessage createResponse(int code) {
+
+<span class="nc" id="L104">    SubscriptionGetResponse subscriptionGetResponse = SubscriptionGetResponse.newBuilder()</span>
+<span class="nc" id="L105">        .setCode(code).build();</span>
+<span class="nc" id="L106">    GetResponse getResponse = GetResponse.newBuilder()</span>
+<span class="nc" id="L107">        .setSubscriptionGetResponse(subscriptionGetResponse).build();</span>
+<span class="nc" id="L108">    return createNFMessage(getResponse);</span>
+  }
+
+  @Override
+  public NFMessage createResponse(ExecutionResult executionResult) {
+<span class="nc bnc" id="L113" title="All 2 branches missed.">    if (executionResult.getCode() == Code.SUCCESS) {</span>
+<span class="nc" id="L114">      SearchResult searchResult = (SearchResult) executionResult;</span>
+
+<span class="nc" id="L116">      List&lt;ByteString&gt; subscriptionDataList = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">      for (Object obj : searchResult.getItems()) {</span>
+<span class="nc" id="L118">        SubscriptionData item = (SubscriptionData) obj;</span>
+<span class="nc" id="L119">        subscriptionDataList.add(item.getData());</span>
+<span class="nc" id="L120">      }</span>
+<span class="nc" id="L121">      SubscriptionDataList data = SubscriptionDataList.newBuilder()</span>
+<span class="nc" id="L122">          .addAllSubscriptionData(subscriptionDataList).build();</span>
+<span class="nc" id="L123">      SubscriptionGetResponse subscriptionGetResponse = SubscriptionGetResponse.newBuilder()</span>
+<span class="nc" id="L124">          .setCode(searchResult.getCode()).setSubscriptionDataList(data).build();</span>
+<span class="nc" id="L125">      GetResponse getResponse = GetResponse.newBuilder()</span>
+<span class="nc" id="L126">          .setSubscriptionGetResponse(subscriptionGetResponse).build();</span>
+<span class="nc" id="L127">      return createNFMessage(getResponse);</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">    } else if (executionResult.getCode() == Code.SUBSCRIPTION_MONITOR_SUCCESS) {</span>
+<span class="nc" id="L129">      SearchResult searchResult = (SearchResult) executionResult;</span>
+
+<span class="nc" id="L131">      List&lt;String&gt; subscriptionIdList = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">      for (Object obj : searchResult.getItems()) {</span>
+<span class="nc" id="L133">        SubscriptionData item = (SubscriptionData) obj;</span>
+<span class="nc" id="L134">        subscriptionIdList.add(item.getSubscriptionID());</span>
+<span class="nc" id="L135">      }</span>
+<span class="nc" id="L136">      SubscriptionIDList data = SubscriptionIDList.newBuilder()</span>
+<span class="nc" id="L137">          .addAllSubscriptionId(subscriptionIdList).build();</span>
+<span class="nc" id="L138">      SubscriptionGetResponse subscriptionGetResponse = SubscriptionGetResponse.newBuilder()</span>
+<span class="nc" id="L139">          .setCode(Code.SUCCESS).setSubscriptionIdList(data).build();</span>
+<span class="nc" id="L140">      GetResponse getResponse = GetResponse.newBuilder()</span>
+<span class="nc" id="L141">          .setSubscriptionGetResponse(subscriptionGetResponse).build();</span>
+<span class="nc" id="L142">      return createNFMessage(getResponse);</span>
+    } else {
+<span class="nc" id="L144">      return createResponse(executionResult.getCode());</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

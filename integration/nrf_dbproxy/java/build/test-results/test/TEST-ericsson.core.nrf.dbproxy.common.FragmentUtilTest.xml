@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ericsson.core.nrf.dbproxy.common.FragmentUtilTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2019-09-02T07:45:27" hostname="c3b6544a0f6e" time="5.831">
+  <properties/>
+  <testcase name="isNeedFragmentTest" classname="ericsson.core.nrf.dbproxy.common.FragmentUtilTest" time="3.029"/>
+  <testcase name="getFragmentResponseTest" classname="ericsson.core.nrf.dbproxy.common.FragmentUtilTest" time="2.802"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

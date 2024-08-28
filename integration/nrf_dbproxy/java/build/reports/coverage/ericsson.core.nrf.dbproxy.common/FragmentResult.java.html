@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FragmentResult.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.common</a> &gt; <span class="el_source">FragmentResult.java</span></div><h1>FragmentResult.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.common;
+
+public class FragmentResult extends SearchResult {
+
+  private String fragment_session_id;
+  private int total_number;
+  private int transmitted_number;
+  private long result_expired_time;
+
+  public FragmentResult() {
+<span class="fc" id="L11">    super(true);</span>
+<span class="fc" id="L12">    fragment_session_id = &quot;&quot;;</span>
+<span class="fc" id="L13">    total_number = 0;</span>
+<span class="fc" id="L14">    transmitted_number = 0;</span>
+<span class="fc" id="L15">    result_expired_time = 0;</span>
+<span class="fc" id="L16">  }</span>
+
+  public String getFragmentSessionID() {
+<span class="fc" id="L19">    return fragment_session_id;</span>
+  }
+
+  public void setFragmentSessionID(String value) {
+<span class="fc" id="L23">    fragment_session_id = value;</span>
+<span class="fc" id="L24">  }</span>
+
+  public int getTotalNumber() {
+<span class="fc" id="L27">    return total_number;</span>
+  }
+
+  public void setTotalNumber(int value) {
+<span class="fc" id="L31">    total_number = value;</span>
+<span class="fc" id="L32">  }</span>
+
+  public int getTransmittedNumber() {
+<span class="fc" id="L35">    return transmitted_number;</span>
+  }
+
+  public void setTransmittedNumber(int value) {
+<span class="fc" id="L39">    transmitted_number = value;</span>
+<span class="fc" id="L40">  }</span>
+
+  public long getExpiredTime() {
+<span class="nc" id="L43">    return result_expired_time;</span>
+  }
+
+  public void setExpiredTime(long value) {
+<span class="fc" id="L47">    result_expired_time = value;</span>
+<span class="fc" id="L48">  }</span>
+
+  @Override
+  public String toString() {
+<span class="nc" id="L52">    StringBuilder sb = new StringBuilder(&quot;&quot;);</span>
+<span class="nc" id="L53">    sb.append(&quot;code = &quot; + Integer.toString(code) + &quot;,&quot;);</span>
+<span class="nc" id="L54">    sb.append(&quot;isFragmented = &quot; + isFragmented + &quot;,&quot;);</span>
+<span class="nc" id="L55">    sb.append(&quot;result size = &quot; + Integer.toString(items.size()));</span>
+<span class="nc" id="L56">    sb.append(&quot;fragment_session_id = &quot; + fragment_session_id + &quot;,&quot;);</span>
+<span class="nc" id="L57">    sb.append(&quot;total_number = &quot; + total_number + &quot;,&quot;);</span>
+<span class="nc" id="L58">    sb.append(&quot;transmitted_number = &quot; + Integer.toString(transmitted_number));</span>
+<span class="nc" id="L59">    return sb.toString();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

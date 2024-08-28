@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.initcm.name }}
+  labels:
+    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      name: {{ .Values.initcm.name }}
+      labels:
+        chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+      annotations:
+        sidecar.istio.io/inject: "false"
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: {{ .Values.initcm.name}}
+        image: {{ .Values.global.imageCredentials.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ['sh', '-c', 'until /etc/nrfagent/scripts/init-cm.sh; do echo waiting for cm mediator ready; sleep 5; done;']
+        env:
+        - name: CM_URI_PREFIX
+          value: {{ .Values.global.cm_uri_prefix }}/
+        - name: NF_INSTANCE_NAME
+          value: {{ .Values.global.nf_instance_name }}

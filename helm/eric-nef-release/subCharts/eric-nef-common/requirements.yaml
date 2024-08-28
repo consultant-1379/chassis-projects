@@ -1,0 +1,21 @@
+dependencies:
+
+  - name: nef-istio
+    version: "0.1.0"
+    repository: "file://./subCharts/nef-istio"
+    tags: 
+       - nef-istio
+    
+  - name: eric-nrfagent
+    version: 0.25.0
+    repository: https://arm.epk.ericsson.se/artifactory/proj-nrf-client-helm
+    tags: 
+       - eric-nrfagent-release
+
+  - name: eric-nef-nf-registration
+    version: ~0.25.0-0
+    repository: https://arm.lmera.ericsson.se/artifactory/proj-nef-dev-helm
+
+  - name: eric-nef-instantiation-job
+    version: ~0.25.0-0
+    repository: https://arm.lmera.ericsson.se/artifactory/proj-nef-dev-helm

@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NRFProfileGetExecutor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.executor.nrfprofile</a> &gt; <span class="el_source">NRFProfileGetExecutor.java</span></div><h1>NRFProfileGetExecutor.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.executor.nrfprofile;
+
+import ericsson.core.nrf.dbproxy.clientcache.ClientCacheService;
+import ericsson.core.nrf.dbproxy.common.Code;
+import ericsson.core.nrf.dbproxy.common.ExecutionResult;
+import ericsson.core.nrf.dbproxy.executor.Executor;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.nrfprofile.NRFProfileFilterProto.NRFProfileFilter;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.nrfprofile.NRFProfileGetRequestProto.NRFProfileGetRequest;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.nrfprofile.NRFProfileIndexProto.NRFKeyStruct;
+import ericsson.core.nrf.dbproxy.helper.nrfprofile.NRFProfileGetHelper;
+import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class NRFProfileGetExecutor extends Executor {
+
+<span class="nc" id="L18">  private static final Logger LOGGER = LogManager.getLogger(NRFProfileGetExecutor.class);</span>
+
+  private static final String OQL_1 = &quot; AND &quot;;
+  private static NRFProfileGetExecutor instance;
+
+  static {
+<span class="nc" id="L24">    instance = null;</span>
+<span class="nc" id="L25">  }</span>
+
+  private NRFProfileGetExecutor() {
+<span class="nc" id="L28">    super(NRFProfileGetHelper.getInstance());</span>
+<span class="nc" id="L29">  }</span>
+
+  public static synchronized NRFProfileGetExecutor getInstance() {
+<span class="nc bnc" id="L32" title="All 2 branches missed.">    if (null == instance) {</span>
+<span class="nc" id="L33">      instance = new NRFProfileGetExecutor();</span>
+    }
+
+<span class="nc" id="L36">    return instance;</span>
+  }
+
+  protected ExecutionResult execute(NFMessage request) {
+<span class="nc" id="L40">    NRFProfileGetRequest getRequest = request.getRequest().getGetRequest()</span>
+<span class="nc" id="L41">        .getNrfProfileGetRequest();</span>
+<span class="nc bnc" id="L42" title="All 4 branches missed.">    switch (getRequest.getDataCase()) {</span>
+      case NRF_INSTANCE_ID:
+<span class="nc" id="L44">        return ClientCacheService.getInstance()</span>
+<span class="nc" id="L45">            .getByID(Code.NRFPROFILE_INDICE, getRequest.getNrfInstanceId());</span>
+      case FILTER:
+<span class="nc" id="L47">        String queryString = getQueryString(getRequest.getFilter());</span>
+<span class="nc" id="L48">        return ClientCacheService.getInstance().getByFilter(Code.NRFPROFILE_INDICE, queryString);</span>
+      case FRAGMENT_SESSION_ID:
+<span class="nc" id="L50">        return ClientCacheService.getInstance()</span>
+<span class="nc" id="L51">            .getByFragSessionId(Code.NRFPROFILE_INDICE, getRequest.getFragmentSessionId());</span>
+      default:
+<span class="nc" id="L53">        return new ExecutionResult(Code.NFMESSAGE_PROTOCOL_ERROR);</span>
+    }
+  }
+
+  private String getQueryString(NRFProfileFilter filter) {
+<span class="nc" id="L58">    String regionName = Code.NRFPROFILE_INDICE;</span>
+<span class="nc" id="L59">    StringBuilder sbPrevious = new StringBuilder(&quot;SELECT DISTINCT p FROM /&quot; + regionName + &quot; p&quot;);</span>
+<span class="nc" id="L60">    StringBuilder sb = new StringBuilder(&quot;&quot;);</span>
+
+<span class="nc" id="L62">    String operation = &quot;OR&quot;;</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">    if (filter.getAndOperation()) {</span>
+<span class="nc" id="L64">      operation = &quot;AND&quot;;</span>
+    }
+
+<span class="nc" id="L67">    boolean keyExist = false;</span>
+
+<span class="nc" id="L69">    keyExist = addKeyStructQueryString(filter.getIndex().getAmfKey1List(), &quot;amf_key1&quot;, &quot;AMFK1&quot;, sb,</span>
+        sbPrevious, operation, keyExist);
+<span class="nc" id="L71">    keyExist = addKeyStructQueryString(filter.getIndex().getAmfKey2List(), &quot;amf_key2&quot;, &quot;AMFK2&quot;, sb,</span>
+        sbPrevious, operation, keyExist);
+<span class="nc" id="L73">    keyExist = addKeyStructQueryString(filter.getIndex().getAmfKey3List(), &quot;amf_key3&quot;, &quot;AMFK3&quot;, sb,</span>
+        sbPrevious, operation, keyExist);
+<span class="nc" id="L75">    keyExist = addKeyStructQueryString(filter.getIndex().getAmfKey4List(), &quot;amf_key4&quot;, &quot;AMFK4&quot;, sb,</span>
+        sbPrevious, operation, keyExist);
+
+<span class="nc" id="L78">    keyExist = addKeyStructQueryString(filter.getIndex().getSmfKey1List(), &quot;smf_key1&quot;, &quot;SMFK1&quot;, sb,</span>
+        sbPrevious, operation, keyExist);
+<span class="nc" id="L80">    keyExist = addKeyStructQueryString(filter.getIndex().getSmfKey2List(), &quot;smf_key2&quot;, &quot;SMFK2&quot;, sb,</span>
+        sbPrevious, operation, keyExist);
+<span class="nc" id="L82">    keyExist = addKeyStructQueryString(filter.getIndex().getSmfKey3List(), &quot;smf_key3&quot;, &quot;SMFK3&quot;, sb,</span>
+        sbPrevious, operation, keyExist);
+
+<span class="nc" id="L85">    keyExist = addKeyStructQueryString(filter.getIndex().getUdmKey1List(), &quot;udm_key1&quot;, &quot;UDMK1&quot;, sb,</span>
+        sbPrevious, operation, keyExist);
+<span class="nc" id="L87">    keyExist = addKeyStructQueryString(filter.getIndex().getUdmKey2List(), &quot;udm_key2&quot;, &quot;UDMK2&quot;, sb,</span>
+        sbPrevious, operation, keyExist);
+
+<span class="nc" id="L90">    keyExist = addKeyStructQueryString(filter.getIndex().getAusfKey1List(), &quot;ausf_key1&quot;, &quot;AUSFK1&quot;,</span>
+        sb, sbPrevious, operation, keyExist);
+<span class="nc" id="L92">    keyExist = addKeyStructQueryString(filter.getIndex().getAusfKey2List(), &quot;ausf_key2&quot;, &quot;AUSFK2&quot;,</span>
+        sb, sbPrevious, operation, keyExist);
+
+<span class="nc" id="L95">    keyExist = addKeyStructQueryString(filter.getIndex().getPcfKey1List(), &quot;pcf_key1&quot;, &quot;PCFK1&quot;, sb,</span>
+        sbPrevious, operation, keyExist);
+<span class="nc" id="L97">    keyExist = addKeyStructQueryString(filter.getIndex().getPcfKey2List(), &quot;pcf_key2&quot;, &quot;PCFK2&quot;, sb,</span>
+        sbPrevious, operation, keyExist);
+
+<span class="nc" id="L100">    long key1 = filter.getIndex().getKey1();</span>
+<span class="nc" id="L101">    long key2 = filter.getIndex().getKey2();</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">    if (key1 &lt; key2) {</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">      if (keyExist) {</span>
+<span class="nc" id="L104">        sb.append(&quot; &quot; + operation + &quot; &quot;);</span>
+      }
+<span class="nc" id="L106">      sb.append(&quot;(p.key1 &gt;= &quot; + key1 + &quot;L&quot; + OQL_1 + &quot;p.key1 &lt; &quot; + key2 + &quot;L)&quot;);</span>
+    }
+
+<span class="nc" id="L109">    sbPrevious.append(&quot; WHERE &quot;);</span>
+<span class="nc" id="L110">    String queryString = sbPrevious.toString() + sb.toString();</span>
+<span class="nc" id="L111">    queryString = getCommonQueryString(filter, queryString, keyExist);</span>
+
+<span class="nc" id="L113">    LOGGER.trace(&quot;OQL = {}&quot;, queryString);</span>
+
+<span class="nc" id="L115">    return queryString;</span>
+  }
+
+  private boolean addKeyStructQueryString(List&lt;NRFKeyStruct&gt; nksList, String keyName,
+      String indexName, StringBuilder sb, StringBuilder sbPrevious, String operation,
+      boolean keyExist) {
+
+<span class="nc" id="L122">    StringBuilder ksb = new StringBuilder(&quot;&quot;);</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">    for (NRFKeyStruct nks : nksList) {</span>
+
+<span class="nc" id="L125">      String subKey1 = nks.getSubKey1();</span>
+<span class="nc" id="L126">      String subKey2 = nks.getSubKey2();</span>
+<span class="nc" id="L127">      String subKey3 = nks.getSubKey3();</span>
+<span class="nc" id="L128">      String subKey4 = nks.getSubKey4();</span>
+<span class="nc" id="L129">      String subKey5 = nks.getSubKey5();</span>
+
+<span class="nc" id="L131">      StringBuilder subSb = new StringBuilder(&quot;&quot;);</span>
+<span class="nc" id="L132">      boolean subKeyExist = false;</span>
+
+<span class="nc bnc" id="L134" title="All 2 branches missed.">      if (!subKey1.isEmpty()) {</span>
+<span class="nc" id="L135">        subSb.append(indexName + &quot;.sub_key1 = '&quot; + subKey1 + &quot;'&quot;);</span>
+<span class="nc" id="L136">        subKeyExist = true;</span>
+      }
+
+<span class="nc bnc" id="L139" title="All 2 branches missed.">      if (!subKey2.isEmpty()) {</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">        if (subKeyExist) {</span>
+<span class="nc" id="L141">          subSb.append(OQL_1);</span>
+        }
+<span class="nc" id="L143">        subSb.append(indexName + &quot;.sub_key2 = '&quot; + subKey2 + &quot;'&quot;);</span>
+<span class="nc" id="L144">        subKeyExist = true;</span>
+      }
+
+<span class="nc bnc" id="L147" title="All 2 branches missed.">      if (!subKey3.isEmpty()) {</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">        if (subKeyExist) {</span>
+<span class="nc" id="L149">          subSb.append(OQL_1);</span>
+        }
+<span class="nc" id="L151">        subSb.append(indexName + &quot;.sub_key3 = '&quot; + subKey3 + &quot;'&quot;);</span>
+<span class="nc" id="L152">        subKeyExist = true;</span>
+      }
+
+<span class="nc bnc" id="L155" title="All 2 branches missed.">      if (!subKey4.isEmpty()) {</span>
+<span class="nc bnc" id="L156" title="All 2 branches missed.">        if (subKeyExist) {</span>
+<span class="nc" id="L157">          subSb.append(OQL_1);</span>
+        }
+<span class="nc" id="L159">        subSb.append(indexName + &quot;.sub_key4 = '&quot; + subKey4 + &quot;'&quot;);</span>
+<span class="nc" id="L160">        subKeyExist = true;</span>
+      }
+
+<span class="nc bnc" id="L163" title="All 2 branches missed.">      if (!subKey5.isEmpty()) {</span>
+<span class="nc bnc" id="L164" title="All 2 branches missed.">        if (subKeyExist) {</span>
+<span class="nc" id="L165">          subSb.append(OQL_1);</span>
+        }
+<span class="nc" id="L167">        subSb.append(indexName + &quot;.sub_key5 = '&quot; + subKey5 + &quot;'&quot;);</span>
+      }
+
+<span class="nc bnc" id="L170" title="All 2 branches missed.">      if (subSb.length() != 0) {</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">        if (ksb.length() == 0) {</span>
+<span class="nc" id="L172">          ksb.append(&quot;(&quot; + subSb.toString() + &quot;)&quot;);</span>
+        } else {
+<span class="nc" id="L174">          ksb.append(&quot; OR (&quot; + subSb.toString() + &quot;)&quot;);</span>
+        }
+      }
+<span class="nc" id="L177">    }</span>
+
+<span class="nc bnc" id="L179" title="All 2 branches missed.">    if (ksb.length() != 0) {</span>
+
+<span class="nc" id="L181">      sbPrevious.append(&quot;, p.&quot; + keyName + &quot;.values &quot; + indexName);</span>
+
+<span class="nc bnc" id="L183" title="All 2 branches missed.">      if (keyExist) {</span>
+<span class="nc" id="L184">        sb.append(&quot; &quot; + operation + &quot; &quot;);</span>
+      }
+<span class="nc" id="L186">      sb.append(&quot;(&quot; + ksb.toString() + &quot;)&quot;);</span>
+<span class="nc" id="L187">      keyExist = true;</span>
+    }
+<span class="nc" id="L189">    return keyExist;</span>
+  }
+
+  private String getCommonQueryString(NRFProfileFilter filter, String innerQuery,
+      boolean keyExist) {
+<span class="nc" id="L194">    StringBuilder sb = new StringBuilder(&quot;&quot;);</span>
+
+<span class="nc" id="L196">    long key3 = filter.getIndex().getKey3();</span>
+<span class="nc bnc" id="L197" title="All 4 branches missed.">    if (key3 == 1 || key3 == 2) {</span>
+<span class="nc bnc" id="L198" title="All 2 branches missed.">      if (keyExist) {</span>
+<span class="nc" id="L199">        sb.append(OQL_1);</span>
+      }
+<span class="nc" id="L201">      sb.append(&quot;value.key3 = &quot; + key3);</span>
+    }
+
+<span class="nc bnc" id="L204" title="All 2 branches missed.">    if (sb.length() == 0) {</span>
+<span class="nc" id="L205">      return innerQuery;</span>
+    }
+
+<span class="nc bnc" id="L208" title="All 2 branches missed.">    if (innerQuery.isEmpty()) {</span>
+<span class="nc" id="L209">      String regionName = Code.NFPROFILE_INDICE;</span>
+<span class="nc" id="L210">      return &quot;SELECT DISTINCT value FROM /&quot; + regionName + &quot;.entrySet WHERE &quot; + sb.toString();</span>
+    } else {
+<span class="nc" id="L212">      return &quot;SELECT DISTINCT value FROM (&quot; + innerQuery + &quot;) value WHERE &quot; + sb.toString();</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

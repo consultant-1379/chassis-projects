@@ -1,0 +1,2 @@
+def isResponseAvailable():
+    return True

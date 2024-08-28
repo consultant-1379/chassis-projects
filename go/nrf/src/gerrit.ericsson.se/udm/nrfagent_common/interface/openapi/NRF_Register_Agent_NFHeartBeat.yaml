@@ -1,0 +1,230 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: NRF Register Agent Service
+  description: NRF Register Agent Service
+servers:
+  - url: http://{apiRoot}/nrf-register-agent/v1
+    variables:
+      apiRoot:
+        default: demohost.com
+        description: address of accessing to NRF Agent
+paths:
+  /nf-status/{nf-Type}/{serviceName}:
+    summary: used for NRF Register Agent Mode
+    put:
+      summary: Heart beat message of NFs per service
+      operationId: NFServiceHeartBeat
+      tags:
+        - NF Service Heart Beat (Document)
+      parameters:
+       - name: serviceName
+         in: path
+         required: true
+         description: Unique name of the NF service
+         schema:
+             type: string
+       - name: nf-Type
+         in: path
+         required : true
+         schema:
+             $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFType'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceInfo'
+        required: true
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+
+  /nf-instances/{nfInstanceID}:
+    summary: used for NRF Register Proxy Mode
+    get:
+      summary: Read the profile of a given NF Instance
+      operationId: GetNFInstance
+      tags:
+        - NF Instance ID (Document)
+      parameters:
+        - name: nfInstanceID
+          in: path
+          description: Unique ID of the NF Instance
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFProfile'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    put:
+      summary: Register a new NF Instance
+      operationId: RegisterNFInstance
+      tags:
+        - NF Instance ID (Document)
+      parameters:
+        - name: nfInstanceID
+          in: path
+          required: true
+          description: Unique ID of the NF Instance to register
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFProfile'
+        required: true
+      responses:
+        '200':
+          description: OK (Profile Replacement)
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFProfile'
+        '201':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFProfile'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nnrf-nfm/v1/nf-instances/{nfInstanceId}'
+              required: true
+              schema:
+                type: string
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    patch:
+      summary: Update NF Instance profile
+      operationId: UpdateNFInstance
+      tags:
+        - NF Instance ID (Document)
+      parameters:
+        - name: nfInstanceID
+          in: path
+          required: true
+          description: Unique ID of the NF Instance to update
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              type: array
+              items:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchItem'
+              minItems: 1
+        required: true
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFProfile'
+        '204':
+          description: Expected response with empty body
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    delete:
+      summary: Deregisters a given NF Instance
+      operationId: DeregisterNFInstance
+      tags:
+        - NF Instance ID (Document)
+      parameters:
+        - name: nfInstanceID
+          in: path
+          required: true
+          description: Unique ID of the NF Instance to deregister
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+      responses:
+        '204':
+          description: Expected response to a successful deregistration
+
+components:
+  schemas:
+    ServiceInfo:
+      type: object
+      required:
+          - nfCMProfileName
+          - nfProfilePath
+          - heartbeatInterval
+      properties:
+        nfCMProfileName:
+          type: string
+        nfProfilePath:
+          type: string
+        load:
+          type : integer
+        heartbeatInterval:
+          type : integer
+
+

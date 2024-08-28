@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NRFProfileProcesser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.executor.nrfprofile</a> &gt; <span class="el_source">NRFProfileProcesser.java</span></div><h1>NRFProfileProcesser.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.executor.nrfprofile;
+
+import ericsson.core.nrf.dbproxy.clientcache.ClientCacheService;
+import ericsson.core.nrf.dbproxy.common.Code;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.KVItem;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchBody;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchItem;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PatchRequest;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.apache.geode.cache.CacheTransactionManager;
+import org.apache.geode.cache.CommitConflictException;
+import org.apache.geode.cache.Region;
+import org.apache.geode.cache.query.SelectResults;
+import org.apache.geode.pdx.JSONFormatter;
+import org.apache.geode.pdx.PdxInstance;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
+
+public class NRFProfileProcesser {
+
+<span class="nc" id="L28">  private static final Logger LOGGER = LogManager.getLogger(NRFProfileProcesser.class);</span>
+<span class="nc" id="L29">  private static final List&lt;String&gt; PATCHNFTYPES = getPatchNfTypes(false);</span>
+<span class="nc" id="L30">  private static final List&lt;String&gt; ALLPATCHTYPES = getPatchNfTypes(true);</span>
+  private static final String GET_NFINFOID_SQL = &quot;select value.body.nfInstanceId from /ericsson-nrf-regionnfinfo.entrySet where value.body.nrfInstanceId=&quot;;
+  private static final String NRF_REGION_NAME = &quot;ericsson-nrf-nrfprofiles&quot;;
+  private static final String NFINFO_REGION_NAME = &quot;ericsson-nrf-regionnfinfo&quot;;
+  private static final String NRFINFO = &quot;nrfInfo&quot;;
+
+<span class="nc" id="L36">  private NRFProfileProcesser() {</span>
+<span class="nc" id="L37">    throw new IllegalStateException(&quot;Utility class&quot;);</span>
+  }
+
+  public static int putNRFProfile(KVItem kvItems) {
+<span class="nc" id="L41">    Map&lt;Object, Object&gt; nfInfoMap = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L42">    Region nrfProfileRegion = ClientCacheService.getInstance().getRegion(NRF_REGION_NAME);</span>
+<span class="nc" id="L43">    Region nfInfoRegion = ClientCacheService.getInstance().getRegion(NFINFO_REGION_NAME);</span>
+<span class="nc" id="L44">    String nrfInstanceId = kvItems.getKey();</span>
+<span class="nc" id="L45">    String nrfProfile = kvItems.getValue();</span>
+<span class="nc" id="L46">    JSONObject nrfJsonObject = new JSONObject(nrfProfile);</span>
+<span class="nc" id="L47">    JSONArray nfInfoArray = nrfJsonObject.getJSONArray(NRFINFO);</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">    for (int i = 0; i &lt; nfInfoArray.length(); i++) {</span>
+<span class="nc" id="L49">      JSONObject infoObject = nfInfoArray.getJSONObject(i);</span>
+<span class="nc" id="L50">      String nfInstanceId = infoObject.getJSONObject(&quot;body&quot;).getString(&quot;nfInstanceId&quot;);</span>
+<span class="nc" id="L51">      PdxInstance pdxInstance = JSONFormatter.fromJSON(infoObject.toString());</span>
+<span class="nc" id="L52">      nfInfoMap.put(nfInstanceId, pdxInstance);</span>
+    }
+<span class="nc" id="L54">    nrfJsonObject.remove(NRFINFO);</span>
+<span class="nc" id="L55">    PdxInstance nrfProfileToDB = JSONFormatter.fromJSON(nrfJsonObject.toString());</span>
+<span class="nc" id="L56">    LOGGER.debug(&quot;nrfProfile stored in db = {}&quot;, JSONFormatter.toJSON(nrfProfileToDB));</span>
+
+<span class="nc" id="L58">    int code = Code.INTERNAL_ERROR;</span>
+<span class="nc" id="L59">    CacheTransactionManager txManager = ClientCacheService.getInstance()</span>
+<span class="nc" id="L60">        .getCacheTransactionManager();</span>
+<span class="nc" id="L61">    boolean retryTransaction = false;</span>
+<span class="nc" id="L62">    int retryTime = 0;</span>
+    do {
+      try {
+<span class="nc" id="L65">        retryTime++;</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">        if (retryTime &gt; 3) {</span>
+          break;
+        }
+<span class="nc" id="L69">        txManager.begin();</span>
+<span class="nc" id="L70">        SelectResults&lt;String&gt; results = (SelectResults&lt;String&gt;) nfInfoRegion.getRegionService()</span>
+<span class="nc" id="L71">            .getQueryService().newQuery(GET_NFINFOID_SQL + &quot;'&quot; + nrfInstanceId + &quot;'&quot;).execute();</span>
+<span class="nc" id="L72">        nfInfoRegion.removeAll(results);</span>
+<span class="nc" id="L73">        nrfProfileRegion.remove(nrfInstanceId);</span>
+<span class="nc" id="L74">        nrfProfileRegion.put(nrfInstanceId, nrfProfileToDB);</span>
+<span class="nc" id="L75">        nfInfoRegion.putAll(nfInfoMap);</span>
+<span class="nc" id="L76">        txManager.commit();</span>
+<span class="nc" id="L77">        retryTransaction = false;</span>
+<span class="nc" id="L78">        code = Code.CREATED;</span>
+<span class="nc" id="L79">      } catch (CommitConflictException conflictException) {</span>
+<span class="nc" id="L80">        LOGGER.error(conflictException.toString());</span>
+<span class="nc" id="L81">        retryTransaction = true;</span>
+<span class="nc" id="L82">      } catch (Exception e) {</span>
+<span class="nc" id="L83">        LOGGER.error(e.toString());</span>
+      } finally {
+<span class="nc bnc" id="L85" title="All 2 branches missed.">        if (txManager.exists()) {</span>
+<span class="nc" id="L86">          txManager.rollback();</span>
+        }
+      }
+<span class="nc bnc" id="L89" title="All 2 branches missed.">    } while (retryTransaction);</span>
+<span class="nc" id="L90">    return code;</span>
+  }
+
+  public static int deleteNRFProfile(String nrfInstanceId) {
+<span class="nc" id="L94">    Region nrfProfileRegion = ClientCacheService.getInstance().getRegion(NRF_REGION_NAME);</span>
+<span class="nc" id="L95">    Region nfInfoRegion = ClientCacheService.getInstance().getRegion(NFINFO_REGION_NAME);</span>
+<span class="nc" id="L96">    int code = Code.INTERNAL_ERROR;</span>
+<span class="nc" id="L97">    CacheTransactionManager txManager = ClientCacheService.getInstance()</span>
+<span class="nc" id="L98">        .getCacheTransactionManager();</span>
+<span class="nc" id="L99">    boolean retryTransaction = false;</span>
+<span class="nc" id="L100">    int retryTime = 0;</span>
+    do {
+      try {
+<span class="nc" id="L103">        retryTime++;</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">        if (retryTime &gt; 3) {</span>
+          break;
+        }
+<span class="nc" id="L107">        txManager.begin();</span>
+<span class="nc" id="L108">        SelectResults&lt;String&gt; results = (SelectResults&lt;String&gt;) nfInfoRegion.getRegionService()</span>
+<span class="nc" id="L109">            .getQueryService().newQuery(GET_NFINFOID_SQL + &quot;'&quot; + nrfInstanceId + &quot;'&quot;).execute();</span>
+<span class="nc" id="L110">        nfInfoRegion.removeAll(results);</span>
+<span class="nc" id="L111">        nrfProfileRegion.remove(nrfInstanceId);</span>
+<span class="nc" id="L112">        txManager.commit();</span>
+<span class="nc" id="L113">        retryTransaction = false;</span>
+<span class="nc" id="L114">        code = Code.SUCCESS;</span>
+<span class="nc" id="L115">      } catch (CommitConflictException conflictException) {</span>
+<span class="nc" id="L116">        LOGGER.error(conflictException.toString());</span>
+<span class="nc" id="L117">        retryTransaction = true;</span>
+<span class="nc" id="L118">      } catch (Exception e) {</span>
+<span class="nc" id="L119">        LOGGER.error(e.toString());</span>
+      } finally {
+<span class="nc bnc" id="L121" title="All 2 branches missed.">        if (txManager.exists()) {</span>
+<span class="nc" id="L122">          txManager.rollback();</span>
+        }
+      }
+<span class="nc bnc" id="L125" title="All 2 branches missed.">    } while (retryTransaction);</span>
+<span class="nc" id="L126">    return code;</span>
+  }
+
+  public static boolean validatePatchRequest(PatchRequest patchRequest) {
+<span class="nc" id="L130">    LOGGER.debug(&quot;patchRequest={}&quot;, patchRequestToString(patchRequest));</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">    if (patchRequest.getAllPatchCount() == 0) {</span>
+<span class="nc" id="L132">      return false;</span>
+    }
+<span class="nc bnc" id="L134" title="All 2 branches missed.">    for (PatchBody patchBody : patchRequest.getAllPatchList()) {</span>
+<span class="nc" id="L135">      String patchType = patchBody.getPatchType();</span>
+<span class="nc" id="L136">      int patchOperation = patchBody.getOperation();</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">      if (!ALLPATCHTYPES.contains(patchType)) {</span>
+<span class="nc" id="L138">        LOGGER.error(&quot;unknow patch nftype=&quot; + patchType);</span>
+<span class="nc" id="L139">        return false;</span>
+      }
+<span class="nc bnc" id="L141" title="All 4 branches missed.">      if (PATCHNFTYPES.contains(patchType) &amp;&amp; patchBody.getPatchNrfInstId().isEmpty()) {</span>
+<span class="nc" id="L142">        LOGGER.error(&quot;nrfIntsanceId should not be null when patch type=&quot; + patchType);</span>
+<span class="nc" id="L143">        return false;</span>
+      }
+<span class="nc bnc" id="L145" title="All 6 branches missed.">      if (patchOperation != Code.PATCH_ADD &amp;&amp; patchOperation != Code.PATCH_REPLACE</span>
+          &amp;&amp; patchOperation != Code.PATCH_REMOVE) {
+<span class="nc" id="L147">        LOGGER.error(&quot;unknow patch operation=&quot; + patchOperation);</span>
+<span class="nc" id="L148">        return false;</span>
+      }
+<span class="nc" id="L150">      List&lt;PatchItem&gt; patchItems = patchBody.getPatchItemList();</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">      for (PatchItem patchItem : patchItems) {</span>
+<span class="nc bnc" id="L152" title="All 2 branches missed.">        if (patchItem.getPatchKey().isEmpty()) {</span>
+<span class="nc" id="L153">          LOGGER.error(&quot;empty patch key&quot;);</span>
+<span class="nc" id="L154">          return false;</span>
+        }
+<span class="nc" id="L156">      }</span>
+<span class="nc" id="L157">    }</span>
+<span class="nc" id="L158">    return true;</span>
+  }
+
+  public static String patchRequestToString(PatchRequest patchRequest) {
+<span class="nc" id="L162">    StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L163">    sb.append(&quot;[&quot;);</span>
+<span class="nc" id="L164">    int index = 0;</span>
+<span class="nc bnc" id="L165" title="All 2 branches missed.">    for (PatchBody patchBody : patchRequest.getAllPatchList()) {</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">      if (index &gt; 0) {</span>
+<span class="nc" id="L167">        sb.append(&quot;,{&quot;);</span>
+      }
+<span class="nc" id="L169">      sb.append(&quot;{&quot;);</span>
+<span class="nc" id="L170">      sb.append(&quot;patchType=&quot; + patchBody.getPatchType());</span>
+<span class="nc" id="L171">      sb.append(&quot;,patchNrfInstanceId=&quot; + patchBody.getPatchNrfInstId());</span>
+<span class="nc" id="L172">      sb.append(&quot;,patchOperation=&quot; + patchBody.getOperation());</span>
+<span class="nc" id="L173">      sb.append(&quot;,patchItem=[&quot;);</span>
+<span class="nc" id="L174">      List&lt;PatchItem&gt; patchItems = patchBody.getPatchItemList();</span>
+<span class="nc bnc" id="L175" title="All 2 branches missed.">      for (PatchItem patchItem : patchItems) {</span>
+<span class="nc" id="L176">        sb.append(&quot;{patchKey=&quot; + patchItem.getPatchKey());</span>
+<span class="nc" id="L177">        sb.append(&quot;,patchValue=&quot; + patchItem.getPatchValue() + &quot;}&quot;);</span>
+<span class="nc" id="L178">      }</span>
+<span class="nc" id="L179">      sb.append(&quot;]&quot;);</span>
+<span class="nc" id="L180">      sb.append(&quot;}&quot;);</span>
+<span class="nc" id="L181">      sb.append(&quot;}&quot;);</span>
+<span class="nc" id="L182">      index++;</span>
+<span class="nc" id="L183">    }</span>
+<span class="nc" id="L184">    sb.append(&quot;]&quot;);</span>
+<span class="nc" id="L185">    return sb.toString();</span>
+  }
+
+  public static int processPatchRequest(PatchRequest patchRequest) {
+<span class="nc" id="L189">    int code = Code.INTERNAL_ERROR;</span>
+<span class="nc" id="L190">    CacheTransactionManager txManager = ClientCacheService.getInstance()</span>
+<span class="nc" id="L191">        .getCacheTransactionManager();</span>
+<span class="nc" id="L192">    boolean retryTransaction = false;</span>
+<span class="nc" id="L193">    int retryTime = 0;</span>
+    do {
+      try {
+<span class="nc" id="L196">        retryTime++;</span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">        if (retryTime &gt; 3) {</span>
+<span class="nc" id="L198">          LOGGER.debug(&quot;patch transaction commit 3 times, stop trying&quot;);</span>
+          break;
+        }
+<span class="nc" id="L201">        txManager.begin();</span>
+<span class="nc bnc" id="L202" title="All 2 branches missed.">        for (PatchBody patchBody : patchRequest.getAllPatchList()) {</span>
+<span class="nc" id="L203">          processPatchBody(patchBody);</span>
+<span class="nc" id="L204">        }</span>
+<span class="nc" id="L205">        txManager.commit();</span>
+<span class="nc" id="L206">        code = Code.CREATED;</span>
+<span class="nc" id="L207">        LOGGER.debug(&quot;patch transaction commit successful, stop trying, retryTime={}&quot;, retryTime);</span>
+<span class="nc" id="L208">        retryTransaction = false;</span>
+<span class="nc" id="L209">      } catch (CommitConflictException ex) {</span>
+<span class="nc" id="L210">        retryTransaction = true;</span>
+<span class="nc" id="L211">        LOGGER.error(&quot;commit patch request fail, err=&quot; + ex.toString());</span>
+<span class="nc" id="L212">      } catch (Exception ex) {</span>
+<span class="nc" id="L213">        LOGGER.error(ex.toString());</span>
+      } finally {
+<span class="nc bnc" id="L215" title="All 2 branches missed.">        if (txManager.exists()) {</span>
+<span class="nc" id="L216">          LOGGER.error(&quot;transaction still exist, will rollback&quot;);</span>
+<span class="nc" id="L217">          txManager.rollback();</span>
+        }
+      }
+<span class="nc bnc" id="L220" title="All 2 branches missed.">    } while (retryTransaction);</span>
+<span class="nc" id="L221">    return code;</span>
+  }
+
+  private static void processPatchBody(PatchBody patchBody) {
+<span class="nc" id="L225">    Region nrfProfileRegion = ClientCacheService.getInstance().getRegion(NRF_REGION_NAME);</span>
+<span class="nc" id="L226">    Region nfInfoRegion = ClientCacheService.getInstance().getRegion(NFINFO_REGION_NAME);</span>
+<span class="nc" id="L227">    int patchOperation = patchBody.getOperation();</span>
+<span class="nc" id="L228">    String patchType = patchBody.getPatchType();</span>
+<span class="nc" id="L229">    List&lt;PatchItem&gt; patchItems = patchBody.getPatchItemList();</span>
+<span class="nc" id="L230">    String nrfInstanceId = patchBody.getPatchNrfInstId();</span>
+
+<span class="nc" id="L232">    Map&lt;Object, Object&gt; patchMap = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L233">    List&lt;Object&gt; patchKeys = new ArrayList&lt;&gt;();</span>
+    try {
+<span class="nc bnc" id="L235" title="All 2 branches missed.">      for (PatchItem patchItem : patchItems) {</span>
+<span class="nc bnc" id="L236" title="All 2 branches missed.">        if (!patchItem.getPatchValue().isEmpty()) {</span>
+<span class="nc" id="L237">          Object typeObject = new JSONTokener(patchItem.getPatchValue()).nextValue();</span>
+<span class="nc bnc" id="L238" title="All 2 branches missed.">          if (typeObject instanceof JSONObject) {</span>
+<span class="nc" id="L239">            PdxInstance pdxInstance = JSONFormatter.fromJSON(patchItem.getPatchValue());</span>
+<span class="nc" id="L240">            patchMap.put(nrfInstanceId, pdxInstance);</span>
+<span class="nc bnc" id="L241" title="All 2 branches missed.">          } else if (typeObject instanceof JSONArray) {</span>
+<span class="nc" id="L242">            JSONArray nfInfoArray = (JSONArray) typeObject;</span>
+<span class="nc bnc" id="L243" title="All 2 branches missed.">            for (int i = 0; i &lt; nfInfoArray.length(); i++) {</span>
+<span class="nc" id="L244">              JSONObject infoObject = nfInfoArray.getJSONObject(i);</span>
+<span class="nc" id="L245">              String nfInstanceId = infoObject.getJSONObject(&quot;body&quot;).getString(&quot;nfInstanceId&quot;);</span>
+<span class="nc" id="L246">              PdxInstance pdxInstance = JSONFormatter.fromJSON(infoObject.toString());</span>
+<span class="nc" id="L247">              patchMap.put(nfInstanceId, pdxInstance);</span>
+            }
+<span class="nc" id="L249">          } else {</span>
+<span class="nc" id="L250">            LOGGER.error(&quot;not a valid patch value={}&quot;, patchItem.getPatchValue());</span>
+          }
+        }
+<span class="nc" id="L253">        patchKeys.add(patchItem.getPatchKey());</span>
+<span class="nc" id="L254">      }</span>
+<span class="nc bnc" id="L255" title="All 5 branches missed.">      switch (patchType) {</span>
+        case Code.NFTYPE_NRF:
+<span class="nc bnc" id="L257" title="All 3 branches missed.">          switch (patchOperation) {</span>
+            case Code.PATCH_ADD:
+            case Code.PATCH_REPLACE:
+<span class="nc bnc" id="L260" title="All 2 branches missed.">              if (patchMap.size() &gt; 0) {</span>
+<span class="nc" id="L261">                nrfProfileRegion.putAll(patchMap);</span>
+              }
+              break;
+            case Code.PATCH_REMOVE:
+<span class="nc" id="L265">              nrfProfileRegion.removeAll(patchKeys);</span>
+<span class="nc" id="L266">              break;</span>
+            default:
+<span class="nc" id="L268">              LOGGER.error(&quot;unknown operation code&quot;);</span>
+          }
+<span class="nc" id="L270">          break;</span>
+        case Code.PATCHINSTID:
+<span class="nc bnc" id="L272" title="All 3 branches missed.">          switch (patchOperation) {</span>
+            case Code.PATCH_ADD:
+            case Code.PATCH_REPLACE:
+<span class="nc bnc" id="L275" title="All 2 branches missed.">              if (patchMap.size() &gt; 0) {</span>
+<span class="nc" id="L276">                nfInfoRegion.putAll(patchMap);</span>
+              }
+              break;
+            case Code.PATCH_REMOVE:
+<span class="nc" id="L280">              nfInfoRegion.removeAll(patchKeys);</span>
+<span class="nc" id="L281">              break;</span>
+            default:
+<span class="nc" id="L283">              LOGGER.error(&quot;unknown operation code&quot;);</span>
+          }
+<span class="nc" id="L285">          break;</span>
+        case Code.NFTYPE_NRFINFO:
+<span class="nc" id="L287">          SelectResults&lt;String&gt; allInfos = (SelectResults&lt;String&gt;) nfInfoRegion.getRegionService()</span>
+<span class="nc" id="L288">              .getQueryService().newQuery(GET_NFINFOID_SQL + &quot;'&quot; + nrfInstanceId + &quot;'&quot;).execute();</span>
+<span class="nc" id="L289">          nfInfoRegion.removeAll(allInfos);</span>
+<span class="nc bnc" id="L290" title="All 2 branches missed.">          if (patchMap.size() &gt; 0) {</span>
+<span class="nc" id="L291">            nfInfoRegion.putAll(patchMap);</span>
+          }
+          break;
+        case Code.NFTYPE_AMF:
+        case Code.NFTYPE_AUSF:
+        case Code.NFTYPE_BSF:
+        case Code.NFTYPE_CHF:
+        case Code.NFTYPE_PCF:
+        case Code.NFTYPE_SMF:
+        case Code.NFTYPE_UDM:
+        case Code.NFTYPE_UDR:
+        case Code.NFTYPE_UPF:
+<span class="nc" id="L303">          SelectResults&lt;String&gt; nfInfos = (SelectResults&lt;String&gt;) nfInfoRegion.getRegionService()</span>
+<span class="nc" id="L304">              .getQueryService().newQuery(</span>
+                  GET_NFINFOID_SQL + &quot;'&quot; + nrfInstanceId + &quot;' AND value.body.nfType='&quot; + patchType
+<span class="nc" id="L306">                      + &quot;'&quot;).execute();</span>
+<span class="nc" id="L307">          nfInfoRegion.removeAll(nfInfos);</span>
+<span class="nc bnc" id="L308" title="All 2 branches missed.">          if (patchMap.size() &gt; 0) {</span>
+<span class="nc" id="L309">            nfInfoRegion.putAll(patchMap);</span>
+          }
+          break;
+        default:
+<span class="nc" id="L313">          LOGGER.error(&quot;unknown patch type&quot;);</span>
+      }
+<span class="nc" id="L315">    } catch (Exception ex) {</span>
+<span class="nc" id="L316">      LOGGER.error(ex.toString());</span>
+<span class="nc" id="L317">    }</span>
+<span class="nc" id="L318">  }</span>
+
+  private static List&lt;String&gt; getPatchNfTypes(boolean isAll) {
+<span class="nc" id="L321">    List&lt;String&gt; patchNfTypes = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L322">    patchNfTypes.add(Code.NFTYPE_NRFINFO);</span>
+<span class="nc" id="L323">    patchNfTypes.add(Code.NFTYPE_AMF);</span>
+<span class="nc" id="L324">    patchNfTypes.add(Code.NFTYPE_AUSF);</span>
+<span class="nc" id="L325">    patchNfTypes.add(Code.NFTYPE_BSF);</span>
+<span class="nc" id="L326">    patchNfTypes.add(Code.NFTYPE_CHF);</span>
+<span class="nc" id="L327">    patchNfTypes.add(Code.NFTYPE_PCF);</span>
+<span class="nc" id="L328">    patchNfTypes.add(Code.NFTYPE_SMF);</span>
+<span class="nc" id="L329">    patchNfTypes.add(Code.NFTYPE_UDM);</span>
+<span class="nc" id="L330">    patchNfTypes.add(Code.NFTYPE_UDR);</span>
+<span class="nc" id="L331">    patchNfTypes.add(Code.NFTYPE_UPF);</span>
+<span class="nc bnc" id="L332" title="All 2 branches missed.">    if (isAll) {</span>
+<span class="nc" id="L333">      patchNfTypes.add(Code.NFTYPE_NRF);</span>
+<span class="nc" id="L334">      patchNfTypes.add(Code.PATCHINSTID);</span>
+    }
+<span class="nc" id="L336">    return patchNfTypes;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

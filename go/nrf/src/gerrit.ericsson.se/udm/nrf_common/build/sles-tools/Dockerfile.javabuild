@@ -1,0 +1,40 @@
+FROM armdocker.rnd.ericsson.se/proj-ldc/common_base_os/sles:1.0.0-9
+
+RUN zypper ar -p 10 -C -G -f https://arm.rnd.ki.sw.ericsson.se/artifactory/proj-ldc-repo-rpm-local/common_base_os/sles/1.0.0-9?ssl_verify=no LDC-SLES15 \
+&& zypper ref -f -r LDC-SLES15 
+
+RUN zypper install -y wget make gcc unzip
+
+RUN zypper ar -C -G -f http://you.linux.ericsson.se/SLE15/SLE-Module-Legacy-Updates/ SLE-Module-Legacy-Updates \
+&& zypper ref -f -r SLE-Module-Legacy-Updates
+
+
+ENV PROTOBUF_VERSION=3.5.1
+ENV GOLANG_VERSION=1.10.1
+ENV PATH=$PATH:/usr/local/go/bin:/go/bin
+ENV GOPATH=/go
+
+# install JDK 
+RUN zypper install -y curl java-1_8_0-openjdk-devel ca-certificates-mozilla
+
+
+
+ENV GRADLE_HOME=/opt/gradle \
+    GRADLE_VERSION=5.0 \
+    GRADLE_DOWNLOAD_SHA256=6157ac9f3410bc63644625b3b3e9e96c963afd7910ae0697792db57813ee79a6
+
+
+# install gradle
+RUN set -o errexit -o nounset \
+	&& echo "Downloading Gradle" \
+	&& wget --no-check-certificate --output-document=gradle.zip "https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip" \
+	\
+	&& echo "Checking download hash" \
+	&& echo "${GRADLE_DOWNLOAD_SHA256} *gradle.zip" | sha256sum --check - \
+	\
+	&& echo "Installing Gradle" \
+	&& unzip gradle.zip \
+	&& rm gradle.zip \
+	&& mv "gradle-${GRADLE_VERSION}" "${GRADLE_HOME}/" \
+	&& ln --symbolic "${GRADLE_HOME}/bin/gradle" /usr/bin/gradle
+

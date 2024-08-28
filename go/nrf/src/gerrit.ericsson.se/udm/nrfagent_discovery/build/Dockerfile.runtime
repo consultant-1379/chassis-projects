@@ -1,0 +1,7 @@
+FROM armdocker.rnd.ericsson.se/proj-ipworks/sles-tools:v1
+RUN  mkdir -p /etc/nrfagent/
+COPY --from=nrfagent-builder /go/src/gerrit.ericsson.se/udm/nrfagent_common/build/etc /etc/nrfagent/
+COPY --from=nrfagent-builder /go/src/gerrit.ericsson.se/udm/nrfagent_discovery/build/config/cache-index.json /
+COPY --from=nrfagent-builder /bin/nrfagent /bin/nrfagentdisc
+
+ENTRYPOINT ["/etc/nrfagent/scripts/entrypoint.sh"]

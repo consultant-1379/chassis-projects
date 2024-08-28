@@ -1,0 +1,111 @@
+#!/usr/bin/env groovy
+
+@Library('PipelineGlobalLibrary') _
+import com.ericsson.*
+
+def chart_version = params.CHART_VERSION
+def chart_repo = params.CHART_REPO
+def chart_name = params.CHART_NAME
+def job = "nrf-spinnaker-test"
+def mynamespace = "${job}-${BUILD_NUMBER}-ns"
+def helmname = "${job}-${BUILD_NUMBER}"
+def commonhelm = "${mynamespace}"
+def storageclass = params['STORAGECLASS']?:"erikube-rbd"
+def pause1 = params['PAUSE_AFTER_DEPLOY']?:'FALSE'
+
+def createSecretFiles() {
+    withCredentials([usernamePassword(credentialsId: 'userpwd-ipworks',
+        passwordVariable: 'arm_pass', usernameVariable: 'arm_user')])
+    {
+        result = sh returnStatus:true, script:"""
+            echo ${arm_user} > /secrets/git/user
+            echo ${arm_pass} > /secrets/git/pwd
+        """
+        if (result != 0)
+            common.msgError("createSecretFiles failed")
+    }
+}
+
+testSuite {
+    // Name of TestSuite, to identify it in the logs.
+    name = "${job}"
+    unit = 'nrf'
+    cloud = "eccd-udm00144"
+    // Execute ShellTestCases in parallel.
+    parallel = false
+
+    // Priority of the TestSuite.
+    priority = 2
+
+    // The namespace.
+    namespace = "${mynamespace}"
+
+    createns = true
+
+    // Environment variables (common to all containers).
+    environment = [
+        envVar(key: 'NAMESPACE', value: mynamespace)
+    ]
+
+    // Container templates.
+    containers = [
+        containerTemplate (
+            name: 'robottests',
+            image: 'armdocker.rnd.ericsson.se/proj-ipworks/robot:3.5',
+            alwaysPullImage: true,
+            command: 'cat',
+            ttyEnabled: true
+        ),
+        containerTemplate (
+            name: 'erikube-client',
+            image: 'armdocker.rnd.ericsson.se/proj_kds/erikube/client:latest',
+            alwaysPullImage: true,
+            command: 'cat',
+            ttyEnabled: true
+        ),
+        containerTemplate (
+            name: 'helm',
+            image: 'armdocker.rnd.ericsson.se/proj-5g-cicd-dev/jenkins/mason/helm:latest',
+            alwaysPullImage: true,
+            command: 'cat',
+            ttyEnabled: true
+        ),
+        containerTemplate (
+            name: 'package',
+            image: 'armdocker.rnd.ericsson.se/proj-5g-cicd-dev/jenkins/mason/package:latest',
+            alwaysPullImage: true,
+            command: 'cat',
+            ttyEnabled: true
+        ),
+        containerTemplate(
+            name: 'git',
+            image: 'alpine/git',
+            ttyEnabled: true,
+            command: 'cat'
+        ),
+        containerTemplate(
+            name: 'mail',
+            image: 'armdocker.rnd.ericsson.se/proj-ipworks/tools/mail',
+            ttyEnabled: true,
+            command: 'cat'
+        )
+    ]
+
+    // Volumes (common to all containers).
+    volumes = [
+        emptyDirVolume(mountPath: '/git', memory: false),
+        emptyDirVolume(mountPath: '/output', memory: false),
+        emptyDirVolume(mountPath: '/secrets/git/', memory: false),
+        hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock'),
+    ]
+
+    // ShellTestCases.
+    testCases = [
+        // Boolean flags: setUp, tearDown, sequential, abortOnError
+        ['sec_files', 'jnlp', {createSecretFiles()}, true, false, true, true] as TestCase,
+        ['clone', 'git', 'cd /git ;git clone https://$(cat /secrets/git/user):$(cat /secrets/git/pwd)@gerrit.ericsson.se/a/5gcicd/chassis-projects -b ${GERRIT_BRANCH} ', true, false, true, true] as ShellTestCase,
+        ['nrf_set_common_env', 'package', "echo export NAMESPACE=${mynamespace} >> /git/chassis-projects/integration/eric_nrf/common.sh;echo export HELMNAME=${helmname} >> /git/chassis-projects/integration/eric_nrf/common.sh; echo export NRFCOMMON=${commonhelm} >> /git/chassis-projects/integration/eric_nrf/common.sh; echo export STORAGECLASS=${storageclass} >> /git/chassis-projects/integration/eric_nrf/common.sh", true, false, true, true] as ShellTestCase,
+        ['nrf_deploy', 'erikube-client', "sh /git/chassis-projects/integration/eric_nrf/deploy_nrf.sh ${chart_version} ${chart_repo} ${chart_name}", true, false, true, true] as ShellTestCase,
+        ['nrf_delete', 'erikube-client', "helm delete --purge ${helmname}-adp ${helmname}-release", false, true, true, true] as ShellTestCase,
+    ]
+}

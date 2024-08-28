@@ -1,0 +1,837 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#", 
+  "type": "object", 
+  "properties": {
+	"event": {
+	  "properties": {
+		"type": {
+		  "enum": [
+			"NF_REGISTERED", 
+			"NF_DEREGISTERED", 
+			"NF_PROFILE_CHANGED", 
+			"AGENT_EVENT_DISC_RESULT", 
+			"AGENT_EVENT_WITHOUT_BODY"
+		  ]
+		}
+	  }
+	}, 
+	"nfInstanceId": {
+	  "type": "string"
+	}, 
+	"agentProducerId": {
+	  "type": "string"
+	},
+	"messageBody": {
+	  "type": "object", 
+	  "properties": {
+  		"validityPeriod": {
+		  "type": "integer"
+		},
+		"nfInstances": {
+		  "items": [
+			{
+			  "nfInstanceID": {
+				"type": "string"
+			  }
+			}, 
+			{
+			  "nfType": {
+				"properties": {
+				  "type": {
+					"enum": [
+					  "NRF", 
+					  "UDM", 
+					  "AMF", 
+					  "SMF", 
+					  "AUSF", 
+					  "NEF", 
+					  "PCF", 
+					  "SMSF", 
+					  "NSSF", 
+					  "LMF", 
+					  "GMLC", 
+					  "5G_EIR", 
+					  "SEPP", 
+					  "UPF", 
+					  "N2IWF", 
+					  "AF", 
+					  "UDSF"
+					]
+				  }
+				}
+			  }
+			}, 
+			{
+			  "type": "object", 
+			  "properties": {
+				"plmn": {
+				  "type": "object", 
+				  "properties": {
+					"mcc": {
+					  "type": "string"
+					}, 
+					"mnc": {
+					  "type": "string"
+					}
+				  }
+				}
+			  }
+			}, 
+			{
+			  "type": "object", 
+			  "properties": {
+				"sNssais": {
+				  "items": [
+					{
+					  "sst": {
+						"type": "number"
+					  }
+					}, 
+					{
+					  "sd": {
+						"type": "string"
+					  }
+					}
+				  ], 
+				  "type": "array"
+				}
+			  }
+			}, 
+			{
+			  "nsiList": {
+				"items": [
+				  {
+					"type": "string"
+				  }
+				], 
+				"type": "array"
+			  }
+			}, 
+			{
+			  "fqdn": {
+				"type": "string"
+			  }
+			}, 
+			{
+			  "ipv4Addresses": {
+				"items": [
+				  {
+					"type": "string"
+				  }
+				], 
+				"type": "array"
+			  }
+			}, 
+			{
+			  "ipv6Addresses": {
+				"items": [
+				  {
+					"type": "string"
+				  }
+				], 
+				"type": "array"
+			  }
+			}, 
+			{
+			  "ipv6Prefixes": {
+				"items": [
+				  {
+					"type": "string"
+				  }
+				], 
+				"type": "array"
+			  }
+			}, 
+			{
+			  "capacity": {
+				"type": "integer"
+			  }
+			}, 
+            {
+			  "load": {
+				"type": "integer"
+			  }
+			},
+            {
+			  "Locality": {
+				"type": "string"
+			  }
+			},
+            {
+			  "priority": {
+				"type": "integer"
+			  }
+			},                 
+			{
+			  "type": "object", 
+			  "properties": {
+				"udrInfo": {
+				  "type": "object", 
+				  "properties": {
+                    "groupId":{
+                      "items":{
+                        "type": "string"
+                      }
+                    },
+					"supiRanges": {
+					  "items": [
+						{
+						  "start": {
+							"type": "string"
+						  }
+						}, 
+						{
+						  "end": {
+							"type": "string"
+						  }
+						}, 
+						{
+						  "pattern": {
+							"type": "string"
+						  }
+						}
+					  ], 
+					  "type": "array"
+					},
+                    "gpsiRanges": {
+					  "items": [
+						{
+						  "start": {
+							"type": "string"
+						  }
+						}, 
+						{
+						  "end": {
+							"type": "string"
+						  }
+						}, 
+						{
+						  "pattern": {
+							"type": "string"
+						  }
+						}
+					  ], 
+					  "type": "array"
+					},
+                    "externalGroupIdentityfiersRanges": {
+					  "items": [
+						{
+						  "start": {
+							"type": "string"
+						  }
+						}, 
+						{
+						  "end": {
+							"type": "string"
+						  }
+						}, 
+						{
+						  "pattern": {
+							"type": "string"
+						  }
+						}
+					  ], 
+					  "type": "array"
+					},
+                    "supportedDataSets":{
+                      "items":[
+                        {
+                           "type": "string"
+                        }        
+                      ]
+                      "type": "array"
+                    }
+				  }
+				}
+			  }
+			}, 
+            {
+			  "type": "object", 
+			  "properties": {
+				"udmInfo": {
+				  "type": "object", 
+				  "properties": {
+                    "groupId":{
+                      "items":{
+                        "type": "string"
+                      }
+                    },
+					"supiRanges": {
+					  "items": [
+						{
+						  "start": {
+							"type": "string"
+						  }
+						}, 
+						{
+						  "end": {
+							"type": "string"
+						  }
+						}, 
+						{
+						  "pattern": {
+							"type": "string"
+						  }
+						}
+					  ], 
+					  "type": "array"
+					},
+                    "gpsiRanges": {
+					  "items": [
+						{
+						  "start": {
+							"type": "string"
+						  }
+						}, 
+						{
+						  "end": {
+							"type": "string"
+						  }
+						}, 
+						{
+						  "pattern": {
+							"type": "string"
+						  }
+						}
+					  ], 
+					  "type": "array"
+					},
+                    "externalGroupIdentityfiersRanges": {
+					  "items": [
+						{
+						  "start": {
+							"type": "string"
+						  }
+						}, 
+						{
+						  "end": {
+							"type": "string"
+						  }
+						}, 
+						{
+						  "pattern": {
+							"type": "string"
+						  }
+						}
+					  ], 
+					  "type": "array"
+					},
+                    "routingIndicator":{
+                      "items":
+                        {
+                           "type": "string"
+                        }        
+                    }
+				  }
+				}
+			  }
+			}, 
+			{
+			  "type": "object", 
+			  "properties": {
+				"ausfInfo": {
+				  "type": "object", 
+				  "properties": {
+					"groupId":{
+                      "items":{
+                        "type": "string"
+                      }
+                    },
+					"supiRanges": {
+					  "items": [
+						{
+						  "start": {
+							"type": "string"
+						  }
+						}, 
+						{
+						  "end": {
+							"type": "string"
+						  }
+						}, 
+						{
+						  "pattern": {
+							"type": "string"
+						  }
+						}
+					  ], 
+					  "type": "array"
+					},
+                    "routingIndicator":{
+                      "items":
+                        {
+                           "type": "string"
+                        }        
+                    }
+				  }
+				}
+			  }
+			}, 
+            {
+			  "type": "object", 
+			  "properties": {
+				"amfInfo": {
+				  "type": "object", 
+				  "properties": {
+					"amfSetId":{
+                      "items":{
+                        "type": "string"
+                      }
+                    },
+                    "amfRegionId":{
+                      "items":{
+                        "type": "string"
+                      }
+                    },
+					"guamiList": {
+					  "items": [
+						{
+						  "plmnId": {
+                            "type": "object", 
+                            "properties": {
+                                "mcc": {
+                                  "type": "string"
+                                }, 
+                                "mnc": {
+                                  "type": "string"
+                                }
+                            }
+                          }
+						}, 
+						{
+						  "amfId": {
+							"type": "string"
+						  }
+						}, 
+					  ], 
+					  "type": "array"
+					},
+                    "taiList": {
+					  "items": [
+						{
+						  "plmnId": {
+                            "type": "object", 
+                            "properties": {
+                                "mcc": {
+                                  "type": "string"
+                                }, 
+                                "mnc": {
+                                  "type": "string"
+                                }
+                            }
+                          }
+						}, 
+						{
+						  "tac": {
+							"type": "string"
+						  }
+						}, 
+					  ], 
+					  "type": "array"
+					},
+					"backupInfoAmfFailure": {
+					  "items": [
+						{
+						  "plmnId": {
+                            "type": "object", 
+                            "properties": {
+                                "mcc": {
+                                  "type": "string"
+                                }, 
+                                "mnc": {
+                                  "type": "string"
+                                }
+                            }
+                          }
+						}, 
+						{
+						  "amfId": {
+							"type": "string"
+						  }
+						}, 
+					  ], 
+					  "type": "array"
+					},
+                    "backupInfoAmfRemoval": {
+					  "items": [
+						{
+						  "plmnId": {
+                            "type": "object", 
+                            "properties": {
+                                "mcc": {
+                                  "type": "string"
+                                }, 
+                                "mnc": {
+                                  "type": "string"
+                                }
+                            }
+                          }
+						}, 
+						{
+						  "amfId": {
+							"type": "string"
+						  }
+						}, 
+					  ], 
+					  "type": "array"
+					}   
+				  }
+				}
+			  }
+			}, 
+			{
+			  "type": "object", 
+			  "properties": {
+				"smfInfo": {
+				  "type": "object", 
+				  "properties": {
+					"taiList": {
+					  "items": [
+						{
+						  "plmnId": {
+                            "type": "object", 
+                            "properties": {
+                                "mcc": {
+                                  "type": "string"
+                                }, 
+                                "mnc": {
+                                  "type": "string"
+                                }
+                            }
+                          }
+						}, 
+						{
+						  "tac": {
+							"type": "string"
+						  }
+						}, 
+					  ], 
+					  "type": "array"
+					},
+					"dnnList": {
+					  "items": [
+						{
+						  "type": "string"
+						}
+					  ], 
+					  "type": "array"
+					},
+                    "pgwFqdn":{
+                      "items":{
+                        "type": "string"
+                      }
+                    }
+				  }
+				}
+			  }
+			}, 
+			{
+			  "type": "object", 
+			  "properties": {
+				"upfInfo": {
+				  "type": "object", 
+				  "properties": {
+					"smfServingArea": {
+					  "items": [
+						{
+						  "type": "string"
+						}
+					  ], 
+					  "type": "array"
+					}, 
+					"sNssaiUpfInfoList": {
+					  "items": [
+					  {
+                          "sNssai":{
+                             "items":{
+                              "sst": {
+							    "type": "number"
+						      }
+					    	  "sd": {
+						    	"type": "string"
+						      }
+						     }
+                           }, 
+						 { 
+						  "dnnUpfInfoList": {
+							"items": [
+                              "dnn":{
+                                {
+                                    "type": "string"
+                                }
+                              }
+							], 
+							"type": "array"
+						    }
+					      }
+                        }
+					  ], 
+					  "type": "array"
+					}
+				  }
+				}
+			  }
+			}, 
+            {
+			  "type": "object", 
+			  "properties": {
+				"pcfInfo": {
+				  "type": "object", 
+				  "properties": {
+                    "dnnList":{
+                       "items": [
+                            {
+                                "type": "string"
+                            } 
+                        ],
+					   "type": "array"
+                    }
+                  }
+                }
+              }
+            },
+            {
+			  "type": "object", 
+			  "properties": {
+				"bsfInfo": {
+				  "type": "object", 
+				  "properties": {
+                    "ipv4AdddressRanges":{
+                       "items": [
+                            {
+                                "start":{
+                                    "type": "string"
+                                }
+                                "end":{
+                                    "type": "string"
+                                }
+
+                            } 
+                        ],
+					   "type": "array"
+                    },
+                    "Ipv6PrefixRanges":{
+                       "items": [
+                            {
+                                "start":{
+                                    "type": "string"
+                                }
+                                "end":{
+                                    "type": "string"
+                                }
+
+                            } 
+                        ],
+					   "type": "array"
+                    }
+                  }
+                }
+              }
+            },
+			{
+			  "type": "object", 
+			  "properties": {
+				"nfServices": {
+				  "items": [
+					{
+					  "serviceInstanceId": {
+						"type": "string"
+					  }
+					}, 
+					{
+					  "serviceName": {
+						"type": "string"
+					  }
+					}, 
+					{
+                      "version": {
+                        "type": "object", 
+                        "properties": {
+                            
+                            "apiVersionInUri": {
+                              "type": "string"
+                            }, 
+                            "apiFullVersion": {
+                              "type": "string"
+                            },
+                            "expiry": {
+                              "type": "string"
+                            }
+                        }
+                      }
+					}, 
+					{
+					  "schema": {
+						"type": "string"
+					  }
+					}, 
+					{
+					  "fqdn": {
+						"type": "string"
+					  }
+					}, 
+					{
+					  "interPlmnFqdn": {
+						"type": "string"
+					  }
+					}, 
+					{
+					  "type": "object", 
+					  "properties": {
+						"ipEndPoints": {
+						  "items": [
+							{
+							  "ipv4Address": {
+								"type": "string"
+							  }
+							}, 
+							{
+							  "ipv6Address": {
+								"type": "string"
+							  }
+							}, 
+							{
+							  "ipv6Prefix": {
+								"type": "string"
+							  }
+							}, 
+							{
+							  "transport": {
+								"type": "string"
+							  }
+							}, 
+							{
+							  "port": {
+								"type": "number"
+							  }
+							}
+						  ], 
+						  "type": "array"
+						}
+					  }
+					}, 
+					{
+					  "apiPrefix": {
+						"type": "string"
+					  }
+					}, 
+					{
+					  "type": "object", 
+					  "properties": {
+						"defaultNotificationSubscriptions": {
+						  "items": [
+							{
+							  "notificationType": {
+								"properties": {
+								  "type": {
+									"enum": [
+									  "N1_MESSAGES", 
+									  "N2_INFORMATION", 
+									  "LOCATION_NOTIFICATION"
+									]
+								  }
+								}
+							  }
+							}, 
+							{
+							  "callbackUri": {
+								"type": "string"
+							  }
+							}, 
+							{
+							  "n1MessageClass": {
+								"properties": {
+								  "type": {
+									"enum": [
+									  "5GMM", 
+									  "SM", 
+									  "LPP", 
+									  "SMS"
+									]
+								  }
+								}
+							  }
+							}, 
+							{
+							  "n2InformationClass": {
+								"properties": {
+								  "type": {
+									"enum": [
+									  "SM", 
+									  "NRPPA",
+                                      "PWS",
+                                      "PWS-BCAL",
+                                      "PWS-RF"
+									]
+								  }
+								}
+							  }
+							}
+						  ], 
+						  "type": "array"
+						}
+					  }
+					}, 
+					{
+					  "type": "object", 
+					  "properties": {
+						"allowedPlmns": {
+						  "items": [
+							{
+							  "mcc": {
+								"type": "string"
+							  }
+							}, 
+							{
+							  "mnc": {
+								"type": "string"
+							  }
+							}
+						  ], 
+						  "type": "array"
+						}
+					  }
+					}, 
+					{
+					  "allowedNfTypes": {
+						"items": [
+						  {
+							"type": "string"
+						  }
+						], 
+						"type": "array"
+					  }
+					}, 		
+					{
+					  "capacity": {
+						"type": "integer"
+					  }
+					}, 
+                    {
+					  "load": {
+						"type": "integer"
+					  }
+					},
+                    {
+					  "priority": {
+						"type": "integer"
+					  }
+					},
+					{
+					  "supportedFeatures": {
+						"type": "string"
+					  }
+					}
+				  ], 
+				  "type": "array"
+				}
+			  }
+			}
+		  ], 
+		  "type": "array"
+		}
+	  }
+	}
+  }
+}
+

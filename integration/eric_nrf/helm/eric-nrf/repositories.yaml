@@ -1,0 +1,4 @@
+repositories:
+- url: https://arm.epk.ericsson.se/artifactory/proj-nrf-generic-local/helm/
+  username: "esdccci"
+  password: "AP3HsDosorYptU6twiEDxmppDZY"

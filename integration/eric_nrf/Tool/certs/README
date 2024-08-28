@@ -1,0 +1,18 @@
+run following command to untrack files no need to check in:
+
+    git update-index --assume-unchanged  2_intermediate/index.txt 2_intermediate/index.txt.old 2_intermediate/serial 2_intermediate/serial.old
+
+
+then run ./create.sh to generate certs.
+
+    ./create.sh -h
+
+
+then create kubernetes secret.
+
+server:
+    kubectl create secret generic <SECRET_NAME> --from-file=tls.crt=3_application/certs/$DOMAIN_NAME.cert.pem  --from-file=tls.key=3_application/private/$DOMAIN_NAME.key.pem --from-file=ca.crt=2_intermediate/certs/ca-chain.cert.pem
+
+client:
+    kubectl create secret generic <SECRET_NAME> --from-file=tls.crt=4_client/certs/$DOMAIN_NAME.cert.pem  --from-file=tls.key=4_client/private/$DOMAIN_NAME.key.pem --from-file=ca.crt=2_intermediate/certs/ca-chain.cert.pem
+

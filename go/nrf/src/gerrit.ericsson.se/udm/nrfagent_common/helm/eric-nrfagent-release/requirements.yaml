@@ -1,0 +1,28 @@
+dependencies:
+- name: eric-nrf-register-agent
+  version: "0.5.10"
+  repository: "https://arm.epk.ericsson.se/artifactory/proj-nrf-client-helm/"
+  condition: eric-nrf-register-agent.enabled
+  tags:
+    - eric-nrf-register-agent
+- name: eric-nrf-notify-agent
+  version: "0.5.10"
+  repository: "https://arm.epk.ericsson.se/artifactory/proj-nrf-client-helm/"
+  condition: eric-nrf-notify-agent.enabled
+  tags:
+    - eric-nrf-notify-agent
+- name: eric-nrf-discovery-agent
+  version: "0.5.10"
+  repository: "https://arm.epk.ericsson.se/artifactory/proj-nrf-client-helm/"
+  condition: eric-nrf-discovery-agent.enabled
+  tags:
+    - eric-nrf-discovery-agent
+- name: eric-nrfagent-common
+  version: "0.5.10"
+  repository: "https://arm.epk.ericsson.se/artifactory/proj-nrf-client-helm/"
+  condition: eric-nrfagent-common.enabled,eric-nrf-register-agent.enabled,eric-nrf-notify-agent.enabled,eric-nrf-discovery-agent.enabled
+  tags:
+    - eric-nrfagent-common
+    - eric-nrf-register-agent
+    - eric-nrf-notify-agent
+    - eric-nrf-discovery-agent

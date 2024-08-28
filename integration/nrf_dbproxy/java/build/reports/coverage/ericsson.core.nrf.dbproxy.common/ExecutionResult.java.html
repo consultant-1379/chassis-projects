@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExecutionResult.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.common</a> &gt; <span class="el_source">ExecutionResult.java</span></div><h1>ExecutionResult.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.common;
+
+public class ExecutionResult {
+
+  protected int code;
+
+<span class="fc" id="L7">  public ExecutionResult(int value) {</span>
+<span class="fc" id="L8">    code = value;</span>
+<span class="fc" id="L9">  }</span>
+
+  public int getCode() {
+<span class="fc" id="L12">    return code;</span>
+  }
+
+  public void setCode(int value) {
+<span class="nc" id="L16">    code = value;</span>
+<span class="nc" id="L17">  }</span>
+
+  public String toString() {
+<span class="nc" id="L20">    StringBuilder sb = new StringBuilder(&quot;&quot;);</span>
+<span class="nc" id="L21">    sb.append(&quot;code = &quot; + Integer.toString(code));</span>
+<span class="nc" id="L22">    return sb.toString();</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

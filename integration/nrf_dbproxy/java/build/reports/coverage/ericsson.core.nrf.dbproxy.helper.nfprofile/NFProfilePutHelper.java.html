@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NFProfilePutHelper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.helper.nfprofile</a> &gt; <span class="el_source">NFProfilePutHelper.java</span></div><h1>NFProfilePutHelper.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.helper.nfprofile;
+
+import ericsson.core.nrf.dbproxy.common.Code;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PutResponse;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.nfprofile.NFProfilePutRequestProto.NFProfilePutRequest;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.nfprofile.NFProfilePutResponseProto.NFProfilePutResponse;
+import ericsson.core.nrf.dbproxy.helper.Helper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class NFProfilePutHelper extends Helper {
+
+<span class="fc" id="L14">  private static final Logger LOGGER = LogManager.getLogger(NFProfilePutHelper.class);</span>
+
+  private static NFProfilePutHelper instance;
+
+  private NFProfilePutHelper() {
+  }
+
+  public static synchronized NFProfilePutHelper getInstance() {
+<span class="fc bfc" id="L22" title="All 2 branches covered.">    if (null == instance) {</span>
+<span class="fc" id="L23">      instance = new NFProfilePutHelper();</span>
+    }
+<span class="fc" id="L25">    return instance;</span>
+  }
+
+  public int validate(NFMessage message) {
+
+<span class="fc" id="L30">    NFProfilePutRequest request = message.getRequest().getPutRequest().getNfProfilePutRequest();</span>
+<span class="fc" id="L31">    String nfInstanceId = request.getNfInstanceId();</span>
+<span class="fc bfc" id="L32" title="All 2 branches covered.">    if (nfInstanceId.isEmpty()) {</span>
+<span class="fc" id="L33">      LOGGER.error(&quot;nf_instance_id field is empty in NFProfilePutRequest&quot;);</span>
+<span class="fc" id="L34">      return Code.EMPTY_NF_INSTANCE_ID;</span>
+    }
+
+<span class="fc bfc" id="L37" title="All 2 branches covered.">    if (nfInstanceId.length() &gt; Code.KEY_MAX_LENGTH) {</span>
+<span class="fc" id="L38">      LOGGER.error(&quot;nf_instance_id length {} is too large, max length is {}&quot;,</span>
+<span class="fc" id="L39">          nfInstanceId.length(), Code.KEY_MAX_LENGTH);</span>
+<span class="fc" id="L40">      return Code.NF_INSTANCE_ID_LENGTH_EXCEED_MAX;</span>
+    }
+
+<span class="fc" id="L43">    String nfProfile = request.getNfProfile();</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">    if (nfProfile.isEmpty()) {</span>
+<span class="fc" id="L45">      LOGGER.error(&quot;nfProfile field is empty in NFProfilePutRequest&quot;);</span>
+<span class="fc" id="L46">      return Code.EMPTY_NF_PROFILE;</span>
+    }
+
+<span class="fc" id="L49">    return Code.VALID;</span>
+  }
+
+  public NFMessage createResponse(int code) {
+
+<span class="fc" id="L54">    NFProfilePutResponse nfProfilePutResponse = NFProfilePutResponse.newBuilder().setCode(code)</span>
+<span class="fc" id="L55">        .build();</span>
+<span class="fc" id="L56">    PutResponse putResponse = PutResponse.newBuilder()</span>
+<span class="fc" id="L57">        .setNfProfilePutResponse(nfProfilePutResponse).build();</span>
+<span class="fc" id="L58">    return createNFMessage(putResponse);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

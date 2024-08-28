@@ -1,0 +1,133 @@
+<?xml version="1.0" ?> 
+<config xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">   
+<!-- ericsson-nrf-fm-instances 0.1.5 -->
+<!-- modified: 2019-07-17 -->   
+  <fm xmlns="urn:rdns:com:ericsson:oammodel:ericsson-fm">    
+    <alarm-model>
+      <id>eric-nrf-nnrf-nfm</id>
+      <alarm-type>
+        <id>nrfMngtNrfConnectionFailure</id>
+        <major-type>193</major-type>
+        <minor-type>7929857</minor-type>
+        <specific-problem>NRF eric-nrf-nnrf-nfm Failed to Connect to NRF</specific-problem>
+        <event-type>communications-alarm</event-type>
+        <probable-cause>connection-establishment-error</probable-cause>
+        <is-stateful>true</is-stateful>
+        <additional-text/>
+        <configured-severity/>
+        <default-severity>major</default-severity>
+      </alarm-type>
+	  <alarm-type>
+        <id>nrfMngtServiceOverloaded</id>
+        <major-type>193</major-type>
+        <minor-type>7929858</minor-type>
+        <specific-problem>NRF eric-nrf-nnrf-nfm Service Overloaded</specific-problem>
+        <event-type>quality-of-service-alarm</event-type>
+        <probable-cause>system-resources-overload</probable-cause>
+        <is-stateful>true</is-stateful>
+        <additional-text/>
+        <configured-severity/>
+        <default-severity>major</default-severity>
+      </alarm-type>
+	  <alarm-type>
+        <id>nrfDataReplicationConnectionFailure</id>
+        <major-type>193</major-type>
+        <minor-type>7929859</minor-type>
+        <specific-problem>NRF eric-nrf-nnrf-nfm Failed to Connect to Replication NRF</specific-problem>
+        <event-type>communications-alarm</event-type>
+        <probable-cause>connection-establishment-error</probable-cause>
+        <is-stateful>true</is-stateful>
+        <additional-text/>
+        <configured-severity/>
+        <default-severity>major</default-severity>
+      </alarm-type>
+	  <alarm-type>
+        <id>nrfMngtDatabaseConnectionFailure</id>
+        <major-type>193</major-type>
+        <minor-type>7929860</minor-type>
+        <specific-problem>NRF eric-nrf-nnrf-nfm Failed to Connect to Database</specific-problem>
+        <event-type>communications-alarm</event-type>
+        <probable-cause>connection-establishment-error</probable-cause>
+        <is-stateful>true</is-stateful>
+        <additional-text/>
+        <configured-severity/>
+        <default-severity>critical</default-severity>
+      </alarm-type>
+	  <alarm-type>
+        <id>nrfMngtNrfRegistrationFailure</id>
+        <major-type>193</major-type>
+        <minor-type>7929861</minor-type>
+        <specific-problem>NRF eric-nrf-management Registration Failure in Another NRF</specific-problem>
+        <event-type>communications-alarm</event-type>
+        <probable-cause>communications-protocol-error</probable-cause>
+        <is-stateful>true</is-stateful>
+        <additional-text/>
+        <configured-severity/>
+        <default-severity>major</default-severity>
+      </alarm-type>
+	  <alarm-type>
+        <id>nrfMngtRemoteTimeOut</id>
+        <major-type>193</major-type>
+        <minor-type>7929862</minor-type>
+        <specific-problem>NRF eric-nrf-nnrf-nfm Service Response Timeout Exceed Threshold</specific-problem>
+        <event-type>communications-alarm</event-type>
+        <probable-cause>x733-threshold-crossed</probable-cause>
+        <is-stateful>true</is-stateful>
+        <additional-text/>
+        <configured-severity/>
+        <default-severity>major</default-severity>
+      </alarm-type>	
+    </alarm-model>
+    <alarm-model>
+      <id>eric-nrf-nnrf-disc</id>
+      <alarm-type>
+        <id>nrfDiscNrfConnectionFailure</id>
+        <major-type>193</major-type>
+        <minor-type>7930112</minor-type>
+        <specific-problem>NRF eric-nrf-nnrf-disc Failed to Connect to NRF</specific-problem>
+        <event-type>communications-alarm</event-type>
+        <probable-cause>connection-establishment-error</probable-cause>
+        <is-stateful>true</is-stateful>
+        <additional-text/>
+        <configured-severity/>
+        <default-severity>major</default-severity>
+      </alarm-type>
+	  <alarm-type>
+        <id>nrfDiscDatabaseConnectionFailure</id>
+        <major-type>193</major-type>
+        <minor-type>7930113</minor-type>
+        <specific-problem>NRF eric-nrf-nnrf-disc Failed to Connect to Database</specific-problem>
+        <event-type>communications-alarm</event-type>
+        <probable-cause>connection-establishment-error</probable-cause>
+        <is-stateful>true</is-stateful>
+        <additional-text/>
+        <configured-severity/>
+        <default-severity>critical</default-severity>
+      </alarm-type>
+      <alarm-type>
+        <id>nrfDiscServiceOverloaded</id>
+        <major-type>193</major-type>
+        <minor-type>7930114</minor-type>
+        <specific-problem>NRF eric-nrf-nnrf-disc Service Overloaded</specific-problem>
+        <event-type>quality-of-service-alarm</event-type>
+        <probable-cause>system-resources-overload</probable-cause>
+        <is-stateful>true</is-stateful>
+        <additional-text/>
+        <configured-severity/>
+        <default-severity>major</default-severity>
+      </alarm-type>
+	  <alarm-type>
+        <id>nrfDiscRemoteTimeOut</id>
+        <major-type>193</major-type>
+        <minor-type>7930115</minor-type>
+        <specific-problem>NRF eric-nrf-nnrf-disc Service Response Timeout Exceed Threshold</specific-problem>
+        <event-type>communications-alarm</event-type>
+        <probable-cause>x733-threshold-crossed</probable-cause>
+        <is-stateful>true</is-stateful>
+        <additional-text/>
+        <configured-severity/>
+        <default-severity>major</default-severity>
+      </alarm-type>	
+    </alarm-model>		
+  </fm>
+</config>

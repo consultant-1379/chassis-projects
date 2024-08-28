@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+// Language Dependent Statements Start
+option java_package = "ericsson.core.nrf.dbproxy.grpc.nfmessage.cachenfprofile";
+option java_outer_classname = "CacheNFProfilePutRequestProto";
+option go_package = "com/dbproxy/nfmessage/cachenfprofile";
+package grpc;
+// Language Dependent Statements End
+
+message CacheNFProfilePutRequest {
+    string cache_nf_instance_id    = 1;
+    string raw_cache_nf_profile    = 2;
+}
+

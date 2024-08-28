@@ -1,0 +1,16 @@
+#!/usr/bin/env groovy
+@Library("PipelineGlobalLibrary") _
+
+mason {
+    repository      = 'HSS/5G/cmproxy'
+    languages       = 'go'
+    project_name    = 'eric-udm-cmproxy'
+    namespace       = 'udm-5gcicd'
+    unit            = 'hss'
+
+    docgen          = false  // docgen not yet implemented for GO
+    helm            = false  // Remove once the Helm chart templates are created in this repo
+
+    // Connect to the next phase in pipeline
+    next_job_name   = 'HSS_5G_deploy'
+}

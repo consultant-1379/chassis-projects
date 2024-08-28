@@ -1,0 +1,7 @@
+{
+"nfType": ["UDM","UDR","AUSF"],
+"supiRanges": [
+{"pattern": "^imsi-4600001"}
+],
+"groupId": "gid100001"
+}

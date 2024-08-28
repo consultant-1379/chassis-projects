@@ -1,0 +1,4 @@
+apiVersion: v1
+description: Ericsson nrf release chart
+name: eric-nrf
+version: 0.0.0

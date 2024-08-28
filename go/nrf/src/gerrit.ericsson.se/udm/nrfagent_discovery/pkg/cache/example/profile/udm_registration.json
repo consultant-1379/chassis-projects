@@ -1,0 +1,57 @@
+{
+    "nfInstanceID": "udm-5g-01",
+    "nfType": "udm",
+    "fqdn": "seliius03695.seli.gic.ericsson.se",
+    "ipAddress": [
+            "10.210.121.75"
+    ],
+    "nfServiceList": [
+            {
+                    "serviceInstanceID": "nudm-uecm-01",
+                    "serviceName": "nudm-uecm",
+                    "version": "v1",
+                    "Schema": "https://",
+                    "fqdn": "seliius03695.seli.gic.ericsson.se",
+                    "apiPrefix": "nudm-uecm",
+                    "ipAddress": [
+                            "10.210.121.75"
+                    ],
+                    "port": 30080,
+                    "allowedNfTypes": [
+                            "amf",
+                            "smf"
+                    ]
+            },
+            {
+                    "serviceInstanceID": "nudm-sdm-01",
+                    "serviceName": "nudm-sdm",
+                    "version": "v1",
+                    "Schema": "https://",
+                    "fqdn": "seliius03695.seli.gic.ericsson.se",
+                    "apiPrefix": "nudm-sdm",
+                    "ipAddress": [
+                            "10.210.121.75"
+                    ],
+                    "port": 30080,
+                    "allowedNfTypes": [
+                            "amf",
+                            "smf"
+                    ]
+            },
+            {
+                    "serviceInstanceID": "nudm-ueau-01",
+                    "serviceName": "nudm-ueau",
+                    "version": "v1",
+                    "Schema": "https://",
+                    "fqdn": "seliius03695.seli.gic.ericsson.se",
+                    "apiPrefix": "nudm-ueau",
+                    "ipAddress": [
+                            "10.210.121.75"
+                    ],
+                    "port": 30080,
+                    "allowedNfTypes": [
+                            "ausf"
+                    ]
+            }
+    ]
+}

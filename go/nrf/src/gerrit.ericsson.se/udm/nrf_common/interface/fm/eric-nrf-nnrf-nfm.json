@@ -1,0 +1,38 @@
+[
+  {
+     "faultName": "nrfMngtNrfConnectionFailure",
+     "createAlarm": true,
+     "defaultDescription": "NRF Management Service Failed to Connect to Another NRF",
+     "defaultExpiration": 600,
+     "defaultSeverity": "Major",
+     "vendor": 193,
+     "code": 7929857
+  },
+  {
+     "faultName": "nrfMngtServiceOverloaded",
+     "createAlarm": true,
+     "defaultDescription": "NRF Management service is overloaded",
+     "defaultExpiration": 60,
+     "defaultSeverity": "Major",
+     "vendor": 193,
+     "code": 7929858
+  },
+  {
+     "faultName": "nrfDataReplicationConnectionFailure",
+     "createAlarm": true,
+     "defaultDescription": "NRF Management service Data Replication Connection to Peer NRF is Broken",
+     "defaultExpiration": 600,
+     "defaultSeverity": "Major",
+     "vendor": 193,
+     "code": 7929859
+  },
+  {
+     "faultName": "nrfMngtDatabaseConnectionFailure",
+     "createAlarm": true,
+     "defaultDescription": "NRF Management Service Failed to Connect to Database",
+     "defaultExpiration": 600,
+     "defaultSeverity": "Critical",
+     "vendor": 193,
+     "code": 7929860
+  }
+]

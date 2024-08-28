@@ -1,0 +1,12 @@
+swagger help to generate golang struct from input openapi spec.
+swagger support both spec in yaml format and spec in json format.
+
+Example
+# swagger.exe ./spec/oafish_ausf-nausf_ue_authentication_service_v3_swagger.yaml ./schema ausf v1
+
+  input:  ./spec/oafish_ausf-nausf_ue_authentication_service_v3_swagger.yaml
+  output: ./schema/ausfv1/struct.go
+
+
+# swagger ./spec/EIPS_Nudm_UEAuthentication_PA2.yaml ./schema udm v1
+# swagger ./spec/Nrf-nf_management_service_v1_swagger_version_04_pa3.yaml ./schema nrfm v1

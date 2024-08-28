@@ -1,0 +1,84 @@
+{
+  "nfInstanceId": "12345678-9udr-def0-1000-100000000101",
+  "nfType": "UDR",
+  "nfStatus": "REGISTERED",
+  "plmn": {
+    "mcc": "460",
+    "mnc": "00"
+  },
+  "sNssais": [{
+    "sst": 0,
+    "sd": "0"
+  },
+  {
+    "sst": 1,
+    "sd": "1"
+  }
+  ],
+  "nsiList": [
+    "111111",
+    "222222",
+    "333333"
+  ],
+  "fqdn": "seliius03696.seli.gic.ericsson.se",
+  "interPlmnFqdn": "seliius03696.seli.gic.ericsson.se",
+  "ipv4Addresses": [
+   "172.16.208.1", "172.16.208.2", "172.16.208.3"
+  ],
+  "ipv6Addresses": [
+    "FE80:1234::0000"
+  ],
+  "ipv6Prefixes": [
+    "FE80:1234:5678:1000::/64"
+  ],
+  "capacity": 100,
+  "udrInfo": {
+    "groupId": "shanghai",
+    "gpsiRanges": [
+             {
+                "pattern":"^msisdn-0861892\\d{7}$"
+             }
+        ],
+     "externalGroupIdentityfiersRanges": [
+             {
+                 "start": "08613710000000",
+                 "end": "08613719999999"
+             },
+             {
+                 "start": "08613720000000",
+                 "end": "08613729999999"
+             }
+        ],
+
+   "supportedDataSets": ["APPLICATION"]
+  },
+ 
+  "nfServices": [
+    {
+      "serviceInstanceId": "nudr-test-01",
+      "serviceName": "nudr-test",
+      "version": [{
+        "apiVersionInUri":"v1",
+        "apiFullVersion": "1.R15.1.1 " ,
+        "expiry":"2020-07-06T02:54:32Z"}],
+      "schema": "http",
+      "fqdn": "seliius03696.seli.gic.ericsson.se",
+      "apiPrefix": "mytest/nudr-auth/v1",
+      "defaultNotificationSubscriptions": [
+        {
+          "notificationType": "N1_MESSAGES",
+          "callbackUri": "/nnrf-nfm/v1/nf-instances/udr-5g-01",
+          "n1MessageClass": "5GMM",
+          "n2InformationClass": "SM"
+        },
+        {
+          "notificationType": "N1_MESSAGES",
+          "callbackUri": "/nnrf-nfm/v1/nf-instances/udr-5g-02",
+          "n1MessageClass": "5GMM",
+          "n2InformationClass": "SM"
+        }
+      ],
+     "supportedFeatures":"A0A0"
+    }
+  ]
+}

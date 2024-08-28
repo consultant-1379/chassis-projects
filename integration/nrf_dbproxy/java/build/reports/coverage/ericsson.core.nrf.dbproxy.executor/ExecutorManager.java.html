@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExecutorManager.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.executor</a> &gt; <span class="el_source">ExecutorManager.java</span></div><h1>ExecutorManager.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.executor;
+
+import ericsson.core.nrf.dbproxy.executor.cachenfprofile.CacheNFProfileGetExecutor;
+import ericsson.core.nrf.dbproxy.executor.cachenfprofile.CacheNFProfilePutExecutor;
+import ericsson.core.nrf.dbproxy.executor.gpsiprefixprofile.GpsiprefixProfileGetExecutor;
+import ericsson.core.nrf.dbproxy.executor.gpsiprofile.GpsiProfileDeleteExecutor;
+import ericsson.core.nrf.dbproxy.executor.gpsiprofile.GpsiProfileGetExecutor;
+import ericsson.core.nrf.dbproxy.executor.gpsiprofile.GpsiProfilePutExecutor;
+import ericsson.core.nrf.dbproxy.executor.groupprofile.GroupProfileDeleteExecutor;
+import ericsson.core.nrf.dbproxy.executor.groupprofile.GroupProfileGetExecutor;
+import ericsson.core.nrf.dbproxy.executor.groupprofile.GroupProfilePutExecutor;
+import ericsson.core.nrf.dbproxy.executor.imsiprefixprofile.ImsiprefixProfileGetExecutor;
+import ericsson.core.nrf.dbproxy.executor.nfprofile.NFProfileCountGetExecutor;
+import ericsson.core.nrf.dbproxy.executor.nfprofile.NFProfileDeleteExecutor;
+import ericsson.core.nrf.dbproxy.executor.nfprofile.NFProfileGetExecutor;
+import ericsson.core.nrf.dbproxy.executor.nfprofile.NFProfilePutExecutor;
+import ericsson.core.nrf.dbproxy.executor.nrfaddress.NRFAddressDeleteExecutor;
+import ericsson.core.nrf.dbproxy.executor.nrfaddress.NRFAddressGetExecutor;
+import ericsson.core.nrf.dbproxy.executor.nrfaddress.NRFAddressPutExecutor;
+import ericsson.core.nrf.dbproxy.executor.nrfprofile.NRFProfileDeleteExecutor;
+import ericsson.core.nrf.dbproxy.executor.nrfprofile.NRFProfileGetExecutor;
+import ericsson.core.nrf.dbproxy.executor.nrfprofile.NRFProfilePutExecutor;
+import ericsson.core.nrf.dbproxy.executor.protocolerror.ProtocolErrorExecutor;
+import ericsson.core.nrf.dbproxy.executor.subscription.SubscriptionDeleteExecutor;
+import ericsson.core.nrf.dbproxy.executor.subscription.SubscriptionGetExecutor;
+import ericsson.core.nrf.dbproxy.executor.subscription.SubscriptionPutExecutor;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.DelRequest;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.GetRequest;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFRequest;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.PutRequest;
+
+public class ExecutorManager {
+
+  private static ExecutorManager instance;
+
+  static {
+<span class="nc" id="L38">    instance = null;</span>
+<span class="nc" id="L39">  }</span>
+
+  private ExecutorManager() {
+  }
+
+  public static synchronized ExecutorManager getInstance() {
+<span class="nc bnc" id="L45" title="All 2 branches missed.">    if (null == instance) {</span>
+<span class="nc" id="L46">      instance = new ExecutorManager();</span>
+    }
+<span class="nc" id="L48">    return instance;</span>
+  }
+
+  public Executor getExecutor(NFMessage request) {
+<span class="nc bnc" id="L52" title="All 2 branches missed.">    if (!request.hasRequest()) {</span>
+<span class="nc" id="L53">      return ProtocolErrorExecutor.getInstance();</span>
+    }
+
+<span class="nc" id="L56">    NFRequest nfRequest = request.getRequest();</span>
+
+<span class="nc bnc" id="L58" title="All 2 branches missed.">    if (nfRequest.hasPutRequest()) {</span>
+
+<span class="nc" id="L60">      PutRequest putRequest = nfRequest.getPutRequest();</span>
+
+<span class="nc bnc" id="L62" title="All 2 branches missed.">      if (putRequest.hasNfProfilePutRequest()) {</span>
+<span class="nc" id="L63">        return NFProfilePutExecutor.getInstance();</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">      } else if (putRequest.hasSubscriptionPutRequest()) {</span>
+<span class="nc" id="L65">        return SubscriptionPutExecutor.getInstance();</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">      } else if (putRequest.hasNrfAddressPutRequest()) {</span>
+<span class="nc" id="L67">        return NRFAddressPutExecutor.getInstance();</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">      } else if (putRequest.hasGroupProfilePutRequest()) {</span>
+<span class="nc" id="L69">        return GroupProfilePutExecutor.getInstance();</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">      } else if (putRequest.hasNrfProfilePutRequest()) {</span>
+<span class="nc" id="L71">        return NRFProfilePutExecutor.getInstance();</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">      } else if (putRequest.hasGpsiProfilePutRequest()) {</span>
+<span class="nc" id="L73">        return GpsiProfilePutExecutor.getInstance();</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">      } else if (putRequest.hasCacheNfProfilePutRequest()) {</span>
+<span class="nc" id="L75">        return CacheNFProfilePutExecutor.getInstance();</span>
+      } else {
+<span class="nc" id="L77">        return ProtocolErrorExecutor.getInstance();</span>
+      }
+<span class="nc bnc" id="L79" title="All 2 branches missed.">    } else if (nfRequest.hasGetRequest()) {</span>
+
+<span class="nc" id="L81">      GetRequest getRequest = nfRequest.getGetRequest();</span>
+
+<span class="nc bnc" id="L83" title="All 2 branches missed.">      if (getRequest.hasNfProfileGetRequest()) {</span>
+<span class="nc" id="L84">        return NFProfileGetExecutor.getInstance();</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">      } else if (getRequest.hasSubscriptionGetRequest()) {</span>
+<span class="nc" id="L86">        return SubscriptionGetExecutor.getInstance();</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">      } else if (getRequest.hasNrfAddressGetRequest()) {</span>
+<span class="nc" id="L88">        return NRFAddressGetExecutor.getInstance();</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">      } else if (getRequest.hasGroupProfileGetRequest()) {</span>
+<span class="nc" id="L90">        return GroupProfileGetExecutor.getInstance();</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">      } else if (getRequest.hasNrfProfileGetRequest()) {</span>
+<span class="nc" id="L92">        return NRFProfileGetExecutor.getInstance();</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">      } else if (getRequest.hasImsiprefixProfileGetRequest()) {</span>
+<span class="nc" id="L94">        return ImsiprefixProfileGetExecutor.getInstance();</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">      } else if (getRequest.hasGpsiProfileGetRequest()) {</span>
+<span class="nc" id="L96">        return GpsiProfileGetExecutor.getInstance();</span>
+<span class="nc bnc" id="L97" title="All 2 branches missed.">      } else if (getRequest.hasGpsiprefixProfileGetRequest()) {</span>
+<span class="nc" id="L98">        return GpsiprefixProfileGetExecutor.getInstance();</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">      } else if (getRequest.hasNfProfileCountGetRequest()) {</span>
+<span class="nc" id="L100">        return NFProfileCountGetExecutor.getInstance();</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">      } else if (getRequest.hasCacheNfProfileGetRequest()) {</span>
+<span class="nc" id="L102">        return CacheNFProfileGetExecutor.getInstance();</span>
+      } else {
+<span class="nc" id="L104">        return ProtocolErrorExecutor.getInstance();</span>
+      }
+<span class="nc bnc" id="L106" title="All 2 branches missed.">    } else if (nfRequest.hasDelRequest()) {</span>
+
+<span class="nc" id="L108">      DelRequest delRequest = nfRequest.getDelRequest();</span>
+
+<span class="nc bnc" id="L110" title="All 2 branches missed.">      if (delRequest.hasNfProfileDelRequest()) {</span>
+<span class="nc" id="L111">        return NFProfileDeleteExecutor.getInstance();</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">      } else if (delRequest.hasSubscriptionDelRequest()) {</span>
+<span class="nc" id="L113">        return SubscriptionDeleteExecutor.getInstance();</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">      } else if (delRequest.hasNrfAddressDelRequest()) {</span>
+<span class="nc" id="L115">        return NRFAddressDeleteExecutor.getInstance();</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">      } else if (delRequest.hasGroupProfileDelRequest()) {</span>
+<span class="nc" id="L117">        return GroupProfileDeleteExecutor.getInstance();</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">      } else if (delRequest.hasNrfProfileDelRequest()) {</span>
+<span class="nc" id="L119">        return NRFProfileDeleteExecutor.getInstance();</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">      } else if (delRequest.hasGpsiProfileDelRequest()) {</span>
+<span class="nc" id="L121">        return GpsiProfileDeleteExecutor.getInstance();</span>
+      } else {
+<span class="nc" id="L123">        return ProtocolErrorExecutor.getInstance();</span>
+      }
+    } else {
+<span class="nc" id="L126">      return ProtocolErrorExecutor.getInstance();</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

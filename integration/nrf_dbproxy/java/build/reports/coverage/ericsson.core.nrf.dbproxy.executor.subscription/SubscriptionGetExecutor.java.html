@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SubscriptionGetExecutor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.executor.subscription</a> &gt; <span class="el_source">SubscriptionGetExecutor.java</span></div><h1>SubscriptionGetExecutor.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.executor.subscription;
+
+import ericsson.core.nrf.dbproxy.clientcache.ClientCacheService;
+import ericsson.core.nrf.dbproxy.common.Code;
+import ericsson.core.nrf.dbproxy.common.ExecutionResult;
+import ericsson.core.nrf.dbproxy.executor.Executor;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.subscription.SubscriptionGetRequestProto.SubscriptionGetRequest;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.subscription.SubscriptionIndexProto.SubKeyStruct;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.subscription.SubscriptionIndexProto.SubscriptionGetIndex;
+import ericsson.core.nrf.dbproxy.helper.subscription.SubscriptionGetHelper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class SubscriptionGetExecutor extends Executor {
+
+<span class="nc" id="L17">  private static final Logger LOGGER = LogManager.getLogger(SubscriptionGetExecutor.class);</span>
+
+  private static final String OQL_1 = &quot;SELECT DISTINCT value FROM /&quot;;
+  private static SubscriptionGetExecutor instance;
+
+  static {
+<span class="nc" id="L23">    instance = null;</span>
+<span class="nc" id="L24">  }</span>
+
+  private SubscriptionGetExecutor() {
+<span class="nc" id="L27">    super(SubscriptionGetHelper.getInstance());</span>
+<span class="nc" id="L28">  }</span>
+
+  public static synchronized SubscriptionGetExecutor getInstance() {
+<span class="nc bnc" id="L31" title="All 2 branches missed.">    if (null == instance) {</span>
+<span class="nc" id="L32">      instance = new SubscriptionGetExecutor();</span>
+    }
+<span class="nc" id="L34">    return instance;</span>
+  }
+
+  protected ExecutionResult execute(NFMessage request) {
+<span class="nc" id="L38">    SubscriptionGetRequest getRequest = request.getRequest().getGetRequest()</span>
+<span class="nc" id="L39">        .getSubscriptionGetRequest();</span>
+<span class="nc bnc" id="L40" title="All 3 branches missed.">    switch (getRequest.getDataCase()) {</span>
+      case SUBSCRIPTION_ID:
+<span class="nc" id="L42">        return ClientCacheService.getInstance()</span>
+<span class="nc" id="L43">            .getByID(Code.SUBSCRIPTION_INDICE, getRequest.getSubscriptionId());</span>
+      case FILTER:
+<span class="nc" id="L45">        String queryString = getQueryString(getRequest.getFilter().getIndex());</span>
+<span class="nc" id="L46">        ExecutionResult result = ClientCacheService.getInstance()</span>
+<span class="nc" id="L47">            .getByFilter(Code.SUBSCRIPTION_INDICE, queryString);</span>
+<span class="nc bnc" id="L48" title="All 4 branches missed.">        if (queryString.contains(&quot;validityTime&quot;) &amp;&amp; result.getCode() == Code.SUCCESS) {</span>
+<span class="nc" id="L49">          result.setCode(Code.SUBSCRIPTION_MONITOR_SUCCESS);</span>
+        }
+<span class="nc" id="L51">        return result;</span>
+      default:
+<span class="nc" id="L53">        return new ExecutionResult(Code.NFMESSAGE_PROTOCOL_ERROR);</span>
+    }
+  }
+
+  private String getQueryString(SubscriptionGetIndex index) {
+<span class="nc" id="L58">    String queryString = &quot;&quot;;</span>
+<span class="nc" id="L59">    String regionName = Code.SUBSCRIPTION_INDICE;</span>
+<span class="nc" id="L60">    String from = regionName + &quot;.entrySet&quot;;</span>
+<span class="nc" id="L61">    String where = &quot;&quot;;</span>
+
+<span class="nc" id="L63">    String noCond = index.getNoCond();</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">    if (!noCond.isEmpty()) {</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">      if (where.isEmpty()) {</span>
+<span class="nc" id="L66">        where = &quot;value.noCond = '&quot; + noCond + &quot;'&quot;;</span>
+      } else {
+<span class="nc" id="L68">        where = where + &quot; OR value.noCond = '&quot; + noCond + &quot;'&quot;;</span>
+      }
+    }
+
+<span class="nc" id="L72">    String nfStatusNotificationUri = index.getNfStatusNotificationUri();</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">    if (!nfStatusNotificationUri.isEmpty()) {</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">      if (where.isEmpty()) {</span>
+<span class="nc" id="L75">        where = &quot;value.nfStatusNotificationUri = '&quot; + nfStatusNotificationUri + &quot;'&quot;;</span>
+      } else {
+<span class="nc" id="L77">        where = where + &quot; OR value.nfStatusNotificationUri = '&quot; + nfStatusNotificationUri + &quot;'&quot;;</span>
+      }
+    }
+
+<span class="nc" id="L81">    String nfInstanceId = index.getNfInstanceId();</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">    if (!nfInstanceId.isEmpty()) {</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">      if (where.isEmpty()) {</span>
+<span class="nc" id="L84">        where = &quot;value.nfInstanceId = '&quot; + nfInstanceId + &quot;'&quot;;</span>
+      } else {
+<span class="nc" id="L86">        where = where + &quot; OR value.nfInstanceId = '&quot; + nfInstanceId + &quot;'&quot;;</span>
+      }
+    }
+
+<span class="nc" id="L90">    String nfType = index.getNfType();</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">    if (!nfType.isEmpty()) {</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">      if (where.isEmpty()) {</span>
+<span class="nc" id="L93">        where = &quot;value.nfType = '&quot; + nfType + &quot;'&quot;;</span>
+      } else {
+<span class="nc" id="L95">        where = where + &quot; OR value.nfType = '&quot; + nfType + &quot;'&quot;;</span>
+      }
+    }
+
+<span class="nc" id="L99">    StringBuilder sb = new StringBuilder(&quot;&quot;);</span>
+<span class="nc" id="L100">    int serviceNameCount = 0;</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">    for (String serviceName : index.getServiceNamesList()) {</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">      if (!serviceName.isEmpty()) {</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">        if (serviceNameCount == 0) {</span>
+<span class="nc" id="L104">          sb.append(&quot;value.serviceName = '&quot; + serviceName + &quot;'&quot;);</span>
+        } else {
+<span class="nc" id="L106">          sb.append(&quot; OR value.serviceName = '&quot; + serviceName + &quot;'&quot;);</span>
+        }
+<span class="nc" id="L108">        serviceNameCount++;</span>
+      }
+<span class="nc" id="L110">    }</span>
+
+<span class="nc bnc" id="L112" title="All 2 branches missed.">    if (sb.length() &gt; 0) {</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">      if (where.isEmpty()) {</span>
+<span class="nc" id="L114">        where = &quot;(&quot; + sb.toString() + &quot;)&quot;;</span>
+      } else {
+<span class="nc" id="L116">        where = where + &quot; OR &quot; + &quot;(&quot; + sb.toString() + &quot;)&quot;;</span>
+      }
+    }
+
+<span class="nc" id="L120">    String amfCondAlias = &quot;amf&quot;;</span>
+<span class="nc" id="L121">    sb = new StringBuilder(&quot;&quot;);</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">    for (SubKeyStruct ks : index.getAmfCondsList()) {</span>
+<span class="nc" id="L123">      StringBuilder subSb = new StringBuilder(&quot;&quot;);</span>
+
+<span class="nc" id="L125">      String subKey1 = ks.getSubKey1();</span>
+<span class="nc" id="L126">      boolean subKeyExist = false;</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">      if (!subKey1.isEmpty()) {</span>
+<span class="nc" id="L128">        subSb.append(amfCondAlias + &quot;.sub_key1 = '&quot; + subKey1 + &quot;'&quot;);</span>
+<span class="nc" id="L129">        subKeyExist = true;</span>
+      }
+
+<span class="nc" id="L132">      String subKey2 = ks.getSubKey2();</span>
+<span class="nc bnc" id="L133" title="All 2 branches missed.">      if (!subKey2.isEmpty()) {</span>
+<span class="nc bnc" id="L134" title="All 2 branches missed.">        if (subKeyExist) {</span>
+<span class="nc" id="L135">          subSb.append(&quot; AND &quot;);</span>
+        }
+<span class="nc" id="L137">        subSb.append(amfCondAlias + &quot;.sub_key2 = '&quot; + subKey2 + &quot;'&quot;);</span>
+      }
+
+<span class="nc bnc" id="L140" title="All 2 branches missed.">      if (subSb.length() == 0) {</span>
+<span class="nc" id="L141">        continue;</span>
+      }
+
+<span class="nc bnc" id="L144" title="All 2 branches missed.">      if (sb.length() == 0) {</span>
+<span class="nc" id="L145">        sb.append(&quot;(&quot; + subSb.toString() + &quot;)&quot;);</span>
+      } else {
+<span class="nc" id="L147">        sb.append(&quot; OR (&quot; + subSb.toString() + &quot;)&quot;);</span>
+      }
+<span class="nc" id="L149">    }</span>
+
+<span class="nc bnc" id="L151" title="All 2 branches missed.">    if (sb.length() &gt; 0) {</span>
+<span class="nc" id="L152">      from = from + &quot;, value.amfCond.values &quot; + amfCondAlias;</span>
+<span class="nc bnc" id="L153" title="All 2 branches missed.">      if (where.isEmpty()) {</span>
+<span class="nc" id="L154">        where = &quot;(&quot; + sb.toString() + &quot;)&quot;;</span>
+      } else {
+<span class="nc" id="L156">        where = where + &quot; OR (&quot; + sb.toString() + &quot;)&quot;;</span>
+      }
+    }
+
+<span class="nc" id="L160">    String guamiListAlias = &quot;guami&quot;;</span>
+<span class="nc" id="L161">    sb = new StringBuilder(&quot;&quot;);</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">    for (SubKeyStruct ks : index.getGuamiListList()) {</span>
+<span class="nc" id="L163">      StringBuilder subSb = new StringBuilder(&quot;&quot;);</span>
+
+<span class="nc" id="L165">      String subKey1 = ks.getSubKey1();</span>
+<span class="nc" id="L166">      boolean subKeyExist = false;</span>
+<span class="nc bnc" id="L167" title="All 2 branches missed.">      if (!subKey1.isEmpty()) {</span>
+<span class="nc" id="L168">        subSb.append(guamiListAlias + &quot;.sub_key1 = '&quot; + subKey1 + &quot;'&quot;);</span>
+<span class="nc" id="L169">        subKeyExist = true;</span>
+      }
+
+<span class="nc" id="L172">      String subKey2 = ks.getSubKey2();</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">      if (!subKey2.isEmpty()) {</span>
+<span class="nc bnc" id="L174" title="All 2 branches missed.">        if (subKeyExist) {</span>
+<span class="nc" id="L175">          subSb.append(&quot; AND &quot;);</span>
+        }
+<span class="nc" id="L177">        subSb.append(guamiListAlias + &quot;.sub_key2 = '&quot; + subKey2 + &quot;'&quot;);</span>
+      }
+
+<span class="nc bnc" id="L180" title="All 2 branches missed.">      if (subSb.length() == 0) {</span>
+<span class="nc" id="L181">        continue;</span>
+      }
+
+<span class="nc bnc" id="L184" title="All 2 branches missed.">      if (sb.length() == 0) {</span>
+<span class="nc" id="L185">        sb.append(&quot;(&quot; + subSb.toString() + &quot;)&quot;);</span>
+      } else {
+<span class="nc" id="L187">        sb.append(&quot; OR (&quot; + subSb.toString() + &quot;)&quot;);</span>
+      }
+<span class="nc" id="L189">    }</span>
+
+<span class="nc bnc" id="L191" title="All 2 branches missed.">    if (sb.length() &gt; 0) {</span>
+<span class="nc" id="L192">      from = from + &quot;, value.guamiList.values &quot; + guamiListAlias;</span>
+<span class="nc bnc" id="L193" title="All 2 branches missed.">      if (where.isEmpty()) {</span>
+<span class="nc" id="L194">        where = &quot;(&quot; + sb.toString() + &quot;)&quot;;</span>
+      } else {
+<span class="nc" id="L196">        where = where + &quot; OR (&quot; + sb.toString() + &quot;)&quot;;</span>
+      }
+    }
+
+<span class="nc" id="L200">    String snssaiListAlias = &quot;snssai&quot;;</span>
+<span class="nc" id="L201">    sb = new StringBuilder(&quot;&quot;);</span>
+<span class="nc bnc" id="L202" title="All 2 branches missed.">    for (SubKeyStruct ks : index.getSnssaiListList()) {</span>
+<span class="nc" id="L203">      StringBuilder subSb = new StringBuilder(&quot;&quot;);</span>
+
+<span class="nc" id="L205">      String subKey1 = ks.getSubKey1();</span>
+<span class="nc" id="L206">      boolean subKeyExist = false;</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">      if (!subKey1.isEmpty()) {</span>
+<span class="nc" id="L208">        subSb.append(snssaiListAlias + &quot;.sub_key1 = '&quot; + subKey1 + &quot;'&quot;);</span>
+<span class="nc" id="L209">        subKeyExist = true;</span>
+      }
+
+<span class="nc" id="L212">      String subKey2 = ks.getSubKey2();</span>
+<span class="nc bnc" id="L213" title="All 2 branches missed.">      if (!subKey2.isEmpty()) {</span>
+<span class="nc bnc" id="L214" title="All 2 branches missed.">        if (subKeyExist) {</span>
+<span class="nc" id="L215">          subSb.append(&quot; AND &quot;);</span>
+        }
+<span class="nc" id="L217">        subSb.append(snssaiListAlias + &quot;.sub_key2 = '&quot; + subKey2 + &quot;'&quot;);</span>
+      }
+
+<span class="nc bnc" id="L220" title="All 2 branches missed.">      if (subSb.length() == 0) {</span>
+<span class="nc" id="L221">        continue;</span>
+      }
+
+<span class="nc bnc" id="L224" title="All 2 branches missed.">      if (sb.length() == 0) {</span>
+<span class="nc" id="L225">        sb.append(&quot;(&quot; + subSb.toString() + &quot;)&quot;);</span>
+      } else {
+<span class="nc" id="L227">        sb.append(&quot; OR (&quot; + subSb.toString() + &quot;)&quot;);</span>
+      }
+<span class="nc" id="L229">    }</span>
+
+<span class="nc bnc" id="L231" title="All 2 branches missed.">    if (sb.length() &gt; 0) {</span>
+<span class="nc" id="L232">      String fromTmp = &quot;value.snssaiList.values &quot; + snssaiListAlias;</span>
+<span class="nc" id="L233">      String whereTmp = sb.toString();</span>
+
+<span class="nc" id="L235">      String nsiListAlias = &quot;nsi&quot;;</span>
+<span class="nc" id="L236">      sb = new StringBuilder(&quot;&quot;);</span>
+<span class="nc" id="L237">      int nsiCount = 0;</span>
+<span class="nc bnc" id="L238" title="All 2 branches missed.">      for (String nsi : index.getNsiListList()) {</span>
+<span class="nc bnc" id="L239" title="All 2 branches missed.">        if (!nsi.isEmpty()) {</span>
+<span class="nc bnc" id="L240" title="All 2 branches missed.">          if (nsiCount == 0) {</span>
+<span class="nc" id="L241">            sb.append(nsiListAlias + &quot; = '&quot; + nsi + &quot;'&quot;);</span>
+          } else {
+<span class="nc" id="L243">            sb.append(&quot; OR &quot; + nsiListAlias + &quot; = '&quot; + nsi + &quot;'&quot;);</span>
+          }
+<span class="nc" id="L245">          nsiCount++;</span>
+        }
+<span class="nc" id="L247">      }</span>
+
+<span class="nc bnc" id="L249" title="All 2 branches missed.">      if (sb.length() &gt; 0) {</span>
+<span class="nc" id="L250">        fromTmp = fromTmp + &quot;, value.nsiList &quot; + nsiListAlias;</span>
+<span class="nc" id="L251">        whereTmp = &quot;(&quot; + whereTmp + &quot;) AND (&quot; + sb.toString() + &quot;)&quot;;</span>
+      }
+
+<span class="nc" id="L254">      from = from + &quot;, &quot; + fromTmp;</span>
+<span class="nc" id="L255">      where = where + &quot; OR (&quot; + whereTmp + &quot;)&quot;;</span>
+    }
+
+<span class="nc" id="L258">    String nfGroupCondAlias = &quot;nfGroup&quot;;</span>
+<span class="nc" id="L259">    sb = new StringBuilder(&quot;&quot;);</span>
+<span class="nc" id="L260">    SubKeyStruct nfGroupCond = index.getNfGroupCond();</span>
+<span class="nc bnc" id="L261" title="All 2 branches missed.">    if (nfGroupCond != null) {</span>
+<span class="nc" id="L262">      boolean subKeyExist = false;</span>
+<span class="nc" id="L263">      String subKey1 = nfGroupCond.getSubKey1();</span>
+<span class="nc bnc" id="L264" title="All 2 branches missed.">      if (!subKey1.isEmpty()) {</span>
+<span class="nc" id="L265">        sb.append(nfGroupCondAlias + &quot;.sub_key1 = '&quot; + subKey1 + &quot;'&quot;);</span>
+<span class="nc" id="L266">        subKeyExist = true;</span>
+      }
+
+<span class="nc" id="L269">      String subKey2 = nfGroupCond.getSubKey2();</span>
+<span class="nc bnc" id="L270" title="All 2 branches missed.">      if (!subKey2.isEmpty()) {</span>
+<span class="nc bnc" id="L271" title="All 2 branches missed.">        if (subKeyExist) {</span>
+<span class="nc" id="L272">          sb.append(&quot; AND &quot;);</span>
+        }
+<span class="nc" id="L274">        sb.append(nfGroupCondAlias + &quot;.sub_key2 = '&quot; + subKey2 + &quot;'&quot;);</span>
+      }
+    }
+
+<span class="nc bnc" id="L278" title="All 2 branches missed.">    if (sb.length() &gt; 0) {</span>
+<span class="nc" id="L279">      from = from + &quot;, value.nfGroupCond.values &quot; + nfGroupCondAlias;</span>
+<span class="nc bnc" id="L280" title="All 2 branches missed.">      if (where.isEmpty()) {</span>
+<span class="nc" id="L281">        where = &quot;(&quot; + sb.toString() + &quot;)&quot;;</span>
+      } else {
+<span class="nc" id="L283">        where = where + &quot; OR (&quot; + sb.toString() + &quot;)&quot;;</span>
+      }
+    }
+
+<span class="nc" id="L287">    long startValidityTime = index.getStartValidityTime();</span>
+<span class="nc" id="L288">    long endValidityTime = index.getEndValidityTime();</span>
+<span class="nc bnc" id="L289" title="All 2 branches missed.">    if (startValidityTime &lt; endValidityTime) {</span>
+<span class="nc bnc" id="L290" title="All 2 branches missed.">      if (where.isEmpty()) {</span>
+<span class="nc" id="L291">        where =</span>
+            &quot;value.validityTime &gt;= &quot; + startValidityTime + &quot;L&quot; + &quot; AND &quot; + &quot;value.validityTime &lt; &quot;
+                + endValidityTime + &quot;L&quot;;
+      } else {
+<span class="nc" id="L295">        where =</span>
+            &quot;(&quot; + where + &quot;) AND (&quot; + &quot;value.validityTime &gt;= &quot; + startValidityTime + &quot;L&quot; + &quot; AND &quot;
+                + &quot;value.validityTime &lt; &quot; + endValidityTime + &quot;L)&quot;;
+      }
+    }
+
+<span class="nc" id="L301">    queryString = OQL_1 + from + &quot; where &quot; + where;</span>
+
+<span class="nc" id="L303">    LOGGER.trace(&quot;OQL = {}&quot;, queryString);</span>
+
+<span class="nc" id="L305">    return queryString;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

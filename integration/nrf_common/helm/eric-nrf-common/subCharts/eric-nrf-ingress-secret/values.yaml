@@ -1,0 +1,5 @@
+global:
+  ingressSecret: istio-ingress-certs
+  #If the ADP deployed in a different namespace with eric-nrf
+  #please assign the namespace of ADP when install nrf.
+  adpNamespace:

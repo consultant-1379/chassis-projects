@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NFProfilePutExecutor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.executor.nfprofile</a> &gt; <span class="el_source">NFProfilePutExecutor.java</span></div><h1>NFProfilePutExecutor.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.executor.nfprofile;
+
+import ericsson.core.nrf.dbproxy.clientcache.ClientCacheService;
+import ericsson.core.nrf.dbproxy.common.Code;
+import ericsson.core.nrf.dbproxy.common.ExecutionResult;
+import ericsson.core.nrf.dbproxy.executor.Executor;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.nfprofile.NFProfilePutRequestProto.NFProfilePutRequest;
+import ericsson.core.nrf.dbproxy.helper.nfprofile.NFProfilePutHelper;
+import org.apache.geode.cache.CacheTransactionManager;
+import org.apache.geode.cache.CommitConflictException;
+import org.apache.geode.pdx.JSONFormatter;
+import org.apache.geode.pdx.PdxInstance;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class NFProfilePutExecutor extends Executor {
+
+<span class="nc" id="L19">  private static final Logger LOGGER = LogManager.getLogger(NFProfilePutExecutor.class);</span>
+
+  private static NFProfilePutExecutor instance;
+
+  static {
+<span class="nc" id="L24">    instance = null;</span>
+<span class="nc" id="L25">  }</span>
+
+  private NFProfilePutExecutor() {
+<span class="nc" id="L28">    super(NFProfilePutHelper.getInstance());</span>
+<span class="nc" id="L29">  }</span>
+
+  public static synchronized NFProfilePutExecutor getInstance() {
+<span class="nc bnc" id="L32" title="All 2 branches missed.">    if (null == instance) {</span>
+<span class="nc" id="L33">      instance = new NFProfilePutExecutor();</span>
+    }
+<span class="nc" id="L35">    return instance;</span>
+  }
+
+  protected ExecutionResult execute(NFMessage request) {
+<span class="nc" id="L39">    NFProfilePutRequest putRequest = request.getRequest().getPutRequest().getNfProfilePutRequest();</span>
+<span class="nc" id="L40">    String nfInstanceId = putRequest.getNfInstanceId();</span>
+<span class="nc" id="L41">    String nfProfile = putRequest.getNfProfile();</span>
+<span class="nc" id="L42">    String nfHelper = putRequest.getNfHelperInfo();</span>
+    int code;
+<span class="nc bnc" id="L44" title="All 4 branches missed.">    if (nfHelper != null &amp;&amp; nfHelper.length() &gt; 0) {</span>
+<span class="nc" id="L45">      code = Code.INTERNAL_ERROR;</span>
+<span class="nc" id="L46">      CacheTransactionManager txManager = ClientCacheService.getInstance()</span>
+<span class="nc" id="L47">          .getCacheTransactionManager();</span>
+<span class="nc" id="L48">      boolean retryTransaction = false;</span>
+<span class="nc" id="L49">      int retryTime = 0;</span>
+<span class="nc" id="L50">      PdxInstance pdxInstanceNfprofile = JSONFormatter.fromJSON(nfProfile);</span>
+<span class="nc" id="L51">      PdxInstance pdxInstanceNfhelper = JSONFormatter.fromJSON(nfHelper);</span>
+      do {
+        try {
+<span class="nc" id="L54">          retryTime++;</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">          if (retryTime &gt; 3) {</span>
+            break;
+          }
+<span class="nc" id="L58">          txManager.begin();</span>
+<span class="nc" id="L59">          ClientCacheService.getInstance()</span>
+<span class="nc" id="L60">              .put(Code.NFPROFILE_INDICE, nfInstanceId, pdxInstanceNfprofile);</span>
+<span class="nc" id="L61">          ClientCacheService.getInstance()</span>
+<span class="nc" id="L62">              .put(Code.NFHELPER_INDICE, nfInstanceId, pdxInstanceNfhelper);</span>
+<span class="nc" id="L63">          txManager.commit();</span>
+<span class="nc" id="L64">          retryTransaction = false;</span>
+<span class="nc" id="L65">          code = Code.CREATED;</span>
+<span class="nc" id="L66">        } catch (CommitConflictException conflictException) {</span>
+<span class="nc" id="L67">          LOGGER.error(conflictException.toString());</span>
+<span class="nc" id="L68">          retryTransaction = true;</span>
+<span class="nc" id="L69">        } catch (Exception e) {</span>
+<span class="nc" id="L70">          LOGGER.error(e.toString());</span>
+        } finally {
+<span class="nc bnc" id="L72" title="All 2 branches missed.">          if (txManager.exists()) {</span>
+<span class="nc" id="L73">            txManager.rollback();</span>
+          }
+        }
+<span class="nc bnc" id="L76" title="All 2 branches missed.">      } while (retryTransaction);</span>
+
+<span class="nc" id="L78">    } else {</span>
+      try {
+<span class="nc" id="L80">        PdxInstance pdxInstance = JSONFormatter.fromJSON(nfProfile);</span>
+<span class="nc" id="L81">        code = ClientCacheService.getInstance()</span>
+<span class="nc" id="L82">            .put(Code.NFPROFILE_INDICE, nfInstanceId, pdxInstance);</span>
+<span class="nc" id="L83">      } catch (Exception e) {</span>
+<span class="nc" id="L84">        LOGGER.error(e.toString());</span>
+<span class="nc" id="L85">        code = Code.NF_PROFILE_FORMAT_ERROR;</span>
+<span class="nc" id="L86">      }</span>
+    }
+
+<span class="nc" id="L89">    return new ExecutionResult(code);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

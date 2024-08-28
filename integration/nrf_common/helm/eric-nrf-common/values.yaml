@@ -1,0 +1,546 @@
+# ########################################################################### #
+# Deployment conditions, select which subchart would like to deploy
+# ########################################################################### #
+#nrf-ingress-secret:
+#  enabled: false
+
+global:
+  timezone: UTC
+
+  #ip protocol stack mode: ipv4 or ipv6
+  ipStackMode: ipv4
+
+  ingressSecret: istio-ingress-certs
+  #If the ADP deployed in a different namespace with eric-nrf
+  #please assign the namespace of ADP when install nrf.
+  adpNamespace:
+
+  nameOverride:
+    #If the chart eric_nrf_common.nameOverride is configured, this value should also be set the same.
+    #If the chart eric_nrf_common.nameOverride is not configured, this value need not change.
+    nrf_common: eric-nrf-common
+
+  registry:
+    url: armdocker.rnd.ericsson.se
+    pullSecret:
+  imageCredentials:
+    pullPolicy: IfNotPresent
+
+  adp:
+    cmm_service: "http://eric-cm-mediator"
+    cmm_service_port_path: "5003/cm/api/v1.1"
+    cmm_config_schema_prefix_name: "ericsson-nrf"
+
+  db:
+    info:
+      configmap:
+        name: "dbinfo"
+        mountpath: "/etc"
+    multisite:
+      configmap:
+        name: "multisite"
+        mountpath: "/etc"
+
+  dbproxy:
+    configmap:
+      name: "dbproxy-attributes"
+      mountpath: "/etc"
+
+rbac:
+  pod_account: "pod-account"
+  pod_role: "pod-role"
+  pod_rolebinding: "rolebinding"
+
+#####################################################################
+##                          IMPORTANT!!
+#####################################################################
+##  Set the value of this attribute according to your needs
+##  when integrating nrf discovery as a sub-chart.
+##  Its value will determine the names of chart resources!
+#####################################################################
+nameOverride:
+
+productInfo:
+  # R-State of the product. R State should match helm chart version (3.1.0 -> R2A)
+  # To automate it when packaging the helm chart rstate can be generated
+  # and below value replaced with correct R-State
+  rstate: R21A
+
+imageCredentials:
+  pullPolicy:
+  repoPath: proj-ipworks
+  registry:
+    # Setting these parameters will override the values provided in their 'global' counterparts
+    url:
+    # note: armdocker does not request pullSecret
+    pullSecret:
+
+images:
+  nrfCommon:
+    name: nrfcommon
+    tag: latest
+
+
+eric-nrf-pm-job:
+  imageCredentials:
+    pullPolicy:
+    repoPath: proj-ipworks
+  images:
+     pmJob:
+      name: nrfpmjobloader
+      tag: latest
+
+updateStrategy:
+  # type can be OnDelete or RollingUpdate
+  type: RollingUpdate
+  rollingUpdate:
+
+nrfCommon:
+  cmInit:
+    jobName: cm-init
+    enabled: "'true'"
+  cmHook:
+    postDelete:
+      name: cm-delete
+      enabled: "'true'"
+  dbInit:
+    name: kvdb-init
+
+
+nrf_schema:
+  jsonschema:
+    configmap:
+      name: "jsonschema"
+    nfProfile:
+      fileName: "nfProfile.json"  
+    patchDocument:
+      fileName: "patchDocument.json"
+    subscriptionData:
+      fileName: "subscriptionData.json"
+
+
+eric-data-kvdb-ag:
+  #####################################################################
+  ##                          IMPORTANT!!
+  #####################################################################
+  ##  Set the value of this attribute according to your needs
+  ##  when integrating kvdb-ag as a sub-chart.
+  ##  Its value will determine the names of chart resources!
+  #####################################################################
+  nameOverride: eric-nrf-kvdb-ag
+
+  #####################################################################
+  ##  Traffic ports used by locators and servers
+  #####################################################################
+  servicePorts:
+    kvdbAgLocator: 10334
+    kvdbAgServer: 40404
+
+  #####################################################################
+  ##  Will be used to form resource names
+  #####################################################################
+  suffix:
+    server: server
+    locator: locator
+    adminMgr: admin-mgr
+
+  #####################################################################
+  ##  Configuration for persistent volume claims
+  #####################################################################
+  persistence:
+    data:
+      # Persistent (potentially local) storage for database containers will be created on the path below
+      # This path will also be used as database working directory
+      path: /opt/dbservice/data
+      name: datadir
+      storageClass: erikube-cinder
+      # Set to false if you do not wish to use persistent storage for database data
+      enabled: true
+      accessMode: ReadWriteOnce
+      locator:
+        allocation: 1Gi
+      server:
+        allocation: 4Gi
+      adminMgr:
+        allocation: 1Gi
+    backup:
+      # Used for intermediate storage of backup pieces during B&R operations.
+      path: /opt/backup
+      name: datadir-backup
+      storageClass: erikube-cinder
+      # Set the enabled flag to false in case you do not wish to use this type of storage.
+      # Keep in mind that this will prevent you from using B&R functionality
+      enabled: false
+      accessMode: ReadWriteOnce
+      locator:
+        allocation: 2Gi
+      server:
+        allocation: 4Gi
+      adminMgr:
+        allocation: 8Gi
+    gwsender:
+      # Persistent storage will be created on the path below. The storage
+      # is meant for disk stores persisting gateway sender queues.
+      path: /opt/gwsender-queue
+      name: datadir-gwsender-queue
+      storageClass: erikube-cinder
+      enabled: false
+      accessMode: ReadWriteOnce
+      allocation: 1Gi
+
+  #####################################################################
+  ##  Default number of locator and server replicas
+  #####################################################################
+  replicas:
+    locator: 2
+    server: 2
+
+  #####################################################################
+  ##  Set to true if you wish to use Istio injection
+  #####################################################################
+  sidecarIstioInject:
+    locator:
+      enabled: false
+    server:
+      enabled: false
+    adminMgr:
+      enabled: false
+
+  #####################################################################
+  ##  Logging settings for different processes started
+  ##  as a part of this chart. Can be updated in runtime.
+  ##  Use DEBUG, INFO, WARN, ERROR
+  #####################################################################
+  logging:
+    initDepend:
+      # Used for init-db container and startup script
+      level: WARN
+    database:
+      level: WARN
+      # maxLogSize defines the size of the log file (in MB) after which
+      # the file is rotated and zipped. maxLogRotations defines the number
+      # of zipped log files to store. The suggested  approach is to keep
+      # maxLogSize low and maxLogRotations high to save disk space. The
+      # zipped log file is around 1-2% the size of the original log file.
+      maxLogSize: 100
+      maxLogRotations: 20
+    monitor:
+      level: WARN
+    adminMgr:
+      level: WARN
+
+  #####################################################################
+  ##  JMX settings
+  #####################################################################
+  jmx:
+    port: 1099
+
+  #####################################################################
+  ##  Prometheus settings
+  #####################################################################
+  prometheus:
+    path: prometheus
+    port: 8081
+    scrape: true
+    metricsPrefix: 'kvdb_ag'
+
+  #####################################################################
+  ##  Access control configuration
+  #####################################################################
+  accessControl:
+    enabled: false
+    allowedCredentialsSecretName: kvdb-ag-allowed-credentials
+    internalCredentialsSecretName: kvdb-ag-internal-credentials
+
+  #######################################################################
+  ##                          IMPORTANT!!
+  #######################################################################
+  ##  If you wish to use custom jars, set enabled to true
+  #######################################################################
+  appJars:
+    enabled: true
+
+  #####################################################################
+  ##  Configuration for KVDB backup agent
+  #####################################################################
+  brAgent:
+    # Admin manager will not attempt to register to BRO if the enabled
+    # attribute is set to false
+    enabled: false
+    backupTypeList:
+    # Backup type = scope
+    # Only one backup type is supported in the first release
+    - backupType:
+      # Not requested for KVDB for the first release, listed here for consistency
+      dataModelArtifactList:
+    type: "Database"
+
+    # A brief description of the backup and restore agent
+    description: "Backup and restore agent for ADP KVDB AG"
+
+    # Timeout (in ms) to use when waiting for backup fragments to be created. The default
+    # is set to 20 minutes. Consider increasing it if your data set per server is going to be large
+    fragmentCreationTimeout: 1200000
+
+    # Read timeout (in ms) to use when transferring backup fragments between
+    # admin manager and database pods. The default is set to 10 minutes.
+    # Consider increasing it if your data set per server is going to be large
+    readTimeout: 600000
+
+    # Compression level to use when creating backup fragments:
+    #   0 => no compression
+    #   6 => default compression (as used by gzip)
+    #   9 => highest compression
+    # Compressing the backup fragments reduces the amount of data being transferred over
+    # the network, but it takes some time to compress large files.
+    compressionLevel: 6
+
+  #######################################################################
+  ##                          IMPORTANT!!
+  #######################################################################
+  ##  As an application integration this chart, you will probably want
+  ##  to tailor cache.xml file according to your needs
+  #######################################################################
+  configFiles:
+    cacheXml: |-
+      <?xml version="1.0" encoding="UTF-8"?>
+      <cache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns="http://geode.apache.org/schema/cache"
+             xsi:schemaLocation="http://geode.apache.org/schema/cache http://geode.apache.org/schema/cache/cache-1.0.xsd"
+             version="1.0">
+          <cache-server max-connections="800" tcp-no-delay="true" socket-buffer-size="32768" max-threads="24" load-poll-interval="5000"/>
+          <region name="ericsson-nrf-distributedlock">
+              <region-attributes refid="REPLICATE_PERSISTENT" scope="global" statistics-enabled="true">
+                  <entry-time-to-live>
+                     <expiration-attributes timeout="10" action="destroy">
+                     </expiration-attributes>
+                  </entry-time-to-live>
+              </region-attributes>
+          </region>
+      </cache>
+
+  #####################################################################
+  ##  Multisite configuration
+  #####################################################################
+  multiSite:
+    enabled: false
+    name: multisite
+    runtimeConfigMode:
+      enabled: false
+    nodePortMode:
+      enabled: false
+    locator:
+      remoteLocator:
+      localHost:
+      distributedSystemID:
+    server:
+      gatewayReceiverPort: 31392
+      gatewayReceiverCreateAdditionalParams:
+
+  istio:
+    gateway:
+      enabled: false
+      locatorPort: 91
+      gatewayReceiverPort: 92
+      ingressgateway: eric-nrf-traffic
+    virtualservice:
+      enabled: false
+
+  #####################################################################
+  ## Must be set to 'true' when deploying on an IPv6 cluster. If set
+  ## to 'true' on a dual stack cluster, IPv6 addresses will be
+  ## preferred over IPv4 addresses. 'true' value can be used on an
+  ## IPv4 cluster with no effect.
+  #####################################################################
+  ipv6StackPreferred: true
+
+  #####################################################################
+  ##  Values used for Kubernetes probing
+  #####################################################################
+  probing:
+    port: 8080
+    readiness:
+      initialDelaySeconds: 40
+      periodSeconds: 5
+      failureThreshold: 1
+      timeoutSeconds: 2
+
+      database:
+        locator:
+          initialDelaySeconds: 40
+          periodSeconds: 5
+          failureThreshold: 2
+          timeoutSeconds: 2
+        server:
+          initialDelaySeconds: 40
+          periodSeconds: 5
+          failureThreshold: 2
+          timeoutSeconds: 2
+      adminMgr:
+        initialDelaySeconds: 15
+        periodSeconds: 5
+        failureThreshold: 1
+        timeoutSeconds: 2
+    liveness:
+      monitor:
+        initialDelaySeconds: 60
+        periodSeconds: 5
+        failureThreshold: 2
+        timeoutSeconds: 3
+      database:
+        initialDelaySeconds: 60
+        periodSeconds: 5
+        failureThreshold: 2
+        timeoutSeconds: 3
+      jmxExporter:
+        initialDelaySeconds: 60
+        periodSeconds: 5
+        failureThreshold: 2
+        timeoutSeconds: 3
+      adminMgr:
+        initialDelaySeconds: 120
+        periodSeconds: 5
+        failureThreshold: 2
+        timeoutSeconds: 3
+
+  #####################################################################
+  ##  CPU and memory requests for the containers
+  #####################################################################
+  requests:
+    initDepend:
+      cpu: 200m
+      memory: 128Mi
+    initDb:
+      cpu: 200m
+      memory: 128Mi
+    database:
+      locator:
+        cpu: 1000m
+        memory: 4Gi
+      server:
+        cpu: 4000m
+        memory: 5Gi
+    monitor:
+      cpu: 500m
+      memory: 650Mi
+    jmxExporter:
+      cpu: 200m
+      memory: 512Mi
+    adminMgr:
+      cpu: 1000m
+      memory: 750Mi
+
+  #####################################################################
+  ##  CPU and memory limits for the containers
+  #####################################################################
+  limits:
+    initDepend:
+      cpu: 200m
+      memory: 128Mi
+    initDb:
+      cpu: 200m
+      memory: 128Mi
+    database:
+      locator:
+        cpu: 2000m
+        memory: 6Gi
+      server:
+        cpu: 8000m
+        memory: 6Gi
+    monitor:
+      cpu: 500m
+      memory: 650Mi
+    jmxExporter:
+      cpu: 200m
+      memory: 512Mi
+    adminMgr:
+      cpu: 2000m
+      memory: 750Mi
+
+  #####################################################################
+  ##  Initial and maximum heap usage of a JVM will be set to the value
+  ##  given below. Should be about 80% of the memory limit set for
+  ##  the container.
+  ##
+  ##  Must not be greater than the container memory limit!!
+  #####################################################################
+  jvmHeap:
+    initDepend: 100m
+    database:
+      locator: 3200m
+      server: 3200m
+    monitor: 384m
+    jmxExporter: 384m
+    adminMgr: 512m
+
+  ######################################################################
+  ##  Provides means to customize JVM arguments (other than heap size)
+  ##
+  ##  Accepted argument format:
+  ##
+  ##  container:
+  ##    - '"value1"'
+  ##    - '"value2"'
+  ##    ..
+  ##    - '"valueN"'
+  ##
+  ######################################################################
+  jvmOptions:
+    initDepend:
+    database:
+      locator:
+      - '"-XX:+UseG1GC"'
+      - '"-XX:MaxGCPauseMillis=10"'
+      - '"-Xlog:gc:file=srvgc.log"'
+      server:
+      - '"-Dgemfire.pdx.mapper.sort-json-field-names=true"'
+      - '"-XX:+UseG1GC"'
+      - '"-XX:MaxGCPauseMillis=10"'
+      - '"-Xlog:gc:file=srvgc.log"'
+      - '"-Dgeode.feature-protobuf-protocol=true"'
+    monitor:
+    jmxExporter:
+
+  #####################################################################
+  ##  Values used when creating config maps or volumes
+  #####################################################################
+  configConsts:
+    static:
+      # Static in a sense that runtime updates of these files aren't supported/advised
+      initDb:
+        # This volume is created from a configMap and mounted to the init-db container.
+        # Contains files that:
+        #   - need to be updated with runtime information before usage
+        #   - need to be writeable by processes running in other containers
+        #   - are not advised to be updated by user in runtime
+        # After the update, all files will be copied to another volume (emptyDir) which
+        # is shared between all containers.
+        path: /usr/src/app/config
+      initDepend:
+        # This volume is created from a configMap and mounted to the init-depend container.
+        path: /usr/src/app/config
+      processed:
+        # This is the emptyDir volume where init-db container copies the files to
+        name: processed
+        path: /etc/config/static
+      adminMgr:
+        path: /etc/config/adminmgr
+      access:
+        credentialsPath: /etc
+        allowedCredentialsFileName: security.json
+        internalCredentialsFileName: internalCredentials.json
+    dynamic:
+      # Dynamic in a sense that runtime updates of these files are supported
+      name: dynamic
+      path: /etc/config/dynamic
+
+  #####################################################################
+  ## Values used to modify node and pod affinity
+  #####################################################################
+  affinity:
+    nodeAffinity: {}
+    podAffinity: {}
+    podAntiAffinity: {}
+    podAntiAffinityRequired: false
+
+

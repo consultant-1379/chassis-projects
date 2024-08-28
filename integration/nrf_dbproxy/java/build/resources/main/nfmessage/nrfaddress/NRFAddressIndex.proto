@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+// Language Dependent Statements Start, below statements are applicable only for Java
+option java_package = "ericsson.core.nrf.dbproxy.grpc.nfmessage.nrfaddress";
+option java_outer_classname = "NRFAddressIndexProto";
+option go_package = "com/dbproxy/nfmessage/nrfaddress";
+package grpc;
+// Language Dependent Statements End
+
+message NRFAddressIndex {
+    string nrf_address_key1 = 1;
+    string nrf_address_key2 = 2;
+    string nrf_address_key3 = 3;
+    string nrf_address_key4 = 4;
+    string nrf_address_key5 = 5;
+}

@@ -1,0 +1,6 @@
+[rhel-7.4-server-rpms]
+name=rhel-7.4-server-rpms
+baseurl=http://yum.linux.ericsson.se/repos/rhel-x86_64-server-7.4.eus
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release

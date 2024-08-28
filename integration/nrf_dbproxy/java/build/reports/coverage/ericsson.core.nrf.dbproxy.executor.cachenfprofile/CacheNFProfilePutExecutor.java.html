@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CacheNFProfilePutExecutor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.executor.cachenfprofile</a> &gt; <span class="el_source">CacheNFProfilePutExecutor.java</span></div><h1>CacheNFProfilePutExecutor.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.executor.cachenfprofile;
+
+import ericsson.core.nrf.dbproxy.clientcache.ClientCacheService;
+import ericsson.core.nrf.dbproxy.common.Code;
+import ericsson.core.nrf.dbproxy.common.ExecutionResult;
+import ericsson.core.nrf.dbproxy.executor.Executor;
+import ericsson.core.nrf.dbproxy.functionservice.RemoteCacheMonitorThread;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.cachenfprofile.CacheNFProfilePutRequestProto.CacheNFProfilePutRequest;
+import ericsson.core.nrf.dbproxy.helper.cachenfprofile.CacheNFProfilePutHelper;
+import org.apache.geode.pdx.JSONFormatter;
+import org.apache.geode.pdx.PdxInstance;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class CacheNFProfilePutExecutor extends Executor {
+
+<span class="nc" id="L18">  private static final Logger LOGGER = LogManager.getLogger(CacheNFProfilePutExecutor.class);</span>
+
+  private static CacheNFProfilePutExecutor instance;
+
+  static {
+<span class="nc" id="L23">    instance = null;</span>
+<span class="nc" id="L24">  }</span>
+
+  private CacheNFProfilePutExecutor() {
+<span class="nc" id="L27">    super(CacheNFProfilePutHelper.getInstance());</span>
+<span class="nc" id="L28">  }</span>
+
+  public static synchronized CacheNFProfilePutExecutor getInstance() {
+<span class="nc bnc" id="L31" title="All 2 branches missed.">    if (null == instance) {</span>
+<span class="nc" id="L32">      instance = new CacheNFProfilePutExecutor();</span>
+    }
+
+<span class="nc" id="L35">    return instance;</span>
+  }
+
+  protected ExecutionResult execute(NFMessage request) {
+<span class="nc" id="L39">    CacheNFProfilePutRequest putRequest = request.getRequest().getPutRequest()</span>
+<span class="nc" id="L40">        .getCacheNfProfilePutRequest();</span>
+<span class="nc" id="L41">    String cacheNfInstanceId = putRequest.getCacheNfInstanceId();</span>
+<span class="nc" id="L42">    String cacheNfProfile = putRequest.getRawCacheNfProfile();</span>
+<span class="nc" id="L43">    int code = Code.CREATED;</span>
+    try {
+<span class="nc" id="L45">      PdxInstance pdxCacheNfProfile = JSONFormatter.fromJSON(cacheNfProfile.toString());</span>
+<span class="nc" id="L46">      ClientCacheService.getInstance()</span>
+<span class="nc" id="L47">          .put(Code.CACHENFPROFILE_INDICE, cacheNfInstanceId, pdxCacheNfProfile);</span>
+<span class="nc" id="L48">      RemoteCacheMonitorThread.getInstance().incCacheOperationCount();</span>
+<span class="nc" id="L49">    } catch (Exception e) {</span>
+<span class="nc" id="L50">      LOGGER.error(e.toString());</span>
+<span class="nc" id="L51">      code = Code.CACHE_NF_PROFILE_FORMAT_ERROR;</span>
+<span class="nc" id="L52">    }</span>
+<span class="nc" id="L53">    return new ExecutionResult(code);</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

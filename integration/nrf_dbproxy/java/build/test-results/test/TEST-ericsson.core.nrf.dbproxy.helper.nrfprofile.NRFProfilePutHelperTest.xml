@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ericsson.core.nrf.dbproxy.helper.nrfprofile.NRFProfilePutHelperTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2019-09-02T07:45:33" hostname="c3b6544a0f6e" time="0.053">
+  <properties/>
+  <testcase name="createResponseTest" classname="ericsson.core.nrf.dbproxy.helper.nrfprofile.NRFProfilePutHelperTest" time="0.018"/>
+  <testcase name="validateTest" classname="ericsson.core.nrf.dbproxy.helper.nrfprofile.NRFProfilePutHelperTest" time="0.035"/>
+  <system-out><![CDATA[[error 2019/09/02 07:45:33.764 UTC <Test worker> tid=0xc] nrf_instance_id field is empty in NRFProfilePutRequest
+
+[error 2019/09/02 07:45:33.765 UTC <Test worker> tid=0xc] nrf_instance_id length 1025 is too large, max length is 1024
+
+[error 2019/09/02 07:45:33.765 UTC <Test worker> tid=0xc] rawNrfProfile field is empty in NRFProfilePutRequest
+
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

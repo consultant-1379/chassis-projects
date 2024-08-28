@@ -1,0 +1,411 @@
+#!/bin/bash
+#app_wrapper
+
+
+WRAPPER_NAME=`basename $0 2>/dev/null`
+INVOKER=$0
+
+# change history
+################
+VERSION=1.1.4
+
+
+# extra array to call functions
+kd_func_array=(get_worker update_worker update_worker_route resource_sum node_sum ictl10 ictl11 ictl12)
+
+
+##########
+
+#aa=(exe log)
+#AA=`test_in_array exe ${aa[@]}`
+#if [ X"$AA" != X ]; then
+# check the whether param in 1st part of array
+test_in_array()
+{
+    #$1 test_item
+    #$2 array
+
+    check=$1
+    shift
+    for item in "$@"; do
+        item1=`echo $item | awk -F: '{print $1}'`
+        if [ "$item1" == "$check" ]; then
+            echo $item1
+            return
+        fi
+    done
+    echo ""
+}   
+
+#aa=(exe:e log:l)
+#AA=`test_in_array1 exe ${aa[@]}`
+#if [ X"$AA" != X ]; then
+# check the whether param in 1st or 2nd part of array
+test_in_array1()
+{
+    #$1 test_item
+    #$2 array
+
+    check=$1
+    shift
+    for item in "$@"; do
+        item1=`echo $item | awk -F: '{print $1}'`
+        item2=`echo $item | awk -F: '{print $2}'`
+        if [ "$item1" == "$check" ]; then
+            if [ X"$item2" = X ]; then
+                echo $item1
+            else
+                echo $item2
+            fi                
+            return
+        #else
+        #    if [ "$item2" == "$check" ]; then
+        #        echo $item2
+        #        return
+        #    fi
+        fi
+    done
+    echo ""
+}   
+
+ 
+usage()
+{
+    echo
+    echo "== kubectl wrapper2 $VERSION =="
+    echo "usage:"
+    echo " $WRAPPER_NAME ver"
+    echo    
+
+    echo -n " $WRAPPER_NAME ["
+    LAST_IN_ARRAY=`echo ${kd_func_array[@]} | awk '{print $NF}' | awk -F: '{print $1}'`
+    for item in ${kd_func_array[@]}; do
+        item1=`echo $item | awk -F: '{print $1}'`
+        case $item1 in
+            $LAST_IN_ARRAY)
+                echo -n ${item1}"]"
+                ;;
+            *)
+                echo -n ${item1}"|"
+                ;;
+        esac
+    done
+    echo;echo "                      --> supported comamnds"   
+}
+
+
+eccd_version()
+{
+
+echo "eccd:"
+if [ -f /usr/local/lib/erikube_setup/image-list.json ]; then
+  cat /usr/local/lib/erikube_setup/image-list.json | grep version
+else
+  echo "  please login into master, then"
+  echo "  cat /usr/local/lib/erikube_setup/image-list.json | grep version"
+fi
+
+}
+
+
+get_worker()
+{
+
+if [ "$1" = "-h" ]; then
+    echo "Usage:"
+    echo "  $WRAPPER_NAME get_worker | xargs -I {} echo {} is a worker"
+    echo "  $WRAPPER_NAME get_worker | xargs -I {} -t ssh -o \"StrictHostKeyChecking no\" raket@{} sudo docker system df"
+    echo "  $WRAPPER_NAME get_worker | xargs -I {} -t scp -o \"StrictHostKeyChecking no\" raket@{} file file"
+    return
+fi
+
+# Finding all Nodes
+_WORKERS_IP=$(kubectl get pod -o wide -n kube-system | grep calico-node | awk ' { print $6 }')
+
+echo "$_WORKERS_IP"
+
+}
+
+
+update_worker()
+{
+if [ $# -eq 0 ]; then
+    echo "execute script on workers"
+    echo "Usage:"
+    echo "  $WRAPPER_NAME update_worker scriptname         ==> run scrip only"
+    echo "  $WRAPPER_NAME update_worker scriptname file    ==> copy file, then run script"
+    echo "  $WRAPPER_NAME update_worker null file          ==> copy file only"
+    return
+fi
+
+# Finding all Nodes
+_WORKERS_IP=$(kubectl get pod -o wide -n kube-system | grep calico-node | awk ' { print $6 }')
+
+rm /tmp/update_worker.log 2>/dev/null
+for i in $_WORKERS_IP
+do
+  echo $i
+  if [ X"$2" != X ]; then 
+    scp -o "StrictHostKeyChecking no" $2 $i:/tmp/$3 >> /tmp/update_worker.log 2>&1
+  fi 
+  if [ X"$2" != Xnull ]; then
+    chmod a+x $1  
+    scp -o "StrictHostKeyChecking no" $1 $i:/tmp/hosts.sh >> /tmp/update_worker.log 2>&1
+    ssh -o "StrictHostKeyChecking no" $i 'sudo sh /tmp/hosts.sh'
+  fi  
+done
+}
+
+
+update_worker_route()
+{
+
+REGISTRY_SERVER=arm.epk.ericsson.se
+REGISTRY_IP=`getent hosts $REGISTRY_SERVER | head -1 | awk '{print $1}'`
+REGISTRY_SERVER1=armdocker.rnd.ericsson.se
+REGISTRY_IP1=`getent hosts $REGISTRY_SERVER1 | head -1 | awk '{print $1}'`
+
+# Finding all Nodes
+_WORKERS_IP=$(kubectl get pod -o wide -n kube-system | grep calico-node | awk ' { print $6 }')
+
+# IMPORTANT !!!!!
+# NOTE: To by able to execute root commands we have to use hosts.sh script like parameter in ssh remote commands with bash -s option in the bellow script
+cat <<EOF > hosts.sh
+#!/bin/bash
+sudo ip route add $REGISTRY_IP via 10.0.10.1
+sudo sed -i '/$REGISTRY_SERVER/d' /etc/hosts
+sudo echo $REGISTRY_IP $REGISTRY_SERVER >> /etc/hosts
+sudo ip route add $REGISTRY_IP1 via 10.0.10.1
+sudo sed -i '/$REGISTRY_SERVER1/d' /etc/hosts
+sudo echo $REGISTRY_IP1 $REGISTRY_SERVER1 >> /etc/hosts
+EOF
+
+for i in $_WORKERS_IP
+do
+   scp -o "StrictHostKeyChecking no" hosts.sh $i:/tmp/hosts.sh
+   ssh -o "StrictHostKeyChecking no" $i 'sudo sh /tmp/hosts.sh'
+done
+
+rm hosts.sh
+
+}
+
+
+resource_sum()
+{
+
+if [ "$1" = "-h" ]; then
+    echo "Usage"
+    echo "  script resource_sum"
+    echo "  script resource_sum eric-"
+    echo "  script resource_sum -n adp"
+    return
+fi
+
+if [ "$1" = "-n" ]; then
+    shift
+    NS=$1
+    shift
+    OPTION="-n $NS"
+else
+    FILTER=eric-
+    if [ X"$1" != X ]; then
+        FILTER=$1
+    fi
+    OPTION="--all-namespaces"
+fi
+#echo $OPTION
+
+# get name list of all deployment, statefulset and daemonset
+AA=`kubectl get deployment $OPTION -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}'; kubectl get statefulset $OPTION -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}'; kubectl get daemonset $OPTION -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}'`
+
+
+if [ -z $FILTER ]; then
+  BB=`echo "$AA" | sort | uniq`
+else
+
+# filter out all ericsson releated resource
+BB=`echo "$AA" | sort | uniq | grep $FILTER` 
+
+fi
+
+RESOURCE=`kubectl describe nodes` 
+
+
+calculate_data(){
+    line=$1
+    REPLICA=0
+    echo "$RESOURCE" | grep $line 2>/dev/null | while read line1; do
+        NAME=`echo $line1 | awk '{print $2}'`
+        [ ${#NAME} -ge 17 ] && NAME1=${NAME:0:-17}
+        SKIP=0
+        if [ "$NAME1" = "eric-nrf-management-notification" ] && [ "$line" =  "eric-nrf-management" ]; then 
+            SKIP=1
+        fi
+
+        if [ $SKIP -ne 1 ]; then
+        REPLICA=`expr $REPLICA + 1`
+        echo $line1
+        CPU_REQ=`echo $line1| awk '{print $3}'`
+        #echo $CPU_REQ
+        HAS_M=`echo $CPU_REQ | grep m | wc -l`
+        if [ $HAS_M -eq 0 ]; then
+            CPU_REQ=`expr $CPU_REQ \* 1000 2>/dev/null`
+        else
+            CPU_REQ=`echo $CPU_REQ | awk -Fm '{print $1}'`
+        fi
+        CPU_REQ_SUM=`expr $CPU_REQ_SUM + $CPU_REQ 2>/dev/null`  
+        CPU_LIMIT=`echo $line1| awk '{print $5}'`
+        #echo $CPU_LIMIT
+        HAS_M=`echo $CPU_LIMIT | grep m | wc -l`
+        if [ $HAS_M -eq 0 ]; then
+            CPU_LIMIT=`expr $CPU_LIMIT \* 1000 2>/dev/null`
+        else
+            CPU_LIMIT=`echo $CPU_LIMIT | awk -Fm '{print $1}'`
+        fi
+        CPU_LIMIT_SUM=`expr $CPU_LIMIT_SUM + $CPU_LIMIT 2>/dev/null`  
+        MEM_REQ=`echo $line1| awk '{print $7}'`
+        #echo $MEM_REQ
+        HAS_M=`echo $MEM_REQ | grep M | wc -l`
+        if [ $HAS_M -eq 0 ]; then
+            MEM_REQ=`echo $MEM_REQ | awk -FG '{print $1}'`
+            MEM_REQ=`expr $MEM_REQ \* 1024 2>/dev/null`
+        else
+            MEM_REQ=`echo $MEM_REQ | awk -FM '{print $1}'`
+        fi
+        MEM_REQ_SUM=`expr $MEM_REQ_SUM + $MEM_REQ 2>/dev/null`         
+        MEM_LIMIT=`echo $line1| awk '{print $9}'`
+        #echo $MEM_LIMIT
+        HAS_M=`echo $MEM_LIMIT | grep M | wc -l`
+        if [ $HAS_M -eq 0 ]; then
+            MEM_LIMIT=`echo $MEM_LIMIT | awk -FG '{print $1}'`
+            MEM_LIMIT=`expr $MEM_LIMIT \* 1024 2>/dev/null`
+        else
+            MEM_LIMIT=`echo $MEM_LIMIT | awk -FM '{print $1}'`
+        fi
+        MEM_LIMIT_SUM=`expr $MEM_LIMIT_SUM + $MEM_LIMIT 2>/dev/null`         
+        echo ${CPU_REQ_SUM}"\t\t"${CPU_LIMIT_SUM}"\t\t"${MEM_REQ_SUM}"\t\t"${MEM_LIMIT_SUM}"\t\t"${REPLICA}
+
+        fi
+    done
+}
+
+
+echo -e " CPU REQUEST(m)\tCPU LIMIT(m)\tMEM REQUEST(Mi)\tMEM LIMIT(Mi)\tREPLICA"
+echo "$BB" | while read line; do 
+    RET=`calculate_data $line | tail -1`
+    echo -e " $RET\t\t"$line 
+    echo -e "$RET"  >> /tmp/res_sum_$$
+done
+
+while read line
+do
+    name=$line
+    if [ X"$name" != X ]; then
+    CPU_REQ=`echo $name | awk '{print $1}'`
+    CPU_LIMIT=`echo $name | awk '{print $2}'`
+    MEM_REQ=`echo $name | awk '{print $3}'`
+    MEM_LIMIT=`echo $name | awk '{print $4}'`
+    #echo $CPU_REQ,$CPU_LIMIT,$MEM_REQ,$MEM_LIMIT
+    CPU_REQ_SUM=`expr $CPU_REQ_SUM + $CPU_REQ 2>/dev/null`
+    CPU_LIMIT_SUM=`expr $CPU_LIMIT_SUM + $CPU_LIMIT 2>/dev/null`
+    MEM_REQ_SUM=`expr $MEM_REQ_SUM + $MEM_REQ 2>/dev/null`
+    MEM_LIMIT_SUM=`expr $MEM_LIMIT_SUM + $MEM_LIMIT 2>/dev/null`
+    fi
+done < /tmp/res_sum_$$
+
+echo 
+echo Total:
+echo -e " CPU REQUEST(m)\tCPU LIMIT(m)\tMEM REQUEST(Mi)\tMEM LIMIT(Mi)"
+echo -e " "${CPU_REQ_SUM}"\t\t"${CPU_LIMIT_SUM}"\t\t"${MEM_REQ_SUM}"\t\t"${MEM_LIMIT_SUM}
+
+echo 
+echo Storage:
+PVC=`kubectl get pvc $OPTION -o jsonpath='{range .items[*]}{.spec.resources.requests.storage}{"\t\t"}{.metadata.name}{"\n"}{end}'`
+echo "$PVC" | sort -k 2 | while read line; do
+    echo -e " $line"
+done
+
+
+#rm /tmp/res_sum_$$
+
+}   
+
+
+node_sum()
+{
+    nodes=$(kubectl get node --no-headers -o custom-columns=NAME:.metadata.name)
+
+    for node in $nodes; do
+        NODEDES=$(kubectl describe node "$node")
+        IP=`echo "$NODEDES" | grep InternalIP | awk '{print $2}'`
+        IS_NOTREADY=`echo "$NODEDES" | grep "Ready.*False" | wc -l`
+        echo -n "= Node: "
+        if [ $IS_NOTREADY -eq 1 ]; then
+          echo -n "NotReady "
+        else
+          echo -n "Ready    "
+        fi
+        echo "$IP $node ="
+        echo Non-terminated Pods:
+        echo "$NODEDES" | sed '1,/Non-terminated Pods:/d' | sed '/Events:/,$d'
+        echo
+    done
+}    
+
+
+ictl12()
+{ 
+
+  docker run -it --rm -v/tmp:/tmp --entrypoint sh armdocker.rnd.ericsson.se/proj-ipworks/alpine-tools:istioctl-1.2.0 -c "cp /bin/istioctl /tmp"
+
+}    
+
+ictl11()
+{
+
+  docker run -it --rm -v/tmp:/tmp --entrypoint sh armdocker.rnd.ericsson.se/proj-ipworks/alpine-tools:istioctl-1.1.0 -c "cp /bin/istioctl /tmp"
+
+}    
+
+ictl10()
+{
+
+  docker run -it --rm -v/tmp:/tmp --entrypoint sh armdocker.rnd.ericsson.se/proj-ipworks/alpine-tools:istioctl-1.0.0 -c "cp /bin/istioctl /tmp"
+
+}
+
+main_proc()
+{
+
+    if [ $# -eq 0 ] || [ "$1" == "--help" ]|| [ "$1" == "-h" ]; then
+        usage
+        return 
+    fi
+
+    if [ "$1" == "--version" ] || [ "$1" == "version" ] || [ "$1" == "ver" ]; then
+        echo "$WRAPPER_NAME version $VERSION"
+        echo 
+        eccd_version
+
+        return
+    fi
+
+
+    AA=`test_in_array $1 ${kd_func_array[@]}`
+    shift
+    if [ X"$AA" != X ]; then
+        $AA "$@"
+        return
+    fi
+}
+
+
+# start of main_entry
+main_entry()
+{
+    echo main_entry
+}
+
+
+main_proc "$@"

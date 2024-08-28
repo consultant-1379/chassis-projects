@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NRFProfile.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.clientcache.schema</a> &gt; <span class="el_source">NRFProfile.java</span></div><h1>NRFProfile.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.clientcache.schema;
+
+import com.google.protobuf.ByteString;
+import java.util.HashMap;
+
+public class NRFProfile {
+
+  private ByteString raw_data;
+
+  private long key1;
+  private long key3;
+
+  private HashMap amf_key1;
+  private HashMap amf_key2;
+  private HashMap amf_key3;
+  private HashMap amf_key4;
+  private HashMap smf_key1;
+  private HashMap smf_key2;
+  private HashMap smf_key3;
+  private HashMap udm_key1;
+  private HashMap udm_key2;
+  private HashMap ausf_key1;
+  private HashMap ausf_key2;
+  private HashMap pcf_key1;
+  private HashMap pcf_key2;
+
+
+<span class="fc" id="L28">  public NRFProfile() {</span>
+<span class="fc" id="L29">    key1 = 0;</span>
+<span class="fc" id="L30">    key3 = 0;</span>
+<span class="fc" id="L31">    amf_key1 = new HashMap();</span>
+<span class="fc" id="L32">    amf_key2 = new HashMap();</span>
+<span class="fc" id="L33">    amf_key3 = new HashMap();</span>
+<span class="fc" id="L34">    amf_key4 = new HashMap();</span>
+<span class="fc" id="L35">    smf_key1 = new HashMap();</span>
+<span class="fc" id="L36">    smf_key2 = new HashMap();</span>
+<span class="fc" id="L37">    smf_key3 = new HashMap();</span>
+<span class="fc" id="L38">    udm_key1 = new HashMap();</span>
+<span class="fc" id="L39">    udm_key2 = new HashMap();</span>
+<span class="fc" id="L40">    ausf_key1 = new HashMap();</span>
+<span class="fc" id="L41">    ausf_key2 = new HashMap();</span>
+<span class="fc" id="L42">    pcf_key1 = new HashMap();</span>
+<span class="fc" id="L43">    pcf_key2 = new HashMap();</span>
+<span class="fc" id="L44">  }</span>
+
+  public ByteString getRaw_data() {
+<span class="fc" id="L47">    return raw_data;</span>
+  }
+
+  public void setRaw_data(ByteString rawData) {
+<span class="fc" id="L51">    this.raw_data = rawData;</span>
+<span class="fc" id="L52">  }</span>
+
+  public synchronized void setAMFKey1(HashMap map) {
+<span class="nc" id="L55">    amf_key1.putAll(map);</span>
+<span class="nc" id="L56">  }</span>
+
+  public synchronized void setAMFKey2(HashMap map) {
+<span class="nc" id="L59">    amf_key2.putAll(map);</span>
+<span class="nc" id="L60">  }</span>
+
+  public synchronized void setAMFKey3(HashMap map) {
+<span class="nc" id="L63">    amf_key3.putAll(map);</span>
+<span class="nc" id="L64">  }</span>
+
+  public synchronized void setAMFKey4(HashMap map) {
+<span class="nc" id="L67">    amf_key4.putAll(map);</span>
+<span class="nc" id="L68">  }</span>
+
+  public synchronized void setSMFKey1(HashMap map) {
+<span class="nc" id="L71">    smf_key1.putAll(map);</span>
+<span class="nc" id="L72">  }</span>
+
+  public synchronized void setSMFKey2(HashMap map) {
+<span class="nc" id="L75">    smf_key2.putAll(map);</span>
+<span class="nc" id="L76">  }</span>
+
+  public synchronized void setSMFKey3(HashMap map) {
+<span class="nc" id="L79">    smf_key3.putAll(map);</span>
+<span class="nc" id="L80">  }</span>
+
+  public synchronized void setUDMKey1(HashMap map) {
+<span class="nc" id="L83">    udm_key1.putAll(map);</span>
+<span class="nc" id="L84">  }</span>
+
+  public synchronized void setUDMKey2(HashMap map) {
+<span class="nc" id="L87">    udm_key2.putAll(map);</span>
+<span class="nc" id="L88">  }</span>
+
+  public synchronized void setAUSFKey1(HashMap map) {
+<span class="nc" id="L91">    ausf_key1.putAll(map);</span>
+<span class="nc" id="L92">  }</span>
+
+  public synchronized void setAUSFKey2(HashMap map) {
+<span class="nc" id="L95">    ausf_key2.putAll(map);</span>
+<span class="nc" id="L96">  }</span>
+
+  public synchronized void setPCFKey1(HashMap map) {
+<span class="nc" id="L99">    pcf_key1.putAll(map);</span>
+<span class="nc" id="L100">  }</span>
+
+  public synchronized void setPCFKey2(HashMap map) {
+<span class="nc" id="L103">    pcf_key2.putAll(map);</span>
+<span class="nc" id="L104">  }</span>
+
+  public long getExpireTime() {
+<span class="fc" id="L107">    return key1;</span>
+  }
+
+  public void setKey1(long key1) {
+<span class="fc" id="L111">    this.key1 = key1;</span>
+<span class="fc" id="L112">  }</span>
+
+  public void setKey3(long key3) {
+<span class="nc" id="L115">    this.key3 = key3;</span>
+<span class="nc" id="L116">  }</span>
+
+  public long getProvFlag() {
+<span class="nc" id="L119">    return key3;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

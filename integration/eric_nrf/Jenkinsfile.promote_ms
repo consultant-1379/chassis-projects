@@ -1,0 +1,30 @@
+
+String CHART_NAME = params.CHART_NAME
+String CHART_VERSION = params.CHART_VERSION
+String CHART_REPO = params.CHART_REPO
+String RELEASE = params.RELEASE
+String VERSION_STRATEGY = params.VERSION_STRATEGY
+String GERRIT_BRANCH =  ""
+String GERRIT_REFSPEC =  ""
+String GERRIT_EVENT_TYPE = ""
+
+if(params.GERRIT_REFSPEC != ""){
+    GERRIT_BRANCH=params.GERRIT_BRANCH
+    GERRIT_REFSPEC=params.GERRIT_REFSPEC
+    GERRIT_EVENT_TYPE=params.GERRIT_EVENT_TYPE
+}
+
+
+node{
+    sh "echo CHART_NAME=${CHART_NAME} > artifact.properties"
+    sh "echo CHART_VERSION=${CHART_VERSION} >> artifact.properties"
+    sh "echo CHART_REPO=${CHART_REPO} >> artifact.properties"
+    if(GERRIT_REFSPEC != ""){
+        sh "echo GERRIT_BRANCH=${GERRIT_BRANCH} >> artifact.properties"
+        sh "echo GERRIT_REFSPEC=${GERRIT_REFSPEC} >> artifact.properties"
+        sh "echo GERRIT_EVENT_TYPE=${GERRIT_EVENT_TYPE} >> artifact.properties"
+        sh "echo RELEASE=${RELEASE} >> artifact.properties"
+        sh "echo VERSION_STRATEGY=${VERSION_STRATEGY} >> artifact.properties"
+    }
+    archiveArtifacts artifacts: 'artifact.properties'
+}

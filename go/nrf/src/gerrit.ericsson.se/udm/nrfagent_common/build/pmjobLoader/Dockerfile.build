@@ -1,0 +1,10 @@
+FROM armdocker.rnd.ericsson.se/proj-ipworks/buildtool:v1
+RUN mkdir -p /go/src/gerrit.ericsson.se/udm/common/
+RUN mkdir -p /go/src/gerrit.ericsson.se/udm/vendor/
+ENV GOPATH=/go
+WORKDIR  /go/src/gerrit.ericsson.se/udm/common/
+COPY common /go/src/gerrit.ericsson.se/udm/common/
+COPY common/3ppcustomize/http2/ /go/src/gerrit.ericsson.se/udm/vendor/golang.org/x/net/http2/ 
+COPY ./vendor /go/src/gerrit.ericsson.se/udm/vendor/
+RUN go build -o /bin/app cmd/pmjobLoader/pmjobLoader.go
+

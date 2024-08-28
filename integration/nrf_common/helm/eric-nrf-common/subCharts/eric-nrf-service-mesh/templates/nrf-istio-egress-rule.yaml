@@ -1,0 +1,31 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: {{ template "eric-nrf-service-mesh.name" . }}-{{ .Values.istio.egress.serviceEntryName }}
+spec:
+  hosts:
+  - {{ .Values.istio.egress.defaultHost | quote }}
+  location: MESH_EXTERNAL
+  ports:
+  - number: {{ .Values.istio.egress.defaultPort }}
+    name: http-port-for-tls-origination
+    protocol: HTTP2
+  resolution: NONE
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: {{ template "eric-nrf-service-mesh.name" . }}-{{ .Values.istio.egress.destinationRuleName }}
+spec:
+  host: {{ .Values.istio.egress.defaultHost | quote }}
+  trafficPolicy:
+    loadBalancer:
+      simple: ROUND_ROBIN
+    portLevelSettings:
+    - port:
+        number: {{ .Values.istio.egress.defaultPort }}
+      tls:
+        mode: {{ .Values.global.istio.destinationtls.mode }}
+        clientCertificate: {{ .Values.global.istio.destinationtls.certsPath }}{{ .Values.global.istio.destinationtls.clientCertificate }}
+        privateKey: {{ .Values.global.istio.destinationtls.certsPath }}{{ .Values.global.istio.destinationtls.privateKey }}
+        caCertificates: {{ .Values.global.istio.destinationtls.caCertsPath }}{{ .Values.global.istio.destinationtls.caCertificates }}

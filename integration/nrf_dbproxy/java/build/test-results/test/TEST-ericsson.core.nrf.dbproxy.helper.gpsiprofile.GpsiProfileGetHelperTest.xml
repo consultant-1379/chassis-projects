@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ericsson.core.nrf.dbproxy.helper.gpsiprofile.GpsiProfileGetHelperTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2019-09-02T07:45:33" hostname="c3b6544a0f6e" time="0.031">
+  <properties/>
+  <testcase name="createResponseTest" classname="ericsson.core.nrf.dbproxy.helper.gpsiprofile.GpsiProfileGetHelperTest" time="0.011"/>
+  <testcase name="validateTest" classname="ericsson.core.nrf.dbproxy.helper.gpsiprofile.GpsiProfileGetHelperTest" time="0.02"/>
+  <system-out><![CDATA[[error 2019/09/02 07:45:33.979 UTC <Test worker> tid=0xc] Empty gpsiProfileId is set in GpsiProfileGetRequest
+
+[error 2019/09/02 07:45:33.980 UTC <Test worker> tid=0xc] gpsiProfileId length 1025 is too large, max length is 1024
+
+[error 2019/09/02 07:45:33.984 UTC <Test worker> tid=0xc] Empty GpsiProfileFilter is set in filter of GpsiProfileGetRequest
+
+[error 2019/09/02 07:45:33.985 UTC <Test worker> tid=0xc] Empty fragmentSessionId is set in NFProfileGetRequest
+
+[error 2019/09/02 07:45:33.985 UTC <Test worker> tid=0xc] Empty GpsiProfileGetRequest is received
+
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NRFAddress.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.clientcache.schema</a> &gt; <span class="el_source">NRFAddress.java</span></div><h1>NRFAddress.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.clientcache.schema;
+
+import com.google.protobuf.ByteString;
+
+public class NRFAddress {
+
+  private String nrf_address_id;
+  private ByteString data;
+  private String key1;
+  private String key2;
+  private String key3;
+  private String key4;
+  private String key5;
+
+<span class="nc" id="L15">  public NRFAddress() {</span>
+
+<span class="nc" id="L17">    this.nrf_address_id = &quot;&quot;;</span>
+<span class="nc" id="L18">    this.data = ByteString.EMPTY;</span>
+<span class="nc" id="L19">    this.key1 = this.key2 = this.key3 = this.key4 = this.key5 = &quot;&quot;;</span>
+<span class="nc" id="L20">  }</span>
+
+  public String getNRFAddressID() {
+
+<span class="nc" id="L24">    return this.nrf_address_id;</span>
+  }
+
+  public void setNRFAddressID(String nrfAddressId) {
+
+<span class="nc" id="L29">    this.nrf_address_id = nrfAddressId;</span>
+<span class="nc" id="L30">  }</span>
+
+  public ByteString getData() {
+
+<span class="nc" id="L34">    return this.data;</span>
+  }
+
+  public void setData(ByteString data) {
+
+<span class="nc" id="L39">    this.data = data;</span>
+<span class="nc" id="L40">  }</span>
+
+  public String getKey1() {
+
+<span class="nc" id="L44">    return this.key1;</span>
+  }
+
+  public void setKey1(String key1) {
+
+<span class="nc" id="L49">    this.key1 = key1;</span>
+<span class="nc" id="L50">  }</span>
+
+  public String getKey2() {
+
+<span class="nc" id="L54">    return this.key2;</span>
+  }
+
+  public void setKey2(String key2) {
+
+<span class="nc" id="L59">    this.key2 = key2;</span>
+<span class="nc" id="L60">  }</span>
+
+  public String getKey3() {
+
+<span class="nc" id="L64">    return this.key3;</span>
+  }
+
+  public void setKey3(String key3) {
+
+<span class="nc" id="L69">    this.key3 = key3;</span>
+<span class="nc" id="L70">  }</span>
+
+  public String getKey4() {
+
+<span class="nc" id="L74">    return this.key4;</span>
+  }
+
+  public void setKey4(String key4) {
+
+<span class="nc" id="L79">    this.key4 = key4;</span>
+<span class="nc" id="L80">  }</span>
+
+  public String getKey5() {
+
+<span class="nc" id="L84">    return this.key5;</span>
+  }
+
+  public void setKey5(String key5) {
+
+<span class="nc" id="L89">    this.key5 = key5;</span>
+<span class="nc" id="L90">  }</span>
+
+  public String toString() {
+
+<span class="nc" id="L94">    String str = &quot;nrf_address_id = {&quot; + this.nrf_address_id + &quot;}, &quot;;</span>
+<span class="nc" id="L95">    str += &quot;data = {&quot; + this.data.toString() + &quot;}, &quot;;</span>
+<span class="nc" id="L96">    str += &quot;key1 = {&quot; + this.key1 + &quot;}, &quot;;</span>
+<span class="nc" id="L97">    str += &quot;key2 = {&quot; + this.key2 + &quot;}, &quot;;</span>
+<span class="nc" id="L98">    str += &quot;key3 = {&quot; + this.key3 + &quot;}, &quot;;</span>
+<span class="nc" id="L99">    str += &quot;key4 = {&quot; + this.key4 + &quot;}, &quot;;</span>
+<span class="nc" id="L100">    str += &quot;key5 = {&quot; + this.key5 + &quot;}&quot;;</span>
+
+<span class="nc" id="L102">    return str;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#", 
+  "type": "object",
+  "required": [
+     "eventType",
+     "nfInstanceId"
+  ],
+  "properties": {
+    "eventType": {
+      "properties": {
+        "type": {
+          "enum": [
+            "REGISTER", 
+            "DEREGISTER"
+          ]
+        }
+      }
+    }, 
+    "nfInstanceId": {
+      "type": "string"
+    }, 
+    "nfType": {
+      "type": "string"
+    },
+    "fqdn" : {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+// Language Dependent Statements Start
+option java_package = "ericsson.core.nrf.dbproxy.grpc.nfmessage.nrfprofile";
+option java_outer_classname = "NRFProfileFilterProto";
+option go_package = "com/dbproxy/nfmessage/nrfprofile";
+import "nfmessage/nrfprofile/NRFProfileIndex.proto";
+package grpc;
+// Language Dependent Statements End
+
+message NRFProfileFilter {
+    bool and_operation   = 1;
+    NRFProfileIndex index = 2;
+}

@@ -1,0 +1,232 @@
+syntax = "proto3";
+
+// Language Dependent Statements Start
+option java_package = "ericsson.core.nrf.dbproxy.grpc";
+option go_package = "com/dbproxy";
+package grpc;
+import "nfmessage/nfprofile/NFProfilePutRequest.proto";
+import "nfmessage/nfprofile/NFProfilePutResponse.proto";
+import "nfmessage/nfprofile/NFProfileGetRequest.proto";
+import "nfmessage/nfprofile/NFProfileGetResponse.proto";
+import "nfmessage/nfprofile/NFProfileCountGetRequest.proto";
+import "nfmessage/nfprofile/NFProfileCountGetResponse.proto";
+import "nfmessage/nfprofile/NFProfileDelRequest.proto";
+import "nfmessage/nfprofile/NFProfileDelResponse.proto";
+import "nfmessage/subscription/SubscriptionPutRequest.proto";
+import "nfmessage/subscription/SubscriptionPutResponse.proto";
+import "nfmessage/subscription/SubscriptionGetRequest.proto";
+import "nfmessage/subscription/SubscriptionGetResponse.proto";
+import "nfmessage/subscription/SubscriptionDelRequest.proto";
+import "nfmessage/subscription/SubscriptionDelResponse.proto";
+import "nfmessage/nrfaddress/NRFAddressPutRequest.proto";
+import "nfmessage/nrfaddress/NRFAddressPutResponse.proto";
+import "nfmessage/nrfaddress/NRFAddressGetRequest.proto";
+import "nfmessage/nrfaddress/NRFAddressGetResponse.proto";
+import "nfmessage/nrfaddress/NRFAddressDelRequest.proto";
+import "nfmessage/nrfaddress/NRFAddressDelResponse.proto";
+import "nfmessage/nrfprofile/NRFProfilePutRequest.proto";
+import "nfmessage/nrfprofile/NRFProfilePutResponse.proto";
+import "nfmessage/nrfprofile/NRFProfileGetRequest.proto";
+import "nfmessage/nrfprofile/NRFProfileGetResponse.proto";
+import "nfmessage/nrfprofile/NRFProfileDelRequest.proto";
+import "nfmessage/nrfprofile/NRFProfileDelResponse.proto";
+import "nfmessage/groupprofile/GroupProfilePutRequest.proto";
+import "nfmessage/groupprofile/GroupProfilePutResponse.proto";
+import "nfmessage/groupprofile/GroupProfileGetRequest.proto";
+import "nfmessage/groupprofile/GroupProfileGetResponse.proto";
+import "nfmessage/groupprofile/GroupProfileDelRequest.proto";
+import "nfmessage/groupprofile/GroupProfileDelResponse.proto";
+import "nfmessage/imsiprefixprofile/ImsiprefixProfileGetRequest.proto";
+import "nfmessage/imsiprefixprofile/ImsiprefixProfileGetResponse.proto";
+import "nfmessage/gpsiprofile/GpsiProfilePutRequest.proto";
+import "nfmessage/gpsiprofile/GpsiProfilePutResponse.proto";
+import "nfmessage/gpsiprofile/GpsiProfileGetRequest.proto";
+import "nfmessage/gpsiprofile/GpsiProfileGetResponse.proto";
+import "nfmessage/gpsiprofile/GpsiProfileDelRequest.proto";
+import "nfmessage/gpsiprofile/GpsiProfileDelResponse.proto";
+import "nfmessage/gpsiprefixprofile/GpsiprefixProfileGetRequest.proto";
+import "nfmessage/gpsiprefixprofile/GpsiprefixProfileGetResponse.proto";
+import "nfmessage/cachenfprofile/CacheNFProfilePutRequest.proto";
+import "nfmessage/cachenfprofile/CacheNFProfilePutResponse.proto";
+import "nfmessage/cachenfprofile/CacheNFProfileGetRequest.proto";
+import "nfmessage/cachenfprofile/CacheNFProfileGetResponse.proto";
+// Language Dependent Statements End
+
+service NFDataManagementService {
+
+    rpc execute(NFMessage) returns (NFMessage);
+
+    rpc insert(InsertRequest) returns (InsertResponse);
+
+    rpc remove(RemoveRequest) returns (RemoveResponse);
+
+    rpc queryByKey(QueryRequest) returns (stream QueryResponse);
+
+    rpc queryByFilter(QueryRequest) returns (stream QueryResponse);
+
+    rpc transferParameter(ParaRequest) returns (ParaResponse);
+
+}
+
+message InsertRequest {
+    string region_name                = 1;
+    repeated KVItem item              = 2;
+    bool trace_enabled                = 3;
+}
+
+message KVItem {
+    string key   = 1;
+    string value = 2;
+}
+
+message InsertResponse {
+    uint32 code                        = 1;
+    repeated string key                = 2; // with insertion failure, it contains those keys which are not inserted into database
+    TraceInfo trace_info               = 3;
+}
+
+
+message RemoveRequest {
+    string region_name  = 1;
+    repeated string key = 2;
+    bool trace_enabled  = 3;
+}
+
+message RemoveResponse {
+    uint32 code          = 1;
+    repeated string key  = 2; // with remove failure, it contains those keys which are not removed from database
+    TraceInfo trace_info = 3;
+}
+
+message ParaRequest {
+    string parameter_name  = 1;
+    string parameter_value = 2;
+    bool trace_enable      = 3;
+}
+
+message ParaResponse {
+    uint32 code = 1;
+    TraceInfo trace_info = 2;
+}
+
+message QueryRequest {
+    string region_name = 1;
+    repeated string query = 2;
+    bool trace_enabled = 3;
+}
+
+message QueryResponse {
+    uint32 code                        = 1;
+    repeated string value              = 2;
+    TraceInfo trace_info               = 3;
+}
+
+message TraceInfo {
+    uint64 arrival_time                = 1; // it indicates the timestamp when the request comes into our application executor
+    uint64 departure_time              = 2; // it indicates the timestamp when the response leaves from our application executor
+}
+
+message NFMessage {
+    string version                     = 1;
+    oneof data {
+        NFRequest request              = 2;
+        NFResponse response            = 3;
+        NFProtocolError protocol_error = 4;
+    }
+}
+
+message NFRequest {
+    oneof data {
+        PutRequest put_request = 1;
+        GetRequest get_request = 2;
+        DelRequest del_request = 3;
+    }
+}
+
+message PutRequest {
+    oneof data {
+        NFProfilePutRequest nf_profile_put_request                  = 1;
+        SubscriptionPutRequest subscription_put_request             = 2;
+        NRFAddressPutRequest nrf_address_put_request                = 3;
+        GroupProfilePutRequest group_profile_put_request            = 4;
+        NRFProfilePutRequest nrf_profile_put_request                = 5;
+        GpsiProfilePutRequest gpsi_profile_put_request              = 6;
+        CacheNFProfilePutRequest cache_nf_profile_put_request       = 7;
+    }
+}
+
+message GetRequest {
+    oneof data {
+        NFProfileGetRequest nf_profile_get_request                   = 1;
+        SubscriptionGetRequest subscription_get_request              = 2;
+        NRFAddressGetRequest nrf_address_get_request                 = 3;
+        GroupProfileGetRequest group_profile_get_request             = 4;
+        NRFProfileGetRequest nrf_profile_get_request                 = 5;
+        ImsiprefixProfileGetRequest imsiprefix_profile_get_request   = 6;
+        GpsiProfileGetRequest gpsi_profile_get_request               = 7;
+        GpsiprefixProfileGetRequest gpsiprefix_profile_get_request   = 8;
+		NFProfileCountGetRequest nf_profile_count_get_request        = 9;
+        CacheNFProfileGetRequest cache_nf_profile_get_request        = 10;
+	}
+}
+
+message DelRequest {
+    oneof data {
+        NFProfileDelRequest nf_profile_del_request           = 1;
+        SubscriptionDelRequest subscription_del_request      = 2;
+        NRFAddressDelRequest nrf_address_del_request         = 3;
+        GroupProfileDelRequest group_profile_del_request     = 4;
+        NRFProfileDelRequest nrf_profile_del_request         = 5;
+        GpsiProfileDelRequest gpsi_profile_del_request       = 6;
+    }
+}
+
+message NFResponse {
+    oneof data {
+        PutResponse put_response = 1;
+        GetResponse get_response = 2;
+        DelResponse del_response = 3;
+    }
+}
+
+message PutResponse {
+    oneof data {
+        NFProfilePutResponse nf_profile_put_response                  = 1;
+        SubscriptionPutResponse subscription_put_response             = 2;
+        NRFAddressPutResponse nrf_address_put_response                = 3;
+        GroupProfilePutResponse group_profile_put_response            = 4;
+        NRFProfilePutResponse nrf_profile_put_response                = 5;
+        GpsiProfilePutResponse gpsi_profile_put_response              = 6;
+        CacheNFProfilePutResponse cache_nf_profile_put_response       = 7;
+    }
+}
+
+message GetResponse {
+    oneof data {
+        NFProfileGetResponse nf_profile_get_response                 = 1;
+        SubscriptionGetResponse subscription_get_response            = 2;
+        NRFAddressGetResponse nrf_address_get_response               = 3;
+        GroupProfileGetResponse group_profile_get_response           = 4;
+        NRFProfileGetResponse nrf_profile_get_response               = 5;
+        ImsiprefixProfileGetResponse imsiprefix_profile_get_response = 6;
+        GpsiProfileGetResponse gpsi_profile_get_response             = 7;
+        GpsiprefixProfileGetResponse gpsiprefix_profile_get_response = 8;
+		NFProfileCountGetResponse nf_profile_count_get_response      = 9;
+        CacheNFProfileGetResponse cache_nf_profile_get_response      = 10;
+    }
+}
+
+message DelResponse {
+    oneof data {
+        NFProfileDelResponse nf_profile_del_response           = 1;
+        SubscriptionDelResponse subscription_del_response      = 2;
+        NRFAddressDelResponse nrf_address_del_response         = 3;
+        GroupProfileDelResponse group_profile_del_response     = 4;
+        NRFProfileDelResponse nrf_profile_del_response         = 5;
+        GpsiProfileDelResponse gpsi_profile_del_response     = 6;
+	}
+}
+
+message NFProtocolError {
+    uint32 code = 1;
+}

@@ -1,0 +1,13 @@
+FROM armdocker.rnd.ericsson.se/proj-ipworks/buildtool:v2
+RUN mkdir -p /go/src/gerrit.ericsson.se/udm/nrfagent_discovery/
+RUN mkdir -p /go/src/gerrit.ericsson.se/udm/nrfagent_common/
+RUN mkdir -p /go/src/gerrit.ericsson.se/udm/common/
+RUN mkdir -p /go/src/gerrit.ericsson.se/udm/vendor/
+ENV GOPATH=/go
+WORKDIR  /go/src/gerrit.ericsson.se/udm/nrfagent_discovery/
+COPY ./common /go/src/gerrit.ericsson.se/udm/common/
+COPY ./vendor /go/src/gerrit.ericsson.se/udm/vendor/
+COPY ./common/3ppcustomize/http2/ /go/src/gerrit.ericsson.se/udm/vendor/golang.org/x/net/http2/ 
+COPY ./nrfagent_common /go/src/gerrit.ericsson.se/udm/nrfagent_common/
+COPY ./nrfagent_discovery /go/src/gerrit.ericsson.se/udm/nrfagent_discovery/
+RUN go build -ldflags "-X gerrit.ericsson.se/udm/nrfagent_discovery/cmd/nrfagent/main.Version=`date -u +%Y%m%d.%H%M%S`" -o /bin/nrfagent cmd/nrfagent/nrfagent.go

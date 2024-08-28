@@ -1,0 +1,20 @@
+[
+  {
+     "faultName": "nrfDiscNrfConnectionFailure",
+     "createAlarm": true,
+     "defaultDescription": "NRF Discovery Service Failed to Connect to Another NRF",
+     "defaultExpiration": 600,
+     "defaultSeverity": "Major",
+     "vendor": 193,
+     "code": 7930112
+  },
+  {
+     "faultName": "nrfDiscDatabaseConnectionFailure",
+     "createAlarm": true,
+     "defaultDescription": "NRF Discovery Service Failed to Connect to Database",
+     "defaultExpiration": 600,
+     "defaultSeverity": "Critical",
+     "vendor": 193,
+     "code": 7930113
+  }
+]

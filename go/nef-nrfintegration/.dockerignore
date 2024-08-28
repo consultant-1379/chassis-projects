@@ -1,0 +1,7 @@
+*
+!Dockerfile
+!go.sum
+!go.mod
+!src
+!ssh
+!ssh/*

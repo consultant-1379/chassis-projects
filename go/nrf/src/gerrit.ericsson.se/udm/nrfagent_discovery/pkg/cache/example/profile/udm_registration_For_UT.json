@@ -1,0 +1,122 @@
+{
+		"validityPeriod": 200,
+		"nfInstances": [
+			   {
+			     "nfInstanceId": "udm-5g-01",
+			     "nfType": "udm",
+				 "nfStatus": "REGISTERED",
+			     "plmn": {
+			       "mcc": "001",
+			       "mnc": "001"
+			     },
+			     "sNssais": [
+			       {
+			         "sst": 1,
+			         "sd": "01"
+			       },
+					{
+					 "sst": 11,
+			         "sd": "11"
+					}
+			     ],
+			     "fqdn": "seliius03696.seli.gic.ericsson.se",
+			     "ipv4Addresses": [
+			       "127.0.0.1"
+			     ],
+			     "ipv6Addresses": [
+			       "FF01::1101"
+			     ],
+			     "ipv6Prefixes": [
+			       "FF01"
+			     ],
+			     "capacity": 1,
+				 "priority":1,
+			     "udrInfo": {
+			       "supiRanges": [
+			         {
+			           "start": "000001",
+			           "end": "000010",
+			           "pattern": "(^imsi-[0-9]{5,15}$)|(^nai-.+$)"
+			         }
+			       ]
+			     },
+			     "amfInfo": {
+			       "amfSetId": "amf-01"
+			     },
+			     "smfInfo": {
+			       "dnnList": [
+			         "udm-dnn-01",
+					 "udm-dnn-011"
+			       ],
+			       "servingArea": [
+			         "udm-servingArea-01"
+			       ]
+			     },
+			     "upfInfo": {
+			       "sNssaiUpfInfoList": [
+			         {
+			           "sNssai": {
+			             "sst": 0,
+			             "sd": "udm-sd-01"
+			           },
+			           "dnnUpfInfoList": [
+			             {
+			               "dnn": "udm-dnn"
+			             }
+			           ]
+			         }
+			       ]
+			     },
+			     "nfServices": [
+			       {
+			         "serviceInstanceId": "nudm-auth-01",
+			         "serviceName": "nudm-auth-01",
+			         "version": "v1",
+			         "schema": "https://",
+			         "fqdn": "seliius03695.seli.gic.ericsson.se",
+			         "ipEndPoints": [
+			           {
+			             "ipv4Address": "127.0,0,1",
+			             "ipv6Address": "FF01::1101",
+			             "ipv6Prefix": "FF01",
+			             "port": 30080
+			           }
+			         ],
+			         "apiPrefix": "nudm-uecm",
+			         "defaultNotificationSubscriptions": [
+			           {
+			             "callbackUri": "https://seliius03695.seli.gic.ericsson.se"
+			           }
+			         ],
+			         "capacity": 1,
+			         "priority": 1,
+			         "supportedFeatures": "supportedFeatures-011"
+			       },
+				 {
+			         "serviceInstanceId": "nausf-auth-01",
+			         "serviceName": "nausf-auth-01",
+			         "version": "v1",
+			         "schema": "https://",
+			         "fqdn": "seliius03695.seli.gic.ericsson.se",
+			         "ipEndPoints": [
+			           {
+			             "ipv4Address": "127.0,0,1",
+			             "ipv6Address": "FF01::1101",
+			             "ipv6Prefix": "FF01",
+			             "port": 30080
+			           }
+			         ],
+			         "apiPrefix": "nudm-uecm",
+			         "defaultNotificationSubscriptions": [
+			           {
+			             "callbackUri": "https://seliius03695.seli.gic.ericsson.se"
+			           }
+			         ],
+			         "capacity": 1,
+			         "priority": 1,
+			         "supportedFeatures": "supportedFeatures-01"
+			       }
+			     ]
+			   }
+			]
+	}

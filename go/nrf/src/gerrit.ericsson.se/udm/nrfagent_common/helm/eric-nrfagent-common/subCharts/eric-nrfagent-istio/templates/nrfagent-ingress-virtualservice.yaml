@@ -1,0 +1,18 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ .Values.global.nf_instance_name }}-nrf-agent-virtualservice
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - {{ .Values.istio.gatewayName }}
+  http:
+  - match:
+    - uri:
+        prefix: /nrf-notify-agent
+    route:
+    - destination:
+        host: {{ .Values.global.nf_instance_name }}-{{ .Values.service.name_nrfagent_ntf }}
+        port:
+          number: {{ .Values.serviceport.ntf_h2_withouttls }}

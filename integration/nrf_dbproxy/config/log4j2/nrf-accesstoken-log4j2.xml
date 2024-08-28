@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="off">
+  <Properties>
+    <Property name="NETWORK_FUNCTION">NRF</Property>
+    <Property name="SERVICE_ID">eric-nrf-nnrf-accesstoken</Property>
+  </Properties>
+  <appenders> 
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout>
+        <pattern>{"version":"0.2.0","timestamp":"%d{yyyy-MM-dd'T'HH:mm:ssZZ}","severity":"%level{TRACE=debug,DEBUG=debug,INFO=info,WARN=warning,ERROR=error,FATAL=critical}","service_id":"${SERVICE_ID}","metadata":{"function":"${NETWORK_FUNCTION}","ul_id":"%F:%L"},"message":"%m"}%n</pattern>
+      </PatternLayout>
+    </Console>
+  </appenders>
+  <loggers>
+    <logger name="org.apache.geode" level="off" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="org.apache.geode.internal.cache.GemFireCacheImpl" level="off" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="org.apache.geode.cache.client.internal.PoolImpl" level="off" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="org.apache.geode.internal.cache.LocalRegion" level="off" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="org.apache.geode.cache.client.internal.pooling.ConnectionManagerImpl" level="off" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="org.apache.geode.cache.client.internal.AutoConnectionSourceImpl" level="off" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="org.apache.geode.distributed.internal.tcpserver.TcpClient" level="off" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="io.grpc.netty.NettyServerHandler" level="off" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <root level="info">
+      <appender-ref ref="Console"/>
+    </root>
+  </loggers>
+</Configuration>

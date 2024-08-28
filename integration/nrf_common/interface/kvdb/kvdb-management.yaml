@@ -1,0 +1,393 @@
+openapi: 3.0.0
+info:
+  version: '1.0.0'
+  title: 'KVDB AG management interface'
+  description: 'KVDB AG management interface specification'
+servers:
+  - url: http://{apiRoot}/kvdb-ag/management/v1
+    variables:
+      apiRoot:
+        default: kvdb-ag.com
+        description: address for accessing KVDB AG management interface
+paths:
+  '/app-jars/partitioners':
+    get:
+      summary: Get information about all uploaded partitioners
+      operationId: GetPartitionersInfo
+      responses:
+        '200':
+          description: Requested paritioners information returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Partitioners'
+        '500':
+          description: Failure to retrive information on all uploaded partitioners
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '504':
+          description: Failure to retrive requested partitioner information due to not being able to connect to a
+                       database cluster locator
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+    post:
+      summary: Upload a new partitioner with the given name
+      operationId: UploadPartitioner
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                fileName:
+                  type: string
+                  format: binary
+        required: true
+      responses:
+        '201':
+          description: Expected response to a successful upload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Partitioner'
+        '500':
+          description: Expected response to an erroneous upload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        default:
+          description: Unexpected error
+  '/app-jars/partitioners/initial-deployment-done':
+    get:
+      summary: Get the initial partitioner deployment status
+      operationId: GetInitialPartitionerDeploymentStatus
+      responses:
+        '200':
+          description: All necessary partitioners were deployed and servers can now be started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InitialPartitionersDeploymentStatus'
+        '404':
+          description: All necessary partitioners were not deployed and servers cannot be started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InitialPartitionersDeploymentStatus'
+        '500':
+          description: Failure to retrive initial deployment status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        default:
+          description: Unexpected error
+    post:
+      summary: Set the initial partitioner deployment status to true
+      operationId: DeploymentStatusTrue
+      responses:
+        '200':
+          description: Expected response to successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GfshCommandId'
+        '500':
+          description: Expected response to an erroneous operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        default:
+          description: Unexpected error
+    delete:
+      summary: Set the initial partitioner deployment status to false
+      operationId: DeploymentStatusFalse
+      responses:
+        '200':
+          description: Expected response to successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GfshCommandId'
+        '500':
+          description: Expected response to an erroneous operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        default:
+          description: Unexpected error
+  '/app-jars/partitioners/{name}':
+    parameters:
+    - name: name
+      in: path
+      description: Partitioner name
+      required: true
+      schema:
+        type: string
+    get:
+      summary: Get information about the partitioner with the given name
+      operationId: GetPartitionerInfo
+      responses:
+        '200':
+          description: Requested paritioner status returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Partitioner'
+        '404':
+          description: Partitioner with the provided name was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: Failure to retrive requested partitioner information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '504':
+          description: Failure to retrive requested partitioner information due to not being able to connect to a
+                       database cluster locator
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+    delete:
+      summary: Delete (and undeploy) partitioner with the given name (NOT YET IMPLEMENTED)
+      operationId: DeletePartitioner
+      responses:
+        '204':
+          description: Expected response to a successful deletion
+        '500':
+          description: Expected response to a erroneous deletion
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        default:
+          description: Unexpected error
+  '/gfsh-commands':
+    get:
+      summary: Get list of commands
+      operationId: GetCommandList
+      responses:
+        '200':
+          description: List of scheduled commands
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GfshCommands'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '401':
+          description: Unauthorized (NOT YET IMPLEMENTED)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '403':
+          description: Forbidden (NOT YET IMPLEMENTED)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '504':
+          description: Not able to connect to a database locator to schedule command execution (NOT YET IMPLEMENTED)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        default:
+          description: Unexpected error
+    post:
+      summary: Schedule GFSH command execution
+      operationId: AddCommand
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GfshCommand'
+        required: true
+      responses:
+        '202':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GfshCommandId'
+        '400':
+          description: Bad Request (NOT YET IMPLEMENTED)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '401':
+          description: Unauthorized (NOT YET IMPLEMENTED)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '403':
+          description: Forbidden (NOT YET IMPLEMENTED)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '504':
+          description: Not able to connect to a database locator to schedule command execution
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  '/gfsh-commands/{uuid}':
+    get:
+      summary: Get command info
+      operationId: GetCommandInfo
+      parameters:
+        - name: uuid
+          in: path
+          description: Command Identifier
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Requested Command Information returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GfshCommand'
+        '400':
+          description: Bad Request (NOT YET IMPLEMENTED)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '401':
+          description: Unauthorized (NOT YET IMPLEMENTED)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '403':
+          description: Forbidden (NOT YET IMPLEMENTED)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: Command not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: Internal Server Error (NOT YET IMPLEMENTED)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        default:
+          description: Unexpected error
+components:
+  schemas:
+    GfshCommand:
+      type: object
+      required:
+        - command
+      properties:
+        id:
+          type: string
+          format: uuid
+        command:
+          type: string
+        metadata:
+          type: string
+        output:
+          type: string
+        executionStatus:
+          type: string
+          enum:
+           - QUEUED
+           - EXECUTING
+           - EXECUTED
+        statusCode:
+          type: integer
+        receivedTimestamp:
+          format: date-time
+          type: string
+        startTimestamp:
+          format: date-time
+          type: string
+        endTimestamp:
+          format: date-time
+          type: string
+    GfshCommandId:
+      type: object
+      required:
+        - commandId
+      properties:
+        commandId:
+          type: string
+          format: uuid
+    GfshCommands:
+      type: array
+      items:
+        $ref: '#/components/schemas/GfshCommand'
+    InitialPartitionersDeploymentStatus:
+      type: object
+      required:
+       - initialPartitionersDeploymentDone
+      properties:
+        initialPartitionersDeploymentDone:
+          type: boolean
+    Partitioner:
+      type: object
+      required:
+        - name
+        - deployed
+        - uploadDirectory
+        - uploadStartTimestamp
+        - uploadEndTimestamp
+        - deployedOnMembers
+      properties:
+        name:
+          type: string
+        deployed:
+          type: boolean
+        uploadDirectory:
+          type: string
+        uploadStartTimestamp:
+          format: date-time
+          type: string
+        uploadEndTimestamp:
+          format: date-time
+          type: string
+        deployedOnMembers:
+          type: array
+          items:
+            type: string
+    Partitioners:
+      type: array
+      items:
+         $ref: '#/components/schemas/Partitioner'
+    ProblemDetails:
+      type: object
+      properties:
+        summary:
+          type: string
+        cause:
+          type: string

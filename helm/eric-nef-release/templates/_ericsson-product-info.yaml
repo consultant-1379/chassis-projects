@@ -1,0 +1,6 @@
+{{- define "eric-udm-chassis.helm-annotations" }}
+annotations:
+  ericsson.com/product-name: "TestCI"
+  ericsson.com/product-number: "UDM 1234 569/1"
+  ericsson.com/product-revision: "R1A"
+{{- end}}

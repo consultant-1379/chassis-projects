@@ -1,0 +1,129 @@
+## TODO: Provide a value.yaml used for MiniKUBE
+
+# ########################################################################### #
+# Global values
+# ########################################################################### #
+tags:
+  eric-nef-jobs: true
+  eric-data-kvdb-ag: false
+  eric-nef-nf-registration: false
+  eric-adp-5g-udm: true
+  eric-log-shipper: false
+  eric-data-visualizer-kb: false
+  eric-fh-alarm-handler: false
+  eric-fh-snmp-alarm-provider: false
+  eric-data-search-engine: false
+  eric-cm-yang-provider: true
+global:
+  timezone: UTC
+  prefix: eric
+  docker:
+    repo: selidocker.lmera.ericsson.se/proj-nef/
+  istio:
+    sidecarInjected: "false"
+  adp:
+    kafka: "eric-data-message-bus-kf:9092"
+    cm:
+      service: "http://eric-cm-mediator:5003/cm/api/v1"
+      schemaName: "ericsson-nef"
+      path: "ericsson-nef:nef"
+      subscribeLeaseTime: 3600
+      subscribeRandomBound: 120
+  eric-nef-common:
+    enabled: true
+  eric-nef-trafficinfluence:
+    enabled: true
+  nef-evex-singleton:
+    enabled: false
+  eric-nef-bdt:
+    enabled: true
+eric-nef-common:
+  eric-adp-5g-udm:
+    eric-data-message-bus-kf:
+      replicas: 1
+      memory: 512Mi
+      cpu: 50m
+      persistentVolumeClaim:
+        storage: 300Mi
+        storageClassName: standard
+    eric-cm-mediator:
+      enabled: true
+      replicaCount: 1
+      resources:
+        cm-mediator:
+          requests:
+            cpu: 10m
+            memory: 200Mi
+      service:
+        name: eric-cm-mediator
+        type: NodePort
+        nodePort: 30087
+      backend:
+        hostname: eric-data-document-database-pg
+        dbname: adp_gs_cm
+      ingress:
+        host: eric-cm-mediator.localhost
+      kafka:
+        hostname: eric-data-message-bus-kf
+        port: 9092
+    eric-data-coordinator-zk:
+      replicas: 1
+      memory: 200Mi
+      cpu: 10m
+      persistantVolumeClaim:
+        storage: 300Mi
+        storageClassName: standard
+    eric-data-document-database-pg:
+      persistence:
+        backup:
+          enabled: false
+        size: 300Mi
+        storageClass: standard
+      resources:
+        requests:
+          memory: 200Mi
+          cpu: 20m
+    eric-pm-bulk-reporter:
+      persistentVolumeClaim:
+        storageClassName: standard
+      resources:
+        bulkreporter:
+          requests:
+            cpu: 10m
+        alarmreporter:
+          requests:
+            cpu: 10m
+        pmsftp:
+          requests:
+            cpu: 10m
+    eric-cm-yang-provider:
+      persistentVolumeClaim:
+        storageClassName: standard
+      CMM:
+        host: eric-cm-mediator:5003
+eric-nef-bdt:
+  replicaCount: 1
+  resources:
+    bdt:
+      limits:
+        cpu: 50m
+        memory: 512Mi
+      requests:
+        cpu: 50m
+        memory: 500Mi
+  eric-data-wide-column-database-cd:
+    replicaCount: 1
+    resources:
+      requests:
+        memoryInMB: 1024
+        cpu: 200m
+    persistence:
+      volumeSize: 500Mi
+eric-nef-trafficinfluence:
+  requests:
+    trafficinflu:
+      cpu: 100m
+      memory: 700Mi
+  replicaCount: 1
+  nefconfig:
+    nrfUrl: http://nrf-simulator-service:80

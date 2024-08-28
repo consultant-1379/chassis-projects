@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DBProxyServer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy</a> &gt; <span class="el_source">DBProxyServer.java</span></div><h1>DBProxyServer.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy;
+
+import static java.util.concurrent.ForkJoinPool.defaultForkJoinWorkerThreadFactory;
+
+import com.google.common.util.concurrent.UncaughtExceptionHandlers;
+import ericsson.core.nrf.dbproxy.common.FragmentSessionManagement;
+import ericsson.core.nrf.dbproxy.config.ConfigLoader;
+import ericsson.core.nrf.dbproxy.config.EnvironmentConfig;
+import ericsson.core.nrf.dbproxy.functionservice.RemoteCacheClearThread;
+import ericsson.core.nrf.dbproxy.functionservice.RemoteCacheMonitorThread;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceImpl;
+import io.grpc.Server;
+import io.grpc.ServerBuilder;
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinWorkerThread;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
+import sun.misc.Signal;
+import sun.misc.SignalHandler;
+
+public class DBProxyServer {
+
+<span class="nc" id="L29">  private static final Logger LOGGER = LogManager.getLogger(DBProxyServer.class);</span>
+  private static DBProxyServer instance;
+  private Server server;
+  private boolean running;
+
+<span class="nc" id="L34">  private DBProxyServer() {</span>
+<span class="nc" id="L35">    this.running = true;</span>
+<span class="nc" id="L36">  }</span>
+
+  public static synchronized DBProxyServer getInstance() {
+<span class="nc bnc" id="L39" title="All 2 branches missed.">    if (null == instance) {</span>
+<span class="nc" id="L40">      instance = new DBProxyServer();</span>
+    }
+<span class="nc" id="L42">    return instance;</span>
+  }
+
+  public static void main(String[] args) {
+<span class="nc" id="L46">    final DBProxyServer dbProxyServer = DBProxyServer.getInstance();</span>
+
+<span class="nc" id="L48">    dbProxyServer.start();</span>
+
+<span class="nc" id="L50">    dbProxyServer.blockUntilShutdown();</span>
+
+<span class="nc bnc" id="L52" title="All 2 branches missed.">    if (dbProxyServer.isRunning()) {</span>
+<span class="nc" id="L53">      dbProxyServer.shutdown();</span>
+    }
+<span class="nc" id="L55">  }</span>
+
+  public boolean isRunning() {
+<span class="nc" id="L58">    return this.running;</span>
+  }
+
+  ExecutorService getExecutor(int asyncThreads) {
+<span class="nc" id="L62">    return new ForkJoinPool(asyncThreads,</span>
+<span class="nc" id="L63">        new ForkJoinPool.ForkJoinWorkerThreadFactory() {</span>
+<span class="nc" id="L64">          final AtomicInteger num = new AtomicInteger();</span>
+
+          @Override
+          public ForkJoinWorkerThread newThread(ForkJoinPool pool) {
+<span class="nc" id="L68">            ForkJoinWorkerThread thread = defaultForkJoinWorkerThreadFactory.newThread(pool);</span>
+<span class="nc" id="L69">            thread.setDaemon(true);</span>
+<span class="nc" id="L70">            thread.setName(&quot;server-worker-&quot; + &quot;-&quot; + num.getAndIncrement());</span>
+<span class="nc" id="L71">            return thread;</span>
+          }
+<span class="nc" id="L73">        }, UncaughtExceptionHandlers.systemExit(), true /* async */);</span>
+  }
+
+  private Boolean isAsyncExecutorEnabled() {
+<span class="nc" id="L77">    boolean isAsyncExecutorEnabled = true;</span>
+    try {
+<span class="nc" id="L79">      String internalConf = EnvironmentConfig.getInstance().getInternalConf();</span>
+<span class="nc" id="L80">      String content = null;</span>
+<span class="nc" id="L81">      content = FileUtils.readFileToString(new File(internalConf), &quot;UTF-8&quot;);</span>
+<span class="nc" id="L82">      JSONObject jsonObject = new JSONObject(content);</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">      if (jsonObject.has(&quot;async-executor-enabled&quot;)) {</span>
+<span class="nc" id="L84">        isAsyncExecutorEnabled = jsonObject.getString(&quot;async-executor-enabled&quot;).equals(&quot;true&quot;);</span>
+      }
+<span class="nc" id="L86">    } catch (IOException e) {</span>
+<span class="nc" id="L87">      LOGGER.error(e.toString());</span>
+<span class="nc" id="L88">    }</span>
+<span class="nc" id="L89">    return isAsyncExecutorEnabled;</span>
+  }
+
+  private int getAsyncThreadNum() {
+<span class="nc" id="L93">    int asyncThreads = Runtime.getRuntime().availableProcessors();</span>
+    try {
+<span class="nc" id="L95">      String internalConf = EnvironmentConfig.getInstance().getInternalConf();</span>
+<span class="nc" id="L96">      String content = null;</span>
+<span class="nc" id="L97">      content = FileUtils.readFileToString(new File(internalConf), &quot;UTF-8&quot;);</span>
+<span class="nc" id="L98">      JSONObject jsonObject = new JSONObject(content);</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">      if (jsonObject.has(&quot;async-threadnum-factor&quot;)) {</span>
+<span class="nc" id="L100">        String factorstr = jsonObject.getString(&quot;async-threadnum-factor&quot;);</span>
+<span class="nc" id="L101">        double factor = Double.parseDouble(factorstr);</span>
+<span class="nc" id="L102">        asyncThreads = (int) (asyncThreads * factor);</span>
+      }
+<span class="nc" id="L104">    } catch (IOException e) {</span>
+<span class="nc" id="L105">      LOGGER.error(e.toString());</span>
+<span class="nc" id="L106">    }</span>
+<span class="nc" id="L107">    return asyncThreads;</span>
+  }
+
+  private void start() {
+<span class="nc" id="L111">    LOGGER.debug(&quot;DBProxy Server is starting&quot;);</span>
+
+<span class="nc" id="L113">    DBProxySignalHandler signalHandler = new DBProxySignalHandler();</span>
+<span class="nc" id="L114">    Signal.handle(new Signal(&quot;TERM&quot;), signalHandler);</span>
+<span class="nc" id="L115">    Signal.handle(new Signal(&quot;INT&quot;), signalHandler);</span>
+
+<span class="nc" id="L117">    FragmentSessionManagement.getInstance().initialize();</span>
+<span class="nc" id="L118">    ConfigLoader.getInstance().start();</span>
+
+<span class="nc" id="L120">    RemoteCacheMonitorThread.getInstance().start();</span>
+<span class="nc" id="L121">    RemoteCacheClearThread.getInstance().start();</span>
+
+<span class="nc" id="L123">    boolean listenOk = false;</span>
+<span class="nc" id="L124">    int asyncThreadnum = getAsyncThreadNum();</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">    if (asyncThreadnum &lt;= 0) {</span>
+<span class="nc" id="L126">      asyncThreadnum = 1;</span>
+    }
+<span class="nc" id="L128">    LOGGER.debug(&quot;async thread num = &quot; + asyncThreadnum);</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">    while (!listenOk) {</span>
+      try {
+<span class="nc bnc" id="L131" title="All 2 branches missed.">        if (isAsyncExecutorEnabled()) {</span>
+<span class="nc" id="L132">          LOGGER.debug(&quot;enabled async executor&quot;);</span>
+<span class="nc" id="L133">          server = ServerBuilder.forPort(EnvironmentConfig.getInstance().getGRPCPort())</span>
+<span class="nc" id="L134">              .addService(new NFDataManagementServiceImpl())</span>
+<span class="nc" id="L135">              .executor(getExecutor(asyncThreadnum))</span>
+<span class="nc" id="L136">              .build().start();</span>
+        } else {
+<span class="nc" id="L138">          LOGGER.debug(&quot;disabled async executor&quot;);</span>
+<span class="nc" id="L139">          server = ServerBuilder.forPort(EnvironmentConfig.getInstance().getGRPCPort())</span>
+<span class="nc" id="L140">              .addService(new NFDataManagementServiceImpl())</span>
+<span class="nc" id="L141">              .build().start();</span>
+        }
+<span class="nc" id="L143">        listenOk = true;</span>
+<span class="nc" id="L144">      } catch (IOException | IllegalStateException e) {</span>
+<span class="nc" id="L145">        LOGGER.error(e.toString());</span>
+<span class="nc" id="L146">        LOGGER.error(&quot;Fail to listen on port = {}&quot;, EnvironmentConfig.getInstance().getGRPCPort());</span>
+<span class="nc" id="L147">      }</span>
+
+<span class="nc bnc" id="L149" title="All 2 branches missed.">      if (!listenOk) {</span>
+<span class="nc" id="L150">        LOGGER.error(&quot;Sleep 5 seconds and try to listen again&quot;);</span>
+        try {
+<span class="nc" id="L152">          Thread.sleep(5000);</span>
+<span class="nc" id="L153">        } catch (Exception e) {</span>
+<span class="nc" id="L154">          LOGGER.error(e.toString());</span>
+<span class="nc" id="L155">        }</span>
+      }
+    }
+
+<span class="nc" id="L159">    LOGGER.debug(</span>
+        &quot;DBProxy Server has been started successfully, listening on port &quot; + EnvironmentConfig
+<span class="nc" id="L161">            .getInstance().getGRPCPort());</span>
+
+<span class="nc" id="L163">    Runtime.getRuntime().addShutdownHook(new Thread(DBProxyServer.this::shutdown));</span>
+
+<span class="nc" id="L165">  }</span>
+
+  private void shutdown() {
+<span class="nc" id="L168">    this.running = false;</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">    if (server != null) {</span>
+<span class="nc" id="L170">      LOGGER.warn(&quot;Shutdown GRPC server&quot;);</span>
+<span class="nc" id="L171">      server.shutdown();</span>
+<span class="nc" id="L172">      server = null;</span>
+    }
+
+<span class="nc" id="L175">  }</span>
+
+  private void blockUntilShutdown() {
+<span class="nc bnc" id="L178" title="All 2 branches missed.">    if (server != null) {</span>
+      try {
+<span class="nc" id="L180">        server.awaitTermination();</span>
+<span class="nc" id="L181">      } catch (InterruptedException e) {</span>
+<span class="nc" id="L182">        LOGGER.error(e.toString());</span>
+<span class="nc" id="L183">        LOGGER.error(&quot;Exception occurs while waiting for DBProxy Server Termination&quot;);</span>
+<span class="nc" id="L184">        Thread.currentThread().interrupt();</span>
+<span class="nc" id="L185">      }</span>
+    }
+<span class="nc" id="L187">  }</span>
+
+<span class="nc" id="L189">  class DBProxySignalHandler implements SignalHandler {</span>
+
+    public void handle(Signal signal) {
+<span class="nc" id="L192">      LOGGER.warn(&quot;Catch signal = &quot; + signal.getName());</span>
+<span class="nc" id="L193">      LOGGER.warn(&quot;Sleep 10 seconds before shutdown DBProxy Server&quot;);</span>
+      try {
+<span class="nc" id="L195">        Thread.sleep(10000);</span>
+<span class="nc" id="L196">      } catch (Exception e) {</span>
+<span class="nc" id="L197">        LOGGER.error(e.toString());</span>
+<span class="nc" id="L198">      }</span>
+
+<span class="nc" id="L200">      DBProxyServer.getInstance().shutdown();</span>
+<span class="nc" id="L201">    }</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

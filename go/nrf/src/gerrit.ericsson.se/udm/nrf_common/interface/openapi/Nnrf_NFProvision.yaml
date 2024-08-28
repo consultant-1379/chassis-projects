@@ -1,0 +1,764 @@
+openapi: 3.0.0
+info:
+  version: '1.PreR15.1.0'
+  title: NRF Provisioning Service
+  description: NRF Provisioning Service
+servers:
+  - url: 'https://{apiRoot}/nnrf-prov/v1'
+    variables:
+      apiRoot:
+        default: demohost.com
+        description: apiRoot as defined in subclause subclause 4.4 of 3GPP TS 29.501
+paths:
+  /nrf-addresses:
+    get:
+      summary: Retrieves a collection of PLMN NRF Addresses
+      operationId: GetNRFAddresses
+      tags:
+        - PLMN NRF Addresses (Collection)
+      parameters:
+        - name: servingPlmn
+          in: query
+          description: The ID of the PLMN where the NRF is located
+          required: false
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlmnNRFAddress'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500' 
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    post:
+      summary: Create new NRF address(es) for one PLMN
+      operationId: CreateNRFAddress
+      tags:
+        - PLMN NRF Addresses (Collection)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlmnNRFAddress'
+        required: true
+      responses:
+        '201':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlmnNRFAddress'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500' 
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+  '/nrf-addresses/{nrfAddressId}':
+    get:
+      summary: Read PLMN NRF address(es)
+      operationId: GetNRFAddress
+      tags:
+        - PLMN NRF Address ID (Document)
+      parameters:
+        - name: nrfAddressId
+          in: path
+          description: Unique ID of the Plmn NRF Address
+          required: true
+          schema:
+            $ref: '#/components/schemas/NRFAddressId'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlmnNRFAddress'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500' 
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    put:
+      summary: Update PLMN NRF Address(es)
+      operationId: UpdateNRFAddress
+      tags:
+        - PLMN NRF Address ID (Document)
+      parameters:
+        - name: nrfAddressId
+          in: path
+          required: true
+          description: Unique ID of the Plmn NRF Address
+          schema:
+            $ref: '#/components/schemas/NRFAddressId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlmnNRFAddress'
+        required: true
+      responses:
+        '200':
+          description: OK (Profile Replacement)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlmnNRFAddress'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500' 
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    delete:
+      summary: Delete PLMN NRF Address(es)
+      operationId: DeletePlmnNRFAddress
+      tags:
+        - PLMN NRF Address ID (Document)
+      parameters:
+        - name: nrfAddressId
+          in: path
+          required: true
+          description: Unique ID of the Plmn NRF Address
+          schema:
+            $ref: '#/components/schemas/NRFAddressId'
+      responses:
+        '204':
+          description: Expected response to a successful deletion
+  /group-profiles/supi-groups/:
+    get:
+      summary: Retrieves a collection of Supi group profile
+      operationId: GetSupiGroupProfile
+      tags:
+        - Supi Group Profiles (Store)
+      parameters:
+        - name: nfType
+          in: query
+          description: Type of NF
+          required: false
+          schema:
+            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFType'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:			
+                  $ref: '#/components/schemas/SupiGroupProfile'      
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500' 
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    post:
+      summary: Create a new supi group profile
+      operationId: CreateSupiGroupProfile
+      tags:
+        - Supi Group Profiles (Collection)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupiGroupProfile'
+        required: true
+      responses:
+        '201':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupiGroupProfile'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+  '/group-profiles/supi-groups/{groupProfileID}':
+    get:
+      summary: Read the Supi Group Profile
+      operationId: GetSupiGroupProfile
+      tags:
+        - Supi Group Profile ID (Document)
+      parameters:
+        - name: groupProfileID
+          in: path
+          description: Unique ID of the Group Profile
+          required: true
+          schema:
+            $ref: '#/components/schemas/GroupProfileID'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupiGroupProfile'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'          
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    put:
+      summary: Update a Supi Group Profile
+      operationId: UpdateSupiGroupProfile
+      tags:
+        - Supi Group Profile ID (Document)
+      parameters:
+        - name: groupProfileID
+          in: path
+          required: true
+          description: Unique ID of the Group Profile
+          schema:
+            $ref: '#/components/schemas/GroupProfileID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupiGroupProfile'
+        required: true
+      responses:
+        '200':
+          description: OK (Profile Replacement)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupiGroupProfile'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    delete:
+      summary: Delete a Supi Group Profile
+      operationId: DeleteSupiGroupProfile
+      tags:
+        - Supi Group Profile ID (Document)
+      parameters:
+        - name: groupProfileID
+          in: path
+          required: true
+          description: Unique ID of the Group Profile
+          schema:
+            $ref: '#/components/schemas/GroupProfileID'
+      responses:
+        '204':
+          description: Expected response to a successful deletion
+  /group-profiles/gpsi-groups/:
+    get:
+      summary: Retrieves a collection of Gpsi group profile
+      operationId: GetGpsiGroupProfile
+      tags:
+        - Gpsi Group Profiles (Store)
+      parameters:
+        - name: nfType
+          in: query
+          description: Type of NF
+          required: false
+          schema:
+            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFType'
+        - name: groupId
+          in: query
+          description: GroupId
+          required: false
+          schema:
+            $ref: '#/components/schemas/GroupID'			
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:				
+                  $ref: '#/components/schemas/GpsiGroupProfile'      
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500' 
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    post:
+      summary: Create a new gpsi group profile
+      operationId: CreateGpsiGroupProfile
+      tags:
+        - Gpsi Group Profiles (Collection)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GpsiGroupProfile'
+        required: true
+      responses:
+        '201':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GpsiGroupProfile'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+  '/group-profiles/gpsi-groups/{groupProfileID}':
+    get:
+      summary: Read the Gpsi Group Profile
+      operationId: GetGpsiGroupProfile
+      tags:
+        - Gpsi Group Profile ID (Document)
+      parameters:
+        - name: groupProfileID
+          in: path
+          description: Unique ID of the Group Profile
+          required: true
+          schema:
+            $ref: '#/components/schemas/GroupProfileID'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GpsiGroupProfile'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'          
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    put:
+      summary: Update a Gpsi Group Profile
+      operationId: UpdateGpsiGroupProfile
+      tags:
+        - Gpsi Group Profile ID (Document)
+      parameters:
+        - name: groupProfileID
+          in: path
+          required: true
+          description: Unique ID of the Group Profile
+          schema:
+            $ref: '#/components/schemas/GroupProfileID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GpsiGroupProfile'
+        required: true
+      responses:
+        '200':
+          description: OK (Profile Replacement)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GpsiGroupProfile'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default' 
+    delete:
+      summary: Delete a Gpsi Group Profile
+      operationId: DeleteGpsiGroupProfile
+      tags:
+        - Gpsi Group Profile ID (Document)
+      parameters:
+        - name: groupProfileID
+          in: path
+          required: true
+          description: Unique ID of the Group Profile
+          schema:
+            $ref: '#/components/schemas/GroupProfileID'
+      responses:
+        '204':
+          description: Expected response to a successful deletion 
+  /subscriptions:
+    get:
+      summary: Retrieves a collection of NF Subscriptions
+      operationId: GetNFSubscriptions
+      tags:
+        - Subscriptions (Collection)
+      parameters:
+        - name: subs-by-nfStatusNotificationUri
+          in: query
+          description: Callback URI of NF Service Consumer by whom the subscription from
+          required: false
+          schema:
+            type: string
+        - name: subs-to-nfInstanceId
+          in: query
+          description: The NFInstanceId which is subscribed to
+          required: false
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        - name: subscriptionId
+          in: query
+          description: Unique ID of the subscription
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: TS29510_Nnrf_NFManagement.yaml#/components/schemas/SubscriptionData
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+  /nf-instances:
+    get:
+      summary: Retrieves a collection of NF Instances
+      operationId: GetNFInstances
+      tags:
+        - NF Instances (Store)
+      parameters:
+        - name: nf-type
+          in: query
+          description: Type of NF
+          required: false
+          schema:
+            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFType'
+        - name: limit
+          in: query
+          description: How many items to return at one time
+          required: false
+          schema:
+            type: integer
+        - name: is-provisioned
+          in: query
+          description: Indication whether NFProfile is provisoned or not
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/3gppHal+json:
+              schema:
+                type: object
+                properties:
+                  _links:
+                    type: object
+                    description: 'List of the URI of NF instances. It has two members whose names are item and self. The item one contains an array of URIs.'
+                    additionalProperties:
+                      $ref: 'TS29571_CommonData.yaml#/components/schemas/LinksValueSchema'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+  '/nf-instances/{nfInstanceID}':
+    get:
+      summary: Read the profile of a given NF Instance
+      operationId: GetNFInstance
+      tags:
+        - NF Instance ID (Document)
+      parameters:
+        - name: nfInstanceID
+          in: path
+          description: Unique ID of the NF Instance
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFProfile'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    put:
+      summary: Register a new NF Instance
+      operationId: RegisterNFInstance
+      tags:
+        - NF Instance ID (Document)
+      parameters:
+        - name: nfInstanceID
+          in: path
+          required: true
+          description: Unique ID of the NF Instance to register
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFProfile'
+        required: true
+      responses:
+        '200':
+          description: OK (Profile Replacement)
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFProfile'
+        '201':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFProfile'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    patch:
+      summary: Update NF Instance profile
+      operationId: UpdateNFInstance
+      tags:
+        - NF Instance ID (Document)
+      parameters:
+        - name: nfInstanceID
+          in: path
+          required: true
+          description: Unique ID of the NF Instance to update
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              type: array
+              items:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchItem'
+        required: true
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFProfile'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    delete:
+      summary: Deregisters a given NF Instance
+      operationId: DeregisterNFInstance
+      tags:
+        - NF Instance ID (Document)
+      parameters:
+        - name: nfInstanceID
+          in: path
+          required: true
+          description: Unique ID of the NF Instance to deregister
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+      responses:
+        '204':
+          description: Expected response to a successful deregistration
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+components:
+  schemas:
+    PlmnNRFAddress:
+      type: object
+      required:
+        - nrfAddressId
+        - servingPlmn
+        - nrfAddresses
+      properties:
+        nrfAddressId:
+          readOnly: true
+          allOf:
+            - $ref: '#/components/schemas/NRFAddressId'
+        servingPlmn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        nrfAddresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/NRFEndPoint'
+    NRFEndPoint:
+      type: object
+      required:
+        - scheme
+        - address
+        - port
+      properties:
+        scheme:
+          type: string
+        address:
+          $ref: '#/components/schemas/NRFAddr'
+        port:
+          type: integer
+    Fqdn:
+      type: string
+    NRFAddressId:
+      type: string
+    SupiGroupProfile:
+      type: object
+      required:
+        - groupProfileId
+        - nfType
+        - supiRanges
+        - groupId
+      properties:
+        groupProfileId:
+          readOnly: true
+          allOf:
+            - $ref: '#/components/schemas/GroupProfileID'
+        nfType:
+          type: array
+          items:
+            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFType'
+        supiRanges:
+          type: array
+          items:
+            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/SupiRanges'
+        groupId:
+          $ref: '#/components/schemas/GroupID'
+    GpsiGroupProfile:
+      type: object
+      required:
+        - groupProfileId
+        - nfType
+        - gpsiRanges
+        - groupId
+      properties:
+        groupProfileId:
+          readOnly: true
+          allOf:
+            - $ref: '#/components/schemas/GroupProfileID'
+        nfType:
+          type: array
+          items:
+            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFType'
+        gpsiRanges:
+          type: array
+          items:
+            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/IdentityRange'
+        groupId:
+          $ref: '#/components/schemas/GroupID'        
+    GroupProfileID:
+      type: string
+    GroupID:
+      type: string
+    NRFAddr:
+      oneOf:
+        - type: object
+          properties:
+            fqdn:
+              $ref: '#/components/schemas/Fqdn'
+        - type: object
+          properties:
+            ipv4Address:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+        - type: object
+          properties:
+            ipv6Address:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
+

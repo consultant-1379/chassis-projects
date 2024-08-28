@@ -1,0 +1,266 @@
+{
+  "nfInstanceId": "12345678-9udm-def0-1000-100000000100",
+  "nfType": "UDM",
+  "nfStatus": "REGISTERED",
+  "plmn": {
+    "mcc": "460",
+    "mnc": "00"
+  },
+  "sNssais": [
+    {
+      "sst": 0,
+      "sd": "0"
+    },
+    {
+      "sst": 1,
+      "sd": "1"
+    }   
+  ],
+  "nsiList": [
+    "111111",
+    "222222",
+    "333333"
+  ],
+  "fqdn": "seliius03696.seli.gic.ericsson.se",
+  "ipv4Addresses": [
+    "172.16.208.1", "172.16.208.2", "172.16.208.3", "172.16.208.4", "172.16.208.5" , "172.16.208.6" , "172.16.208.7", "172.16.208.8"],
+  "capacity": 100,
+  "udmInfo": {
+    "supiRanges": [
+        {
+          "pattern":"^imsi-60000\\d{4}$"
+        }
+     ],  
+    "gpsiRanges": [
+      {
+        "pattern":"^msisdn-42345678904\\d{4}$"
+      }  
+    ],
+    "externalGroupIdentityfiersRanges": [
+	  {
+        "pattern":"^msisdn-52345678905\\d{4}$"
+      } 
+    ],
+	"routingIndicator": "4321"  
+  },
+  "nfServices": [
+    {
+      "serviceInstanceId": "nudm-uecm-01",
+      "serviceName": "nudm-comm",
+      "version": [{
+        "apiVersionInUri":"v1",
+        "apiFullVersion": "1.R15.1.1 " ,
+        "expiry":"2020-07-06T02:54:32Z"}],
+      "schema": "https",
+      "fqdn": "seliius03690.seli.gic.ericsson.se",
+       "ipEndPoints":[
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30088
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30089
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0002",
+          "transport": "TCP",
+          "port": 30090
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30089
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30089
+        }
+      ],
+      "defaultNotificationSubscriptions": [
+        {
+          "notificationType": "N1_MESSAGES",
+          "callbackUri": "/nnrf-nfm/v1/nf-instances/udm-5g-01",
+          "n1MessageClass": "5GMM",
+          "n2InformationClass": "SM"
+        }
+      ],
+      "supportedFeatures":"A0A0"
+    },
+    {
+      "serviceInstanceId": "nudm-uecm-02",
+      "serviceName": "nudm-comm",
+      "version": [{
+        "apiVersionInUri":"v1",
+        "apiFullVersion": "1.R15.1.1 " ,
+        "expiry":"2020-07-06T02:54:32Z"}],
+      "schema": "https",
+      "fqdn": "seliius03690.seli.gic.ericsson.se",
+       "ipEndPoints":[
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30088
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30089
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0002",
+          "transport": "TCP",
+          "port": 30090
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30089
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30089
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30089
+        }
+      ],
+       "supportedFeatures":"A0A0"
+    },
+    {
+      "serviceInstanceId": "nudm-uecm-03",
+      "serviceName": "nudm-comm",
+      "version": [{
+        "apiVersionInUri":"v1",
+        "apiFullVersion": "1.R15.1.1 " ,
+        "expiry":"2020-07-06T02:54:32Z"}],
+      "schema": "https",
+      "fqdn": "seliius03690.seli.gic.ericsson.se",
+       "ipEndPoints":[
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30088
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30089
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0002",
+          "transport": "TCP",
+          "port": 30090
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30089
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30089
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30089
+        }
+      ],
+       "supportedFeatures":"A0A0"
+    },
+    {
+      "serviceInstanceId": "nudm-uecm-04",
+      "serviceName": "nudm-comm",
+      "version": [{
+        "apiVersionInUri":"v1",
+        "apiFullVersion": "1.R15.1.1 " ,
+        "expiry":"2020-07-06T02:54:32Z"}],
+      "schema": "https",
+      "fqdn": "seliius03690.seli.gic.ericsson.se",
+       "ipEndPoints":[
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30088
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30089
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0002",
+          "transport": "TCP",
+          "port": 30090
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30089
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30089
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30089
+        }
+      ],
+       "supportedFeatures":"A0A0"
+    },
+    {
+      "serviceInstanceId": "nudm-uecm-05",
+      "serviceName": "nudm-comm",
+      "version": [{
+        "apiVersionInUri":"v1",
+        "apiFullVersion": "1.R15.1.1 " ,
+        "expiry":"2020-07-06T02:54:32Z"}],
+      "schema": "https",
+      "fqdn": "seliius03690.seli.gic.ericsson.se",
+       "ipEndPoints":[
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30088
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30089
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0002",
+          "transport": "TCP",
+          "port": 30090
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30089
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30089
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30089
+        }
+      ],
+       "supportedFeatures":"A0A0"
+    }
+  ]
+}

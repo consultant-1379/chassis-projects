@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "eric-nef-nf-registration.name" . }}-config
+  labels:
+    app.kubernetes.io/name: {{ include "eric-nef-nf-registration.name" . }}
+    app.kubernetes.io/version: {{ include "eric-nef-nf-registration.version" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ template "eric-nef-nf-registration.chart" . }}
+  annotations:
+        {{- include "eric-nef-nf-registration.product-info" . | nindent 4 }}
+
+data:
+  NF_CM_PROFILE_NAME: {{ .Values.global.adp.cm.schemaName | quote}}
+  NF_PROFILE_PATH: {{ .Values.global.adp.cm.path | quote}}
+  GLOBAL_PREFIX: "eric" # keeping this before there is solution for discover name overridden nef services
+  NRF_AGENT_URI: {{ .Values.config.nrfAgentUri | quote}}
+  SERVICE_NAME_MAP: {{ toJson .Values.config.serviceNameMap | quote}}
+  HEARTBEAT_INTERVAL: {{ .Values.config.heartbeatInterval |quote}}
+  RETRY_INTERVAL: {{ .Values.config.retryInterval | quote}}
+  RETRY_TIMES: {{ .Values.config.retryTimes | quote}}
+  NAMESPACE: {{ .Release.Namespace }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: targetnfprofiles-nef
+  labels:
+    nrf-agent-targetnfprofiles: "nef"
+data:
+  targetnfprofiles-nef-{{ .Release.Namespace }}.json: |-
+    {
+      "targetNfProfiles": [
+        {
+          "requesterNfType": "NEF",
+          "targetNfType": "UDR",
+          "targetServiceNames": [
+            "nudr-dr"
+          ],
+          "subscriptionValidityTime": 86400
+        },
+        {
+          "requesterNfType": "NEF",
+          "targetNfType": "PCF",
+          "targetServiceNames": [
+            "npcf-bdtpolicycontrol",
+            "npcf-policyauthorization"
+          ],
+          "subscriptionValidityTime": 86400
+        },
+        {
+          "requesterNfType": "NEF",
+          "targetNfType": "BSF",
+          "targetServiceNames": [
+            "nbsf-management"
+          ],
+          "subscriptionValidityTime": 86400
+        },
+        {
+          "requesterNfType": "NEF",
+          "targetNfType": "UDM",
+          "targetServiceNames": [
+            "nudm-sdm"
+          ],
+          "subscriptionValidityTime": 86400
+        }
+
+      ]
+    }
+
+
+ 

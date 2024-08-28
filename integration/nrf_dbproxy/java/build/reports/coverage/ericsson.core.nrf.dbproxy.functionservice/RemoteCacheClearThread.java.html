@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RemoteCacheClearThread.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.functionservice</a> &gt; <span class="el_source">RemoteCacheClearThread.java</span></div><h1>RemoteCacheClearThread.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.functionservice;
+
+import com.ericsson.geode.functionservice.ClearCode;
+import com.ericsson.geode.functionservice.RemoteCacheClearService;
+import ericsson.core.nrf.dbproxy.DBProxyServer;
+import ericsson.core.nrf.dbproxy.clientcache.ClientCacheService;
+import ericsson.core.nrf.dbproxy.common.Code;
+import java.util.List;
+import org.apache.geode.cache.execute.Execution;
+import org.apache.geode.cache.execute.FunctionService;
+import org.apache.geode.cache.execute.ResultCollector;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+<span class="nc" id="L15">public class RemoteCacheClearThread {</span>
+
+<span class="nc" id="L17">  private static final Logger LOGGER = LogManager.getLogger(RemoteCacheClearThread.class);</span>
+  private static RemoteCacheClearThread instance;
+
+  static {
+<span class="nc" id="L21">    instance = null;</span>
+<span class="nc" id="L22">  }</span>
+
+  private boolean running;
+  private boolean clearFlag;
+
+  public static synchronized RemoteCacheClearThread getInstance() {
+<span class="nc bnc" id="L28" title="All 2 branches missed.">    if (null == instance) {</span>
+<span class="nc" id="L29">      instance = new RemoteCacheClearThread();</span>
+    }
+<span class="nc" id="L31">    return instance;</span>
+  }
+
+  public boolean getClearFlag() {
+<span class="nc" id="L35">    return this.clearFlag;</span>
+  }
+
+  public void setClearFlag(boolean b) {
+<span class="nc" id="L39">    this.clearFlag = b;</span>
+<span class="nc" id="L40">  }</span>
+
+  public boolean isRunning() {
+<span class="nc" id="L43">    return this.running;</span>
+  }
+
+  public void start() {
+<span class="nc bnc" id="L47" title="All 2 branches missed.">    if (!RemoteCacheMonitorThread.getInstance().getHostname().contains(&quot;discovery&quot;)) {</span>
+<span class="nc" id="L48">      return;</span>
+    }
+
+<span class="nc bnc" id="L51" title="All 2 branches missed.">    while (!ClientCacheService.getInstance().isAvailable()) {</span>
+<span class="nc" id="L52">      LOGGER.debug(&quot;ClientCache not available wait 1 seconds&quot;);</span>
+      try {
+<span class="nc" id="L54">        Thread.sleep(1000);</span>
+<span class="nc" id="L55">      } catch (Exception e) {</span>
+<span class="nc" id="L56">        LOGGER.error(e.toString());</span>
+<span class="nc" id="L57">      }</span>
+    }
+
+<span class="nc" id="L60">    Thread clear = new Thread(() -&gt; {</span>
+<span class="nc" id="L61">      running = true;</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">      while (DBProxyServer.getInstance().isRunning()) {</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">        while (clearFlag) {</span>
+          try {
+            Execution execution = FunctionService
+<span class="nc" id="L66">                .onRegion(ClientCacheService.getInstance().getRegion(Code.CACHENFPROFILE_INDICE))</span>
+<span class="nc" id="L67">                .setArguments(RemoteCacheMonitorThread.getInstance().getCapacity());</span>
+<span class="nc" id="L68">            ResultCollector&lt;Object, List&gt; results = execution</span>
+<span class="nc" id="L69">                .execute(new RemoteCacheClearService());</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">            if ((int) results.getResult().get(0) != ClearCode.ClearSuccess) {</span>
+<span class="nc" id="L71">              LOGGER.error(&quot;Cache Region Capacity Clear Fail&quot;);</span>
+            } else {
+<span class="nc" id="L73">              LOGGER.debug(&quot;Cache Region Capacity Clear Success&quot;);</span>
+            }
+<span class="nc" id="L75">          } catch (Exception e) {</span>
+<span class="nc" id="L76">            LOGGER.error(e.toString());</span>
+<span class="nc" id="L77">          }</span>
+<span class="nc" id="L78">          clearFlag = false;</span>
+        }
+        try {
+<span class="nc" id="L81">          Thread.sleep(500);</span>
+<span class="nc" id="L82">        } catch (Exception e) {</span>
+<span class="nc" id="L83">          LOGGER.error(e.toString());</span>
+<span class="nc" id="L84">        }</span>
+      }
+<span class="nc" id="L86">    });</span>
+
+<span class="nc" id="L88">    clear.start();</span>
+<span class="nc" id="L89">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

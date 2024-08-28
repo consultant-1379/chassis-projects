@@ -1,0 +1,48 @@
+dependencies:
+- name: eric-nrf-common
+  version: "0.26.0"
+  repository: "https://arm.lmera.ericsson.se/artifactory/proj-cicd5g-test-drop-helm"
+  condition: eric-nrf-common.enabled
+  tags:
+    - eric-nrf-common
+    - eric-nrf-all
+
+- name: eric-nrf-management
+  version: "0.26.0"
+  repository: "https://arm.epk.ericsson.se/artifactory/proj-nrf-generic-local/helm/"
+  condition: eric-nrf-management.enabled
+  tags:
+    - eric-nrf-management
+    - eric-nrf-all
+
+- name: eric-nrf-discovery
+  version: "0.26.0"
+  repository: "https://arm.epk.ericsson.se/artifactory/proj-nrf-generic-local/helm/"
+  condition: eric-nrf-discovery.enabled
+  tags:
+    - eric-nrf-discovery
+    - eric-nrf-all
+
+- name: eric-nrf-accesstoken
+  version: "0.26.0"
+  repository: "https://arm.epk.ericsson.se/artifactory/proj-nrf-generic-local/helm/"
+  condition: eric-nrf-accesstoken.enabled
+  tags:
+    - eric-nrf-accesstoken
+    - eric-nrf-all
+
+- name: eric-nrf-provision
+  version: "0.26.0"
+  repository: "https://arm.epk.ericsson.se/artifactory/proj-nrf-generic-local/helm/"
+  condition: eric-nrf-provision.enabled
+  tags:
+    - eric-nrf-provision
+    - eric-nrf-all
+
+- name: eric-nrf-dns
+  version: "0.26.0"
+  repository: "https://arm.epk.ericsson.se/artifactory/proj-nrf-generic-local/helm/"
+  condition: eric-nrf-dns.enabled
+  tags:
+    - eric-nrf-dns
+    - eric-nrf-all

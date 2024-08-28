@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+// Language Dependent Statements Start
+option java_package = "ericsson.core.nrf.dbproxy.grpc.nfmessage.nfprofile";
+option java_outer_classname = "NFProfileFilterProto";
+option go_package = "com/dbproxy/nfmessage/nfprofile";
+import "nfmessage/common/SearchParameter.proto";
+import "nfmessage/common/SearchExpression.proto";
+package grpc;
+// Language Dependent Statements End
+
+message NFProfileFilter {
+    Range expired_time_range           = 1;
+    Range last_update_time_range       = 2;
+    int32 provisioned                  = 3;
+    ProvVersion prov_version           = 4;
+    SearchExpression search_expression = 5;
+}
+
+message Range {
+    uint64 start = 1;
+    uint64 end   = 2;
+}
+
+message ProvVersion {
+    uint64 supi_version = 1;
+    uint64 gpsi_version = 2;
+}

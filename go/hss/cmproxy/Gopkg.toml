@@ -1,0 +1,15 @@
+[[constraint]]
+  revision = "47146a131734ce532ded5f5500be59ebc38d8ced"
+  name = "gerrit.ericsson.se/HSS/5G/protocols"
+
+[[constraint]]
+  branch = "master"
+  name = "golang.org/x/net"
+
+[[constraint]]
+  name = "google.golang.org/grpc"
+  version = "=1.9.2"
+
+[prune]
+  go-tests = true
+  unused-packages = true

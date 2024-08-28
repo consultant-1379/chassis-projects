@@ -1,0 +1,4 @@
+apiVersion: v1
+description: nef common subchart
+name: eric-nef-common
+version: 0.25.0

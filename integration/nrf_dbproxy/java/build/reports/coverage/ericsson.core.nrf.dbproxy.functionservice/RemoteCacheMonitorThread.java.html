@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RemoteCacheMonitorThread.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.functionservice</a> &gt; <span class="el_source">RemoteCacheMonitorThread.java</span></div><h1>RemoteCacheMonitorThread.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.functionservice;
+
+import com.ericsson.geode.functionservice.ClearCode;
+import com.ericsson.geode.functionservice.RemoteCacheDistributeLock;
+import ericsson.core.nrf.dbproxy.DBProxyServer;
+import ericsson.core.nrf.dbproxy.clientcache.ClientCacheService;
+import ericsson.core.nrf.dbproxy.common.Code;
+import ericsson.core.nrf.dbproxy.config.GeodeConfig;
+import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+import org.apache.geode.cache.execute.Execution;
+import org.apache.geode.cache.execute.FunctionService;
+import org.apache.geode.cache.execute.ResultCollector;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+<span class="nc" id="L24">public class RemoteCacheMonitorThread {</span>
+
+<span class="nc" id="L26">  private static final Logger LOGGER = LogManager.getLogger(RemoteCacheMonitorThread.class);</span>
+  private static RemoteCacheMonitorThread instance;
+
+  static {
+<span class="nc" id="L30">    instance = null;</span>
+<span class="nc" id="L31">  }</span>
+
+<span class="nc" id="L33">  private AtomicLong putOperationCount = new AtomicLong();</span>
+<span class="nc" id="L34">  private String hostname = &quot;&quot;;</span>
+<span class="nc" id="L35">  private int capacity = 100;</span>
+<span class="nc" id="L36">  private long sleepTime = 100;</span>
+<span class="nc" id="L37">  private Map&lt;String, String&gt; lockArgs = new HashMap&lt;String, String&gt;();</span>
+<span class="nc" id="L38">  private Map&lt;String, String&gt; unlockArgs = new HashMap&lt;String, String&gt;();</span>
+
+  public static synchronized RemoteCacheMonitorThread getInstance() {
+<span class="nc bnc" id="L41" title="All 2 branches missed.">    if (null == instance) {</span>
+<span class="nc" id="L42">      instance = new RemoteCacheMonitorThread();</span>
+    }
+
+<span class="nc" id="L45">    return instance;</span>
+  }
+
+  public int getCapacity() {
+<span class="nc" id="L49">    return this.capacity;</span>
+  }
+
+  public void setCapacity(int capacity) {
+<span class="nc" id="L53">    LOGGER.debug(&quot;capacity : &quot; + capacity);</span>
+<span class="nc" id="L54">    this.capacity = capacity;</span>
+<span class="nc" id="L55">  }</span>
+
+  public void incCacheOperationCount() {
+<span class="nc" id="L58">    this.putOperationCount.incrementAndGet();</span>
+<span class="nc" id="L59">  }</span>
+
+  public void resetCacheOperationCount() {
+<span class="nc" id="L62">    this.putOperationCount.getAndSet(0);</span>
+<span class="nc" id="L63">  }</span>
+
+  public long getCacheOperationCount() {
+<span class="nc" id="L66">    return this.putOperationCount.longValue();</span>
+  }
+
+  public void setHostname() {
+    try {
+<span class="nc" id="L71">      this.hostname = InetAddress.getLocalHost().getHostName();</span>
+<span class="nc" id="L72">    } catch (Exception e) {</span>
+<span class="nc" id="L73">      this.hostname = UUID.randomUUID().toString() + System.currentTimeMillis();</span>
+<span class="nc" id="L74">      LOGGER</span>
+<span class="nc" id="L75">          .error(&quot;Get HostName fail :&quot; + e.toString() + &quot;Generator UUID as hostname : &quot; + hostname);</span>
+<span class="nc" id="L76">    }</span>
+<span class="nc" id="L77">  }</span>
+
+  public int lockDistributedlock() {
+<span class="nc" id="L80">    int ret = ClearCode.GetLockFail;</span>
+    try {
+      Execution execution = FunctionService
+<span class="nc" id="L83">          .onRegion(ClientCacheService.getInstance().getRegion(Code.DISTRIBUTEDLOCK_INDICE))</span>
+<span class="nc" id="L84">          .setArguments(lockArgs);</span>
+<span class="nc" id="L85">      ResultCollector&lt;Object, List&gt; results = execution</span>
+<span class="nc" id="L86">          .execute(new RemoteCacheDistributeLock());</span>
+<span class="nc" id="L87">      ret = (int) results.getResult().get(0);</span>
+<span class="nc" id="L88">    } catch (Exception e) {</span>
+<span class="nc" id="L89">      LOGGER.error(e.toString());</span>
+<span class="nc" id="L90">      ret = ClearCode.GetLockFail;</span>
+<span class="nc" id="L91">    }</span>
+
+<span class="nc" id="L93">    return ret;</span>
+  }
+
+  public int unlockDistributedlock() {
+<span class="nc" id="L97">    int unLockRet = ClearCode.GetLockFail;</span>
+    try {
+      Execution execution2 = FunctionService
+<span class="nc" id="L100">          .onRegion(ClientCacheService.getInstance().getRegion(Code.DISTRIBUTEDLOCK_INDICE))</span>
+<span class="nc" id="L101">          .setArguments(unlockArgs);</span>
+<span class="nc" id="L102">      ResultCollector&lt;Object, List&gt; results2 = execution2</span>
+<span class="nc" id="L103">          .execute(new RemoteCacheDistributeLock());</span>
+<span class="nc" id="L104">      unLockRet = (int) results2.getResult().get(0);</span>
+<span class="nc" id="L105">    } catch (Exception e) {</span>
+<span class="nc" id="L106">      LOGGER.error(e.toString());</span>
+<span class="nc" id="L107">      unLockRet = ClearCode.GetLockFail;</span>
+<span class="nc" id="L108">    }</span>
+
+<span class="nc" id="L110">    return unLockRet;</span>
+  }
+
+  public String getHostname() {
+<span class="nc" id="L114">    return this.hostname;</span>
+  }
+
+  public void start() {
+<span class="nc" id="L118">    setHostname();</span>
+<span class="nc" id="L119">    LOGGER.debug(&quot;Hostname: &quot; + hostname);</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">    if (!hostname.contains(&quot;discovery&quot;)) {</span>
+<span class="nc" id="L121">      return;</span>
+    }
+<span class="nc bnc" id="L123" title="All 2 branches missed.">    while (!ClientCacheService.getInstance().isAvailable()) {</span>
+<span class="nc" id="L124">      LOGGER.debug(&quot;ClientCache not available wait 1 seconds&quot;);</span>
+      try {
+<span class="nc" id="L126">        Thread.sleep(1000);</span>
+<span class="nc" id="L127">      } catch (Exception e) {</span>
+<span class="nc" id="L128">        LOGGER.error(e.toString());</span>
+<span class="nc" id="L129">      }</span>
+    }
+
+<span class="nc" id="L132">    lockArgs.put(&quot;lock&quot;, hostname);</span>
+<span class="nc" id="L133">    unlockArgs.put(&quot;unlock&quot;, hostname);</span>
+
+<span class="nc" id="L135">    AtomicBoolean b = new AtomicBoolean(false);</span>
+
+<span class="nc" id="L137">    Timer timer = new Timer();</span>
+<span class="nc" id="L138">    timer.scheduleAtFixedRate(new TimerTask() {</span>
+      @Override
+      public void run() {
+<span class="nc" id="L141">        b.set(true);</span>
+<span class="nc" id="L142">      }</span>
+<span class="nc" id="L143">    }, GeodeConfig.getRemoteCacheClearInterval(), GeodeConfig.getRemoteCacheClearInterval());</span>
+
+<span class="nc" id="L145">    Thread monitor = new Thread(() -&gt; {</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">      while (DBProxyServer.getInstance().isRunning()) {</span>
+<span class="nc bnc" id="L147" title="All 2 branches missed.">        while (getCacheOperationCount() &gt;= GeodeConfig.getRemoteCachePutCount()</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">            || b.get()) {</span>
+
+<span class="nc bnc" id="L150" title="All 2 branches missed.">          if (b.get()) {</span>
+<span class="nc" id="L151">            b.set(false);</span>
+          } else {
+<span class="nc" id="L153">            resetCacheOperationCount();</span>
+          }
+
+          try {
+<span class="nc" id="L157">            int ret = lockDistributedlock();</span>
+<span class="nc bnc" id="L158" title="All 2 branches missed.">            if (ret == ClearCode.GetLockSucc) {</span>
+<span class="nc bnc" id="L159" title="All 2 branches missed.">              if (!RemoteCacheClearThread.getInstance().getClearFlag()) {</span>
+<span class="nc" id="L160">                RemoteCacheClearThread.getInstance().setClearFlag(true);</span>
+              }
+<span class="nc bnc" id="L162" title="All 2 branches missed.">              while (RemoteCacheClearThread.getInstance().getClearFlag()) {</span>
+<span class="nc" id="L163">                LOGGER.debug(&quot;Start Clear cache&quot;);</span>
+<span class="nc" id="L164">                Thread.sleep((long) ClearCode.UpdataDistributeInterval * 1000);</span>
+<span class="nc" id="L165">                LOGGER.debug(</span>
+                    &quot;Clear cachenfprofiles not finished, still occupy distributedlock  cache capacity: &quot;
+                        + capacity);
+<span class="nc" id="L168">                int relock = lockDistributedlock();</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">                if (relock != ClearCode.GetLockSucc) {</span>
+<span class="nc" id="L170">                  LOGGER.error(&quot;Clear cachenfprofiles not finished, but lost distributedlock&quot;);</span>
+                }
+<span class="nc" id="L172">              }</span>
+
+<span class="nc" id="L174">              int unLockRet = unlockDistributedlock();</span>
+<span class="nc bnc" id="L175" title="All 2 branches missed.">              if (unLockRet == ClearCode.GetLockFail) {</span>
+<span class="nc" id="L176">                LOGGER.error(&quot;After Capacity Clear, to UnLock Distributedlock fail&quot;);</span>
+              }
+<span class="nc" id="L178">              LOGGER.debug(&quot;End Clear cache&quot;);</span>
+<span class="nc" id="L179">            } else {</span>
+<span class="nc" id="L180">              break;</span>
+            }
+<span class="nc" id="L182">          } catch (Exception e) {</span>
+<span class="nc" id="L183">            LOGGER.error(e.toString());</span>
+<span class="nc" id="L184">          }</span>
+        }
+
+        try {
+<span class="nc" id="L188">          Thread.sleep(sleepTime);</span>
+<span class="nc" id="L189">        } catch (Exception e) {</span>
+<span class="nc" id="L190">          LOGGER.error(e.toString());</span>
+<span class="nc" id="L191">        }</span>
+      }
+<span class="nc" id="L193">    });</span>
+
+<span class="nc" id="L195">    monitor.start();</span>
+<span class="nc" id="L196">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

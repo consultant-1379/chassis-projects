@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.nrfCommon.dbInit.name }}
+  labels:
+    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      name: {{ .Values.nrfCommon.dbInit.name }}
+      labels:
+        chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+      annotations:
+        sidecar.istio.io/inject: "false"
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: {{ .Values.nrfCommon.dbInit.name }}
+        image: {{ .Values.global.imageCredentials.repository }}/{{ .Values.nrfCommon.image.name }}:{{ .Values.nrfCommon.image.tag }}
+        imagePullPolicy: {{ .Values.nrfCommon.image.pullPolicy }}
+        command:
+        - /bin/pre-config-kvdb.sh
+        env:
+        - name: CACHE_REGION_ENABLED
+          value: {{ .Values.nrfCommon.dbInit.enabled }}
+        - name: KVDB_ADMIN_MGR
+          value: {{ .Values.nrfCommon.dbInit.kvdb_admin_mgr_service }}
+        - name: CM_SERVICE_NAME
+          value: {{ .Values.global.cmproxy.cmm_service }}
+        - name: CM_SCHEMA_NAME
+          value: {{ .Values.global.cmproxy.cmm_config_schema_prefix_name }}

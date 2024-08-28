@@ -1,0 +1,899 @@
+{
+    "common": [
+        {
+            "parameter": "target-nf-type",
+            "path": "body.nfType",
+            "from": "",
+            "where": "value.helper.nfType",
+            "exist_check": false
+        },
+        {
+            "parameter": "target-nf-instance-id",
+            "path": "body.nfInstanceId",
+            "from": "",
+            "where": "value.helper.nfInstanceId",
+            "exist_check": false
+        },
+        {
+            "parameter": "target-nf-fqdn",
+            "path": "body.fqdn",
+            "from": "",
+            "where": "value.helper.fqdn",
+            "exist_check": false
+        },
+        {
+            "parameter": "snssais/sst",
+            "path": "body.sNssais.sst",
+            "from": "value.helper.sNssais snssai",
+            "where": "snssai.sst",
+            "exist_check": false
+        },
+        {
+            "parameter": "snssais/sd",
+            "path": "body.sNssais.sd",
+            "from": "value.helper.sNssais snssai",
+            "where": "snssai.sd",
+            "exist_check": false
+        },
+        {
+            "parameter": "nsi-list",
+            "path": "body.nsiList",
+            "from": "value.helper.nsiList nsi",
+            "where": "nsi",
+            "exist_check": false
+        }
+    ],
+    "udr":[
+        {
+            "parameter": "supi/start",
+            "path": "body.udrInfo.supiRanges.start",
+            "from": "value.helper.udrInfo.supiRanges supi",
+            "where": "supi.start",
+            "exist_check": false
+        },
+        {
+            "parameter": "supi/end",
+            "path": "body.udrInfo.supiRanges.end",
+            "from": "value.helper.udrInfo.supiRanges supi",
+            "where": "supi.end",
+            "exist_check": false
+        },
+        {
+            "parameter": "supi/start/length",
+            "path": "body.udrInfo.supiRanges.start.length",
+            "from": "value.helper.udrInfo.supiRanges supi",
+            "where": "supi.start.length()",
+            "exist_check": false
+        },
+        {
+            "parameter": "supi/end/length",
+            "path": "body.udrInfo.supiRanges.end.length",
+            "from": "value.helper.udrInfo.supiRanges supi",
+            "where": "supi.end.length()",
+            "exist_check": false
+        },
+        {
+            "parameter": "supi/pattern",
+            "path": "body.udrInfo.supiRanges.pattern",
+            "from": "value.helper.udrInfo.supiRanges supi",
+            "where": "supi.pattern",
+            "exist_check": false
+        },
+        {
+            "parameter": "supi/absence/pattern",
+            "path": "helper.udrInfo.supiMatchAll",
+            "from": "",
+            "where": "value.helper.udrInfo.supiMatchAll",
+            "exist_check": false
+        },
+        {
+            "parameter": "gpsi/start",
+            "path": "body.udrInfo.gpsiRanges.start",
+            "from": "value.helper.udrInfo.gpsiRanges gpsi",
+            "where": "gpsi.start",
+            "exist_check": false
+        },
+        {
+            "parameter": "gpsi/end",
+            "path": "body.udrInfo.gpsiRanges.end",
+            "from": "value.helper.udrInfo.gpsiRanges gpsi",
+            "where": "gpsi.end",
+            "exist_check": false
+        },
+        {
+            "parameter": "gpsi/start/length",
+            "path": "body.udrInfo.gpsiRanges.start.length",
+            "from": "value.helper.udrInfo.gpsiRanges gpsi",
+            "where": "gpsi.start.length()",
+            "exist_check": false
+        },
+        {
+            "parameter": "gpsi/end/length",
+            "path": "body.udrInfo.gpsiRanges.end.length",
+            "from": "value.helper.udrInfo.gpsiRanges gpsi",
+            "where": "gpsi.end.length()",
+            "exist_check": false
+        },
+        {
+            "parameter": "gpsi/pattern",
+            "path": "body.udrInfo.gpsiRanges.pattern",
+            "from": "value.helper.udrInfo.gpsiRanges gpsi",
+            "where": "gpsi.pattern",
+            "exist_check": false
+        },
+        {
+            "parameter": "gpsi/absence/pattern",
+            "path": "helper.udrInfo.gpsiMatchAll",
+            "from": "",
+            "where": "value.helper.udrInfo.gpsiMatchAll",
+            "exist_check": false
+        },
+        {
+            "parameter": "external-group-identity/start",
+            "path": "body.udrInfo.externalGroupIdentifiersRanges.start",
+            "from": "value.helper.udrInfo.externalGroupIdentifiersRanges external_group_identity",
+            "where": "external_group_identity.start",
+            "exist_check": false
+        },
+        {
+            "parameter": "external-group-identity/end",
+            "path": "body.udrInfo.externalGroupIdentifiersRanges.end",
+            "from": "value.helper.udrInfo.externalGroupIdentifiersRanges external_group_identity",
+            "where": "external_group_identity.end",
+            "exist_check": false
+        },
+        {
+            "parameter": "external-group-identity/start/length",
+            "path": "body.udrInfo.externalGroupIdentifiersRanges.start.length",
+            "from": "value.helper.udrInfo.externalGroupIdentifiersRanges external_group_identity",
+            "where": "external_group_identity.start.length()",
+            "exist_check": false
+        },
+        {
+            "parameter": "external-group-identity/end/length",
+            "path": "body.udrInfo.externalGroupIdentifiersRanges.end.length",
+            "from": "value.helper.udrInfo.externalGroupIdentifiersRanges external_group_identity",
+            "where": "external_group_identity.end.length()",
+            "exist_check": false
+        },
+        {
+            "parameter": "external-group-identity/pattern",
+            "path": "body.udrInfo.externalGroupIdentifiersRanges.pattern",
+            "from": "value.helper.udrInfo.externalGroupIdentifiersRanges external_group_identity",
+            "where": "external_group_identity.pattern",
+            "exist_check": false
+        },
+        {
+            "parameter": "data-set",
+            "path": "body.udrInfo.supportedDataSets",
+            "from": "value.helper.udrInfo.supportedDataSets data_set",
+            "where": "data_set",
+            "exist_check": false
+        },
+        {
+            "parameter": "group-id-list",
+            "path": "body.udrInfo.groupId",
+            "from": "",
+            "where": "value.helper.udrInfo.groupId",
+            "exist_check": false
+        }
+    ],
+    "udm":[
+        {
+            "parameter": "supi/start",
+            "path": "body.udmInfo.supiRanges.start",
+            "from": "value.helper.udmInfo.supiRanges supi",
+            "where": "supi.start",
+            "exist_check": false
+        },
+        {
+            "parameter": "supi/end",
+            "path": "body.udmInfo.supiRanges.end",
+            "from": "value.helper.udmInfo.supiRanges supi",
+            "where": "supi.end",
+            "exist_check": false
+        },
+        {
+            "parameter": "supi/start/length",
+            "path": "body.udmInfo.supiRanges.start.length",
+            "from": "value.helper.udmInfo.supiRanges supi",
+            "where": "supi.start.length()",
+            "exist_check": false
+        },
+        {
+            "parameter": "supi/end/length",
+            "path": "body.udmInfo.supiRanges.end.length",
+            "from": "value.helper.udmInfo.supiRanges supi",
+            "where": "supi.end.length()",
+            "exist_check": false
+        },
+        {
+            "parameter": "supi/pattern",
+            "path": "body.udmInfo.supiRanges.pattern",
+            "from": "value.helper.udmInfo.supiRanges supi",
+            "where": "supi.pattern",
+            "exist_check": false
+        },
+
+        {
+            "parameter": "supi/absence/pattern",
+            "path": "helper.udmInfo.supiMatchAll",
+            "from": "",
+            "where": "value.helper.udmInfo.supiMatchAll",
+            "exist_check": false
+        },
+        {
+            "parameter": "gpsi/start",
+            "path": "body.udmInfo.gpsiRanges.start",
+            "from": "value.helper.udmInfo.gpsiRanges gpsi",
+            "where": "gpsi.start",
+            "exist_check": false
+        },
+        {
+            "parameter": "gpsi/end",
+            "path": "body.udmInfo.gpsiRanges.end",
+            "from": "value.helper.udmInfo.gpsiRanges gpsi",
+            "where": "gpsi.end",
+            "exist_check": false
+        },
+        {
+            "parameter": "gpsi/start/length",
+            "path": "body.udmInfo.gpsiRanges.start.length",
+            "from": "value.helper.udmInfo.gpsiRanges gpsi",
+            "where": "gpsi.start.length()",
+            "exist_check": false
+        },
+        {
+            "parameter": "gpsi/end/length",
+            "path": "body.udmInfo.gpsiRanges.end.length",
+            "from": "value.helper.udmInfo.gpsiRanges gpsi",
+            "where": "gpsi.end.length()",
+            "exist_check": false
+        },
+        {
+            "parameter": "gpsi/pattern",
+            "path": "body.udmInfo.gpsiRanges.pattern",
+            "from": "value.helper.udmInfo.gpsiRanges gpsi",
+            "where": "gpsi.pattern",
+            "exist_check": false
+        },
+        {
+            "parameter": "gpsi/absence/pattern",
+            "path": "helper.udmInfo.gpsiMatchAll",
+            "from": "",
+            "where": "value.helper.udmInfo.gpsiMatchAll",
+            "exist_check": false
+        },
+        {
+            "parameter": "external-group-identity/start",
+            "path": "body.udmInfo.externalGroupIdentifiersRanges.start",
+            "from": "value.helper.udmInfo.externalGroupIdentifiersRanges external_group_identity",
+            "where": "external_group_identity.start",
+            "exist_check": false
+        },
+        {
+            "parameter": "external-group-identity/end",
+            "path": "body.udmInfo.externalGroupIdentifiersRanges.end",
+            "from": "value.helper.udmInfo.externalGroupIdentifiersRanges external_group_identity",
+            "where": "external_group_identity.end",
+            "exist_check": false
+        },
+        {
+            "parameter": "external-group-identity/start/length",
+            "path": "body.udmInfo.externalGroupIdentifiersRanges.start.length",
+            "from": "value.helper.udmInfo.externalGroupIdentifiersRanges external_group_identity",
+            "where": "external_group_identity.start.length()",
+            "exist_check": false
+        },
+        {
+            "parameter": "external-group-identity/end/length",
+            "path": "body.udmInfo.externalGroupIdentifiersRanges.end.length",
+            "from": "value.helper.udmInfo.externalGroupIdentifiersRanges external_group_identity",
+            "where": "external_group_identity.end.length()",
+            "exist_check": false
+        },
+        {
+            "parameter": "external-group-identity/pattern",
+            "path": "body.udmInfo.externalGroupIdentifiersRanges.pattern",
+            "from": "value.helper.udmInfo.externalGroupIdentifiersRanges external_group_identity",
+            "where": "external_group_identity.pattern",
+            "exist_check": false
+        },
+        {
+            "parameter": "routing-indicator",
+            "path": "body.udmInfo.routingIndicators",
+            "from": "value.helper.udmInfo.routingIndicators routing_indicator",
+            "where": "routing_indicator",
+            "exist_check": false
+        },
+        {
+            "parameter": "group-id-list",
+            "path": "body.udmInfo.groupId",
+            "from": "",
+            "where": "value.helper.udmInfo.groupId",
+            "exist_check": false
+        }
+    ],
+    "ausf":[
+        {
+            "parameter": "supi/start",
+            "path": "body.ausfInfo.supiRanges.start",
+            "from": "value.helper.ausfInfo.supiRanges supi",
+            "where": "supi.start",
+            "exist_check": false
+        },
+        {
+            "parameter": "supi/end",
+            "path": "body.ausfInfo.supiRanges.end",
+            "from": "value.helper.ausfInfo.supiRanges supi",
+            "where": "supi.end",
+            "exist_check": false
+        },
+        {
+            "parameter": "supi/start/length",
+            "path": "body.ausfInfo.supiRanges.start.length",
+            "from": "value.helper.ausfInfo.supiRanges supi",
+            "where": "supi.start.length()",
+            "exist_check": false
+        },
+        {
+            "parameter": "supi/end/length",
+            "path": "body.ausfInfo.supiRanges.end.length",
+            "from": "value.helper.ausfInfo.supiRanges supi",
+            "where": "supi.end.length()",
+            "exist_check": false
+        },
+        {
+            "parameter": "supi/pattern",
+            "path": "body.ausfInfo.supiRanges.pattern",
+            "from": "value.helper.ausfInfo.supiRanges supi",
+            "where": "supi.pattern",
+            "exist_check": false
+        },
+        {
+            "parameter": "supi/absence/pattern",
+            "path": "helper.ausfInfo.supiMatchAll",
+            "from": "",
+            "where": "value.helper.ausfInfo.supiMatchAll",
+            "exist_check": false
+        },
+        {
+            "parameter": "routing-indicator",
+            "path": "body.ausfInfo.routingIndicators",
+            "from": "value.helper.ausfInfo.routingIndicators routing_indicator",
+            "where": "routing_indicator",
+            "exist_check": false
+        },
+        {
+            "parameter": "group-id-list",
+            "path": "body.ausfInfo.groupId",
+            "from": "",
+            "where": "value.helper.ausfInfo.groupId",
+            "exist_check": false
+        }
+    ],
+    "amf":[
+        {
+            "parameter": "tai/list/plmnid/mcc",
+            "path": "body.amfInfo.taiList.plmnId.mcc",
+            "from": "value.helper.amfInfo.taiList tai",
+            "where": "tai.plmnId.mcc",
+            "exist_check": false
+        },
+        {
+            "parameter": "tai/list/plmnid/mnc",
+            "path": "body.amfInfo.taiList.plmnId.mnc",
+            "from": "value.helper.amfInfo.taiList tai",
+            "where": "tai.plmnId.mnc",
+            "exist_check": false
+        },
+        {
+            "parameter": "tai/list/tac",
+            "path": "body.amfInfo.taiList.tac",
+            "from": "value.helper.amfInfo.taiList tai",
+            "where": "tai.tac",
+            "exist_check": false
+        },
+        {
+            "parameter": "tai/rangelist/plmnid/mcc",
+            "path": "body.amfInfo.taiRangeList.plmnId.mcc",
+            "from": "value.helper.amfInfo.taiRangeList tai_range",
+            "where": "tai_range.plmnId.mcc",
+            "exist_check": false
+        },
+        {
+            "parameter": "tai/rangelist/plmnid/mnc",
+            "path": "body.amfInfo.taiRangeList.plmnId.mnc",
+            "from": "value.helper.amfInfo.taiRangeList tai_range",
+            "where": "tai_range.plmnId.mnc",
+            "exist_check": false
+        },
+        {
+            "parameter": "tai/rangelist/tac/start",
+            "path": "body.amfInfo.taiRangeList.tacRangeList.start",
+            "from": "value.helper.amfInfo.taiRangeList tai_range, tai_range.tacRangeList tac_range",
+            "where": "tac_range.start",
+            "exist_check": false
+        },
+        {
+            "parameter": "tai/rangelist/tac/end",
+            "path": "body.amfInfo.taiRangeList.tacRangeList.end",
+            "from": "value.helper.amfInfo.taiRangeList tai_range, tai_range.tacRangeList tac_range",
+            "where": "tac_range.end",
+            "exist_check": false
+        },
+        {
+            "parameter": "tai/rangelist/tac/start/length",
+            "path": "body.amfInfo.taiRangeList.tacRangeList.start.length",
+            "from": "value.helper.amfInfo.taiRangeList tai_range, tai_range.tacRangeList tac_range",
+            "where": "tac_range.start.length()",
+            "exist_check": false
+        },
+        {
+            "parameter": "tai/rangelist/tac/end/length",
+            "path": "body.amfInfo.taiRangeList.tacRangeList.end.length",
+            "from": "value.helper.amfInfo.taiRangeList tai_range, tai_range.tacRangeList tac_range",
+            "where": "tac_range.end.length()",
+            "exist_check": false
+        },
+        {
+            "parameter": "tai/rangelist/tac/pattern",
+            "path": "body.amfInfo.taiRangeList.tacRangeList.pattern",
+            "from": "value.helper.amfInfo.taiRangeList tai_range, tai_range.tacRangeList tac_range",
+            "where": "tac_range.pattern",
+            "exist_check": false
+        },
+        {
+            "parameter": "amf-region-id",
+            "path": "body.amfInfo.amfRegionId",
+            "from": "",
+            "where": "value.helper.amfInfo.amfRegionId",
+            "exist_check": false
+        },
+        {
+            "parameter": "amf-set-id",
+            "path": "body.amfInfo.amfSetId",
+            "from": "",
+            "where": "value.helper.amfInfo.amfSetId",
+            "exist_check": false
+        },
+        {
+            "parameter": "guami/plmnid/mcc",
+            "path": "body.amfInfo.guamiList.plmnId.mcc",
+            "from": "value.helper.amfInfo.guamiList guami",
+            "where": "guami.plmnId.mcc",
+            "exist_check": false
+        },
+        {
+            "parameter": "guami/plmnid/mnc",
+            "path": "body.amfInfo.guamiList.plmnId.mnc",
+            "from": "value.helper.amfInfo.guamiList guami",
+            "where": "guami.plmnId.mnc",
+            "exist_check": false
+        },
+        {
+            "parameter": "guami/amfId",
+            "path": "body.amfInfo.guamiList.amfId",
+            "from": "value.helper.amfInfo.guamiList guami",
+            "where": "guami.amfId",
+            "exist_check": false
+        },
+        {
+            "parameter": "guami/backfailure/plmnid/mcc",
+            "path": "body.amfInfo.backupInfoAmfFailure.plmnId.mcc",
+            "from": "value.helper.amfInfo.backupInfoAmfFailure guami_failure",
+            "where": "guami_failure.plmnId.mcc",
+            "exist_check": false
+        },
+        {
+            "parameter": "guami/backfailure/plmnid/mnc",
+            "path": "body.amfInfo.backupInfoAmfFailure.plmnId.mnc",
+            "from": "value.helper.amfInfo.backupInfoAmfFailure guami_failure",
+            "where": "guami_failure.plmnId.mnc",
+            "exist_check": false
+        },
+        {
+            "parameter": "guami/backfailure/amfId",
+            "path": "body.amfInfo.backupInfoAmfFailure.amfId",
+            "from": "value.helper.amfInfo.backupInfoAmfFailure guami_failure",
+            "where": "guami_failure.amfId",
+            "exist_check": false
+        },
+        {
+            "parameter": "guami/backremoval/plmnid/mcc",
+            "path": "body.amfInfo.backupInfoAmfRemoval.plmnId.mcc",
+            "from": "value.helper.amfInfo.backupInfoAmfRemoval guami_removal",
+            "where": "guami_removal.plmnId.mcc",
+            "exist_check": false
+        },
+        {
+            "parameter": "guami/backremoval/plmnid/mnc",
+            "path": "body.amfInfo.backupInfoAmfRemoval.plmnId.mnc",
+            "from": "value.helper.amfInfo.backupInfoAmfRemoval guami_removal",
+            "where": "guami_removal.plmnId.mnc",
+            "exist_check": false
+        },
+        {
+            "parameter": "guami/backremoval/amfId",
+            "path": "body.amfInfo.backupInfoAmfRemoval.amfId",
+            "from": "value.helper.amfInfo.backupInfoAmfRemoval guami_removal",
+            "where": "guami_removal.amfId",
+            "exist_check": false
+        }
+    ],
+    "smf":[
+        {
+            "parameter": "snssais/sst",
+            "path": "body.smfInfo.sNssaiSmffInfoList.sNssai.sst",
+            "from": "value.helper.smfInfo.sNssaiSmfInfoList snssai_smf_info",
+            "where": "snssai_smf_info.sNssai.sst",
+            "exist_check": false
+        },
+        {
+            "parameter": "snssais/sd",
+            "path": "body.smfInfo.sNssaiSmfInfoList.sNssai.sd",
+            "from": "value.helper.smfInfo.sNssaiSmfInfoList snssai_smf_info",
+            "where": "snssai_smf_info.sNssai.sd",
+            "exist_check": false
+        },
+        {
+            "parameter": "dnn",
+            "path": "body.smfInfo.sNssaiSmfInfoList.dnnSmfInfoList.dnn",
+            "from": "value.helper.smfInfo.sNssaiSmfInfoList snssai_smf_info, snssai_smf_info.dnnSmfInfoList dnn_smf_info",
+            "where": "dnn_smf_info.dnn",
+            "exist_check": false
+        },
+        {
+            "parameter": "tai/list/plmnid/mcc",
+            "path": "body.smfInfo.taiList.plmnId.mcc",
+            "from": "value.helper.smfInfo.taiList tai",
+            "where": "tai.plmnId.mcc",
+            "exist_check": false
+        },
+        {
+            "parameter": "tai/list/plmnid/mnc",
+            "path": "body.smfInfo.taiList.plmnId.mnc",
+            "from": "value.helper.smfInfo.taiList tai",
+            "where": "tai.plmnId.mnc",
+            "exist_check": false
+        },
+        {
+            "parameter": "tai/list/tac",
+            "path": "body.smfInfo.taiList.tac",
+            "from": "value.helper.smfInfo.taiList tai",
+            "where": "tai.tac",
+            "exist_check": false
+        },
+        {
+            "parameter": "tai/rangelist/plmnid/mcc",
+            "path": "body.smfInfo.taiRangeList.plmnId.mcc",
+            "from": "value.helper.smfInfo.taiRangeList tai_range",
+            "where": "tai_range.plmnId.mcc",
+            "exist_check": false
+        },
+        {
+            "parameter": "tai/rangelist/plmnid/mnc",
+            "path": "body.smfInfo.taiRangeList.plmnId.mnc",
+            "from": "value.helper.smfInfo.taiRangeList tai_range",
+            "where": "tai_range.plmnId.mnc",
+            "exist_check": false
+        },
+        {
+            "parameter": "tai/rangelist/tac/start",
+            "path": "body.smfInfo.taiRangeList.tacRangeList.start",
+            "from": "value.helper.smfInfo.taiRangeList tai_range, tai_range.tacRangeList tac_range",
+            "where": "tac_range.start",
+            "exist_check": false
+        },
+        {
+            "parameter": "tai/rangelist/tac/end",
+            "path": "body.smfInfo.taiRangeList.tacRangeList.end",
+            "from": "value.helper.smfInfo.taiRangeList tai_range, tai_range.tacRangeList tac_range",
+            "where": "tac_range.end",
+            "exist_check": false
+        },
+        {
+            "parameter": "tai/rangelist/tac/start/length",
+            "path": "body.smfInfo.taiRangeList.tacRangeList.start.length",
+            "from": "value.helper.smfInfo.taiRangeList tai_range, tai_range.tacRangeList tac_range",
+            "where": "tac_range.start.length()",
+            "exist_check": false
+        },
+        {
+            "parameter": "tai/rangelist/tac/end/length",
+            "path": "body.smfInfo.taiRangeList.tacRangeList.end.length",
+            "from": "value.helper.smfInfo.taiRangeList tai_range, tai_range.tacRangeList tac_range",
+            "where": "tac_range.end.length()",
+            "exist_check": false
+        },
+        {
+            "parameter": "tai/rangelist/tac/pattern",
+            "path": "body.smfInfo.taiRangeList.tacRangeList.pattern",
+            "from": "value.helper.smfInfo.taiRangeList tai_range, tai_range.tacRangeList tac_range",
+            "where": "tac_range.pattern",
+            "exist_check": false
+        },
+        {
+            "parameter": "pgw",
+            "path": "body.smfInfo.pgwFqdn",
+            "from": "",
+            "where": "value.helper.smfInfo.pgwFqdn",
+            "exist_check": false
+        }
+    ],
+    "upf":[
+        {
+            "parameter": "snssais/sst",
+            "path": "body.upfInfo.sNssaiUpfInfoList.sNssai.sst",
+            "from": "value.helper.upfInfo.sNssaiUpfInfoList snssai_upf_info",
+            "where": "snssai_upf_info.sNssai.sst",
+            "exist_check": false
+        },
+        {
+            "parameter": "snssais/sd",
+            "path": "body.upfInfo.sNssaiUpfInfoList.sNssai.sd",
+            "from": "value.helper.upfInfo.sNssaiUpfInfoList snssai_upf_info",
+            "where": "snssai_upf_info.sNssai.sd",
+            "exist_check": false
+        },
+        {
+            "parameter": "dnai-list",
+            "path": "body.upfInfo.sNssaiUpfInfoList.dnnUpfInfoList.dnai",
+            "from": "value.helper.upfInfo.sNssaiUpfInfoList snssai_upf_info, snssai_upf_info.dnnUpfInfoList dnn_upf_info, dnn_upf_info.dnaiList dnai",
+            "where": "dnai",
+            "exist_check": false
+        },
+        {
+            "parameter": "dnn",
+            "path": "body.upfInfo.sNssaiUpfInfoList.dnnUpfInfoList.dnn",
+            "from": "value.helper.upfInfo.sNssaiUpfInfoList snssai_upf_info, snssai_upf_info.dnnUpfInfoList dnn_upf_info",
+            "where": "dnn_upf_info.dnn",
+            "exist_check": false
+        },
+        {
+            "parameter": "smf-serving-area",
+            "path": "body.upfInfo.smfServingArea",
+            "from": "value.helper.upfInfo.smfServingArea smf_serving_area",
+            "where": "smf_serving_area",
+            "exist_check": false
+        }
+    ],
+    "pcf":[
+        {
+            "parameter": "dnn",
+            "path": "body.pcfInfo.dnnList",
+            "from": "value.helper.pcfInfo.dnnList dnn",
+            "where": "dnn",
+            "exist_check": false
+        },
+        {
+            "parameter": "supi/start",
+            "path": "body.pcfInfo.supiRanges.start",
+            "from": "value.helper.pcfInfo.supiRanges supi",
+            "where": "supi.start",
+            "exist_check": false
+        },
+        {
+            "parameter": "supi/end",
+            "path": "body.pcfInfo.supiRanges.end",
+            "from": "value.helper.pcfInfo.supiRanges supi",
+            "where": "supi.end",
+            "exist_check": false
+        },
+        {
+            "parameter": "supi/start/length",
+            "path": "body.pcfInfo.supiRanges.start.length",
+            "from": "value.helper.pcfInfo.supiRanges supi",
+            "where": "supi.start.length()",
+            "exist_check": false
+        },
+        {
+            "parameter": "supi/end/length",
+            "path": "body.pcfInfo.supiRanges.end.length",
+            "from": "value.helper.pcfInfo.supiRanges supi",
+            "where": "supi.end.length()",
+            "exist_check": false
+        },
+        {
+            "parameter": "supi/pattern",
+            "path": "body.pcfInfo.supiRanges.pattern",
+            "from": "value.helper.pcfInfo.supiRanges supi",
+            "where": "supi.pattern",
+            "exist_check": false
+        },
+        {
+            "parameter": "supi/absence/pattern",
+            "path": "helper.pcfInfo.supiMatchAll",
+            "from": "",
+            "where": "value.helper.pcfInfo.supiMatchAll",
+            "exist_check": false
+        },
+        {
+            "parameter": "gpsi/start",
+            "path": "body.pcfInfo.gpsiRanges.start",
+            "from": "value.helper.pcfInfo.gpsiRanges gpsi",
+            "where": "gpsi.start",
+            "exist_check": false
+        },
+        {
+            "parameter": "gpsi/end",
+            "path": "body.pcfInfo.gpsiRanges.end",
+            "from": "value.helper.pcfInfo.gpsiRanges gpsi",
+            "where": "gpsi.end",
+            "exist_check": false
+        },
+        {
+            "parameter": "gpsi/start/length",
+            "path": "body.pcfInfo.gpsiRanges.start.length",
+            "from": "value.helper.pcfInfo.gpsiRanges gpsi",
+            "where": "gpsi.start.length()",
+            "exist_check": false
+        },
+        {
+            "parameter": "gpsi/end/length",
+            "path": "body.pcfInfo.gpsiRanges.end.length",
+            "from": "value.helper.pcfInfo.gpsiRanges gpsi",
+            "where": "gpsi.end.length()",
+            "exist_check": false
+        },
+        {
+            "parameter": "gpsi/pattern",
+            "path": "body.pcfInfo.gpsiRanges.pattern",
+            "from": "value.helper.pcfInfo.gpsiRanges gpsi",
+            "where": "gpsi.pattern",
+            "exist_check": false
+        },
+        {
+            "parameter": "gpsi/absence/pattern",
+            "path": "helper.pcfInfo.gpsiMatchAll",
+            "from": "",
+            "where": "value.helper.pcfInfo.gpsiMatchAll",
+            "exist_check": false
+        },
+        {
+            "parameter": "group-id-list",
+            "path": "body.pcfInfo.groupId",
+            "from": "",
+            "where": "value.helper.pcfInfo.groupId",
+            "exist_check": false
+        }
+    ],
+    "bsf":[
+        {
+            "parameter": "dnn",
+            "path": "body.bsfInfo.dnnList",
+            "from": "value.helper.bsfInfo.dnnList dnn",
+            "where": "dnn",
+            "exist_check": false
+        },
+        {
+            "parameter": "ip-domain",
+            "path": "body.bsfInfo.ipDomainList",
+            "from": "value.helper.bsfInfo.ipDomainList ip_domain",
+            "where": "ip_domain",
+            "exist_check": false
+        }
+    ],
+    "chf":[
+        {
+            "parameter": "supi/start",
+            "path": "body.chfInfo.supiRangeList.start",
+            "from": "value.helper.chfInfo.supiRangeList supi",
+            "where": "supi.start",
+            "exist_check": false
+        },
+        {
+            "parameter": "supi/end",
+            "path": "body.chfInfo.supiRangeList.end",
+            "from": "value.helper.chfInfo.supiRangeList supi",
+            "where": "supi.end",
+            "exist_check": false
+        },
+        {
+            "parameter": "supi/start/length",
+            "path": "body.chfInfo.supiRangeList.start.length",
+            "from": "value.helper.chfInfo.supiRangeList supi",
+            "where": "supi.start.length()",
+            "exist_check": false
+        },
+        {
+            "parameter": "supi/end/length",
+            "path": "body.chfInfo.supiRangeList.end.length",
+            "from": "value.helper.chfInfo.supiRangeList supi",
+            "where": "supi.end.length()",
+            "exist_check": false
+        },
+        {
+            "parameter": "supi/pattern",
+            "path": "body.chfInfo.supiRangeList.pattern",
+            "from": "value.helper.chfInfo.supiRangeList supi",
+            "where": "supi.pattern",
+            "exist_check": false
+        },
+        {
+            "parameter": "supi/absence/pattern",
+            "path": "helper.chfInfo.supiMatchAll",
+            "from": "",
+            "where": "value.helper.chfInfo.supiMatchAll",
+            "exist_check": false
+        },
+        {
+            "parameter": "gpsi/start",
+            "path": "body.chfInfo.gpsiRangeList.start",
+            "from": "value.helper.chfInfo.gpsiRangeList gpsi",
+            "where": "gpsi.start",
+            "exist_check": false
+        },
+        {
+            "parameter": "gpsi/end",
+            "path": "body.chfInfo.gpsiRangeList.end",
+            "from": "value.helper.chfInfo.gpsiRangeList gpsi",
+            "where": "gpsi.end",
+            "exist_check": false
+        },
+        {
+            "parameter": "gpsi/start/length",
+            "path": "body.chfInfo.gpsiRangeList.start.length",
+            "from": "value.helper.chfInfo.gpsiRangeList gpsi",
+            "where": "gpsi.start.length()",
+            "exist_check": false
+        },
+        {
+            "parameter": "gpsi/end/length",
+            "path": "body.chfInfo.gpsiRangeList.end.length",
+            "from": "value.helper.chfInfo.gpsiRangeList gpsi",
+            "where": "gpsi.end.length()",
+            "exist_check": false
+        },
+        {
+            "parameter": "gpsi/pattern",
+            "path": "body.chfInfo.gpsiRangeList.pattern",
+            "from": "value.helper.chfInfo.gpsiRangeList gpsi",
+            "where": "gpsi.pattern",
+            "exist_check": false
+        },
+        {
+            "parameter": "gpsi/absence/pattern",
+            "path": "helper.chfInfo.gpsiMatchAll",
+            "from": "",
+            "where": "value.helper.chfInfo.gpsiMatchAll",
+            "exist_check": false
+        },
+
+        {
+            "parameter": "chf-supported-plmn/start",
+            "path": "body.chfInfo.plmnRangeList.start",
+            "from": "value.helper.chfInfo.plmnRangeList plmn_range",
+            "where": "plmn_range.start",
+            "exist_check": false
+        },
+        {
+            "parameter": "chf-supported-plmn/end",
+            "path": "body.chfInfo.plmnRangeList.end",
+            "from": "value.helper.chfInfo.plmnRangeList plmn_range",
+            "where": "plmn_range.end",
+            "exist_check": false
+        },
+        {
+            "parameter": "chf-supported-plmn/start/length",
+            "path": "body.chfInfo.plmnRangeList.start.length",
+            "from": "value.helper.chfInfo.plmnRangeList plmn_range",
+            "where": "plmn_range.start.length()",
+            "exist_check": false
+        },
+        {
+            "parameter": "chf-supported-plmn/end/length",
+            "path": "body.chfInfo.plmnRangeList.end.length",
+            "from": "value.helper.chfInfo.plmnRangeList plmn_range",
+            "where": "plmn_range.end.length()",
+            "exist_check": false
+        },
+        {
+            "parameter": "chf-supported-plmn/pattern",
+            "path": "body.chfInfo.plmnRangeList.pattern",
+            "from": "value.helper.chfInfo.plmnRangeList plmn_range",
+            "where": "plmn_range.pattern",
+            "exist_check": false
+        }
+    ]
+}

@@ -1,0 +1,1 @@
+FROM armdocker.rnd.ericsson.se/proj-5g-cicd-release/busybox

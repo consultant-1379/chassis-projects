@@ -1,0 +1,151 @@
+{
+	"data": {
+		"ericsson-pm:pm": {
+			"job": [{
+				"name": "nrfagent-pm",
+				"type": "measurement-job",
+				"reporting-period": "fifteen-min",
+				"granularity-period": "fifteen-min",
+				"current-job-state": "stopped",
+				"control": "start-stop",
+				"compression-type": "gzip",
+				"measurement-reader": [{
+					"name": "nrfagent-discovery-reader",
+					"group-ref": "nrfagent-nrf-discovery"
+				}],
+				"requested-job-state": "stopped"
+			}],
+			"group": [{
+				"name": "nrfagent-nrf-discovery",
+				"generation": "5GS",
+				"validity": true,
+				"measured-object": "/nrf-agent-cm-root",
+				"description": "NRFAgent discovery counter group",
+				"version": "0.1.0",
+				"measurement-type": [{
+						"id": "nrf-discovery-requests-total",
+						"measurement-name": "nrf-discovery-requests-total",
+						"size": 8,
+						"collection-method": "cc",
+						"description": "Total number of discovery requests sent to NRF",
+						"condition": "Incremented when a discovery request is sent to NRF",
+						"aggregation": "sum",
+						"measurement-status": "used",
+						"measurement-result": "Integer value",
+						"multiplicity": 1,
+						"reset-at-gran-period": true,
+						"internal-metric-name": "nrf_discovery_requests_total",
+						"internal-metric-type": "Counter"
+					},
+					{
+						"id": "nrf-discovery-responses-total",
+						"measurement-name": "nrf-discovery-responses-total",
+						"size": 8,
+						"collection-method": "cc",
+						"description": "Total number of discovery responses received from NRF",
+						"condition": "Incremented when a discovery response is received from NRF",
+						"aggregation": "sum",
+						"measurement-status": "used",
+						"measurement-result": "Integer value",
+						"multiplicity": 1,
+						"reset-at-gran-period": true,
+						"internal-metric-name": "nrf_discovery_responses_total",
+						"internal-metric-type": "Counter"
+					},
+					{
+						"id": "nf-discovery-requests-total",
+						"measurement-name": "nf-discovery-requests-total",
+						"size": 8,
+						"collection-method": "cc",
+						"description": "Total number of discovery requests sent to NF",
+						"condition": "Incremented when a discovery request is sent to NF",
+						"aggregation": "sum",
+						"measurement-status": "used",
+						"measurement-result": "Integer value",
+						"multiplicity": 1,
+						"reset-at-gran-period": true,
+						"internal-metric-name": "nf_discovery_requests_total",
+						"internal-metric-type": "Counter"
+					},
+					{
+						"id": "nf-discovery-responses-total",
+						"measurement-name": "nf-discovery-responses-total",
+						"size": 8,
+						"collection-method": "cc",
+						"description": "Total number of discovery responses received from NF",
+						"condition": "Incremented when a discovery response is received from NF",
+						"aggregation": "sum",
+						"measurement-status": "used",
+						"measurement-result": "Integer value",
+						"multiplicity": 1,
+						"reset-at-gran-period": true,
+						"internal-metric-name": "nf_discovery_responses_total",
+						"internal-metric-type": "Counter"
+					},
+					{
+						"id": "nrf-discovery-responses-2xx",
+						"measurement-name": "nrf-discovery-responses-2xx",
+						"size": 8,
+						"collection-method": "cc",
+						"description": "Total number of 2xx discovery responses received from NRF",
+						"condition": "Incremented when a 2xx discovery response is received from NRF",
+						"aggregation": "sum",
+						"measurement-status": "used",
+						"measurement-result": "Integer value",
+						"multiplicity": 1,
+						"reset-at-gran-period": true,
+						"internal-metric-name": "nrf_discovery_responses_2xx",
+						"internal-metric-type": "Counter"
+					},
+					{
+						"id": "nrf-discovery-responses-3xx",
+						"measurement-name": "nrf-discovery-responses-3xx",
+						"size": 8,
+						"collection-method": "cc",
+						"description": "Total number of 3xx discovery responses received from NRF",
+						"condition": "Incremented when a 3xx discovery response is received from NRF",
+						"aggregation": "sum",
+						"measurement-status": "used",
+						"measurement-result": "Integer value",
+						"multiplicity": 1,
+						"reset-at-gran-period": true,
+						"internal-metric-name": "nrf_discovery_responses_3xx",
+						"internal-metric-type": "Counter"
+					},
+					{
+						"id": "nrf-discovery-responses-4xx",
+						"measurement-name": "nrf-discovery-responses-4xx",
+						"size": 8,
+						"collection-method": "cc",
+						"description": "Total number of 4xx discovery responses received from NRF",
+						"condition": "Incremented when a 4xx discovery response is received from NRF",
+						"aggregation": "sum",
+						"measurement-status": "used",
+						"measurement-result": "Integer value",
+						"multiplicity": 1,
+						"reset-at-gran-period": true,
+						"internal-metric-name": "nrf_discovery_responses_4xx",
+						"internal-metric-type": "Counter"
+					},
+					{
+						"id": "nrf-discovery-responses-5xx",
+						"measurement-name": "nrf-discovery-responses-5xx",
+						"size": 8,
+						"collection-method": "cc",
+						"description": "Total number of 5xx discovery responses received from NRF",
+						"condition": "Incremented when a 5xx discovery response is received from NRF",
+						"aggregation": "sum",
+						"measurement-status": "used",
+						"measurement-result": "Integer value",
+						"multiplicity": 1,
+						"reset-at-gran-period": true,
+						"internal-metric-name": "nrf_discovery_responses_5xx",
+						"internal-metric-type": "Counter"
+					}
+				]
+			}]
+		}
+	},
+	"name": "ADP-GS-PM-BR",
+	"title": "The ADP-GS-PM-BR configuration"
+}

@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+// Language Dependent Statments Start
+option java_package = "ericsson.core.nrf.dbproxy.grpc.nfmessage.nrfprofile";
+option java_outer_classname = "NRFProfilePutResponseProto";
+option go_package = "com/dbproxy/nfmessage/nrfprofile";
+package grpc;
+// Language Dependent Statments End
+
+message NRFProfilePutResponse {
+    uint32 code = 1;  
+}
+

@@ -1,0 +1,21 @@
+{
+    "name": "connection-pool",
+    "free-connection-timeout": 1000,
+    "idle-timeout": 10000,
+    "load-conditioning-interval": 10000,
+    "max-connections": 500,
+    "min-connections": 32,
+    "ping-interval": 10000,
+    "pr-single-hop-enabled": "false",
+    "read-timeout": 1000,
+    "retry-attempts": -1,
+    "socket-buffer-size": 262144,
+    "socket-connect-timeout": 1000,
+    "subscription-enabled": "false",
+    "thread-local-connections": "false",
+    "async-executor-enabled": "true",
+    "async-threadnum-factor": "2",
+    "max-transmit-fragment-size": 3145728,
+    "remote-cache-put-threshold": 200,
+    "remote-cache-clear-interval": 3000
+}

@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ImsiPrefixProfilesUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.executor.common</a> &gt; <span class="el_source">ImsiPrefixProfilesUtil.java</span></div><h1>ImsiPrefixProfilesUtil.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.executor.common;
+
+import ericsson.core.nrf.dbproxy.clientcache.ClientCacheService;
+import ericsson.core.nrf.dbproxy.clientcache.schema.ImsiprefixProfiles;
+import ericsson.core.nrf.dbproxy.common.Code;
+import ericsson.core.nrf.dbproxy.common.ExecutionResult;
+import ericsson.core.nrf.dbproxy.common.SearchResult;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.imsiprefixprofile.ImsiprefixProfileProto.ImsiprefixProfile;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.geode.cache.Region;
+
+public class ImsiPrefixProfilesUtil {
+
+<span class="nc" id="L19">  private static final Logger LOGGER = LogManager.getLogger(ImsiPrefixProfilesUtil.class);</span>
+
+  private ImsiPrefixProfilesUtil() {
+  }
+
+  public static int addImsiprefixProfile(ImsiprefixProfile imsiprefixProfile) {
+<span class="nc" id="L25">    ExecutionResult getResult = ClientCacheService.getInstance()</span>
+<span class="nc" id="L26">        .getByID(Code.IMSIPREFIXPROFILE_INDICE, imsiprefixProfile.getImsiPrefix());</span>
+<span class="nc bnc" id="L27" title="All 2 branches missed.">    if (getResult.getCode() == Code.DATA_NOT_EXIST) {</span>
+<span class="nc" id="L28">      ImsiprefixProfiles imsiprefixProfiles = createImsiprefixProfiles(</span>
+<span class="nc" id="L29">          imsiprefixProfile.getImsiPrefix(), imsiprefixProfile.getValueInfo());</span>
+<span class="nc" id="L30">      int codePut = ClientCacheService.getInstance()</span>
+<span class="nc" id="L31">          .put(Code.IMSIPREFIXPROFILE_INDICE, imsiprefixProfile.getImsiPrefix(),</span>
+              imsiprefixProfiles);
+<span class="nc bnc" id="L33" title="All 2 branches missed.">      if (codePut != Code.CREATED) {</span>
+<span class="nc" id="L34">        LOGGER.error(&quot;addImsiprefixProfile: imsiprefix {} created failure, code:{}&quot;,</span>
+<span class="nc" id="L35">            imsiprefixProfile.getImsiPrefix(), codePut);</span>
+<span class="nc" id="L36">        return codePut;</span>
+      }
+<span class="nc bnc" id="L38" title="All 2 branches missed.">    } else if (getResult.getCode() == Code.SUCCESS) {</span>
+<span class="nc" id="L39">      SearchResult searchResult = (SearchResult) getResult;</span>
+<span class="nc" id="L40">      List&lt;ImsiprefixProfiles&gt; imsiProfilesList = getImsiProfilesList(searchResult.getItems());</span>
+<span class="nc" id="L41">      ImsiprefixProfiles imsiProfiles = imsiProfilesList.get(0);</span>
+<span class="nc" id="L42">      imsiProfiles.addValueInfo(imsiprefixProfile.getValueInfo());</span>
+<span class="nc" id="L43">      LOGGER.debug(&quot;Begin add imsiProfiles: {}&quot;, imsiProfiles.toString());</span>
+<span class="nc" id="L44">      int codePut = ClientCacheService.getInstance()</span>
+<span class="nc" id="L45">          .put(Code.IMSIPREFIXPROFILE_INDICE, imsiprefixProfile.getImsiPrefix(), imsiProfiles);</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">      if (codePut != Code.CREATED) {</span>
+<span class="nc" id="L47">        LOGGER.error(&quot;addImsiprefixProfile: expend imsiprefix {} failure, code:{}&quot;,</span>
+<span class="nc" id="L48">            imsiprefixProfile.getImsiPrefix(), codePut);</span>
+<span class="nc" id="L49">        return codePut;</span>
+      }
+
+<span class="nc" id="L52">    } else {</span>
+<span class="nc" id="L53">      LOGGER.error(&quot;addImsiprefixProfile: imsi prefix get failure.&quot;);</span>
+<span class="nc" id="L54">      return getResult.getCode();</span>
+    }
+<span class="nc" id="L56">    return Code.CREATED;</span>
+  }
+
+  public static int delImsiprefixProfile(ImsiprefixProfile imsiprefixProfile) {
+<span class="nc" id="L60">    ExecutionResult getResult = ClientCacheService.getInstance()</span>
+<span class="nc" id="L61">        .getByID(Code.IMSIPREFIXPROFILE_INDICE, imsiprefixProfile.getImsiPrefix());</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">    if (getResult.getCode() == Code.DATA_NOT_EXIST) {</span>
+<span class="nc" id="L63">      LOGGER.error(&quot;delImsiprefixProfile imsiprefix not exist: {} &quot;,</span>
+<span class="nc" id="L64">          imsiprefixProfile.getImsiPrefix());</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">    } else if (getResult.getCode() == Code.SUCCESS) {</span>
+<span class="nc" id="L66">      SearchResult searchResult = (SearchResult) getResult;</span>
+<span class="nc" id="L67">      List&lt;ImsiprefixProfiles&gt; imsiProfilesList = getImsiProfilesList(searchResult.getItems());</span>
+<span class="nc" id="L68">      ImsiprefixProfiles imsiProfiles = imsiProfilesList.get(0);</span>
+<span class="nc" id="L69">      imsiProfiles.rmValueInfo(imsiprefixProfile.getValueInfo());</span>
+<span class="nc" id="L70">      LOGGER.debug(&quot;Begin change imsiProfiles: {}&quot;, imsiProfiles.toString());</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">      if (imsiProfiles.getValueInfo().size() != 0) {</span>
+<span class="nc" id="L72">        int codePut = ClientCacheService.getInstance()</span>
+<span class="nc" id="L73">            .put(Code.IMSIPREFIXPROFILE_INDICE, imsiprefixProfile.getImsiPrefix(), imsiProfiles);</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">        if (codePut != Code.CREATED) {</span>
+<span class="nc" id="L75">          LOGGER.error(&quot;delImsiprefixProfile: reduce imsiprefix {} failure, code:{}&quot;,</span>
+<span class="nc" id="L76">              imsiprefixProfile.getImsiPrefix(), codePut);</span>
+<span class="nc" id="L77">          return codePut;</span>
+        }
+<span class="nc" id="L79">      } else {</span>
+<span class="nc" id="L80">        int codeDel = ClientCacheService.getInstance()</span>
+<span class="nc" id="L81">            .delete(Code.IMSIPREFIXPROFILE_INDICE, imsiprefixProfile.getImsiPrefix(), false);</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">        if (codeDel != Code.SUCCESS) {</span>
+<span class="nc" id="L83">          LOGGER.error(&quot;delImsiprefixProfile: delete imsiprefix {} failure, code:{}&quot;,</span>
+<span class="nc" id="L84">              imsiprefixProfile.getImsiPrefix(), codeDel);</span>
+<span class="nc" id="L85">          return codeDel;</span>
+        }
+      }
+
+<span class="nc" id="L89">    } else {</span>
+<span class="nc" id="L90">      LOGGER.error(&quot;delImsiprefixProfile: imsi prefix get failure.&quot;);</span>
+<span class="nc" id="L91">      return getResult.getCode();</span>
+    }
+<span class="nc" id="L93">    return Code.SUCCESS;</span>
+  }
+
+  public static int addImsiprefixProfiles(List&lt;ImsiprefixProfile&gt; profilePutList) {
+<span class="nc" id="L97">    Map&lt;Object, Object&gt; addMap = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L98">    Region imsiRegion = ClientCacheService.getInstance().getRegion(Code.IMSIPREFIXPROFILE_INDICE);</span>
+
+<span class="nc bnc" id="L100" title="All 2 branches missed.">    for (ImsiprefixProfile imsiprefixProfile : profilePutList) {</span>
+<span class="nc" id="L101">      ExecutionResult getResult = ClientCacheService.getInstance()</span>
+<span class="nc" id="L102">          .getByID(Code.IMSIPREFIXPROFILE_INDICE, imsiprefixProfile.getImsiPrefix());</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">      if (getResult.getCode() == Code.DATA_NOT_EXIST) {</span>
+<span class="nc" id="L104">        ImsiprefixProfiles imsiprefixProfiles = createImsiprefixProfiles(</span>
+<span class="nc" id="L105">            imsiprefixProfile.getImsiPrefix(), imsiprefixProfile.getValueInfo());</span>
+<span class="nc" id="L106">        addMap.put(imsiprefixProfile.getImsiPrefix(), imsiprefixProfiles);</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">      } else if (getResult.getCode() == Code.SUCCESS) {</span>
+<span class="nc" id="L108">        SearchResult searchResult = (SearchResult) getResult;</span>
+<span class="nc" id="L109">        List&lt;ImsiprefixProfiles&gt; imsiProfilesList = getImsiProfilesList(searchResult.getItems());</span>
+<span class="nc" id="L110">        ImsiprefixProfiles imsiprefixProfiles = imsiProfilesList.get(0);</span>
+<span class="nc" id="L111">        imsiprefixProfiles.addValueInfo(imsiprefixProfile.getValueInfo());</span>
+<span class="nc" id="L112">        addMap.put(imsiprefixProfile.getImsiPrefix(), imsiprefixProfiles);</span>
+<span class="nc" id="L113">      } else {</span>
+<span class="nc" id="L114">        LOGGER.error(&quot;addImsiprefixProfiles: imsi prefix get failure.&quot;);</span>
+<span class="nc" id="L115">        return getResult.getCode();</span>
+      }
+<span class="nc" id="L117">    }</span>
+
+<span class="nc" id="L119">    imsiRegion.putAll(addMap);</span>
+<span class="nc" id="L120">    return Code.SUCCESS;</span>
+  }
+
+  public static int delImsiprefixProfiles(List&lt;ImsiprefixProfile&gt; profileDelList) {
+<span class="nc" id="L124">    List&lt;Object&gt; delList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L125">    Map&lt;Object, Object&gt; updateMap = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L126">    Region imsiRegion = ClientCacheService.getInstance().getRegion(Code.IMSIPREFIXPROFILE_INDICE);</span>
+
+<span class="nc bnc" id="L128" title="All 2 branches missed.">    for (ImsiprefixProfile imsiprefixProfile : profileDelList) {</span>
+<span class="nc" id="L129">      ExecutionResult getResult = ClientCacheService.getInstance()</span>
+<span class="nc" id="L130">          .getByID(Code.IMSIPREFIXPROFILE_INDICE, imsiprefixProfile.getImsiPrefix());</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">      if (getResult.getCode() == Code.DATA_NOT_EXIST) {</span>
+<span class="nc" id="L132">        LOGGER.error(&quot;delImsiprefixProfiles imsiprefix not exist: {} &quot;, imsiprefixProfile.getImsiPrefix());</span>
+<span class="nc" id="L133">        continue;</span>
+<span class="nc bnc" id="L134" title="All 2 branches missed.">      } else if (getResult.getCode() == Code.SUCCESS) {</span>
+<span class="nc" id="L135">        SearchResult searchResult = (SearchResult) getResult;</span>
+<span class="nc" id="L136">        List&lt;ImsiprefixProfiles&gt; imsiProfilesList = getImsiProfilesList(searchResult.getItems());</span>
+<span class="nc" id="L137">        ImsiprefixProfiles imsiprefixProfiles = imsiProfilesList.get(0);</span>
+<span class="nc" id="L138">        imsiprefixProfiles.rmValueInfo(imsiprefixProfile.getValueInfo());</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">        if (imsiprefixProfiles.getValueInfo().size() != 0) {</span>
+<span class="nc" id="L140">          updateMap.put(imsiprefixProfile.getImsiPrefix(), imsiprefixProfiles);</span>
+        } else {
+<span class="nc" id="L142">          delList.add(imsiprefixProfile.getImsiPrefix());</span>
+        }
+<span class="nc" id="L144">      } else {</span>
+<span class="nc" id="L145">        LOGGER.error(&quot;delImsiprefixProfiles: imsi prefix get failure.&quot;);</span>
+<span class="nc" id="L146">        return getResult.getCode();</span>
+      }
+<span class="nc" id="L148">    }</span>
+
+<span class="nc" id="L150">    imsiRegion.removeAll(delList);</span>
+<span class="nc" id="L151">    imsiRegion.putAll(updateMap);</span>
+<span class="nc" id="L152">    return Code.SUCCESS;</span>
+  }
+
+  private static ImsiprefixProfiles createImsiprefixProfiles(Long imsiPrefix, String valueInfo) {
+<span class="nc" id="L156">    ImsiprefixProfiles imsiprefixProfiles = new ImsiprefixProfiles();</span>
+
+<span class="nc" id="L158">    imsiprefixProfiles.setImsiprefix(imsiPrefix);</span>
+<span class="nc" id="L159">    imsiprefixProfiles.addValueInfo(valueInfo);</span>
+
+<span class="nc" id="L161">    LOGGER.debug(&quot;Imsiprefix Profile : {}&quot;, imsiprefixProfiles.toString());</span>
+
+<span class="nc" id="L163">    return imsiprefixProfiles;</span>
+  }
+
+  private static List&lt;ImsiprefixProfiles&gt; getImsiProfilesList(List&lt;Object&gt; items) {
+<span class="nc" id="L167">    List&lt;ImsiprefixProfiles&gt; imsiprofilesList = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L168" title="All 2 branches missed.">    for (Object obj : items) {</span>
+<span class="nc" id="L169">      ImsiprefixProfiles imsiProfiles = (ImsiprefixProfiles) obj;</span>
+<span class="nc" id="L170">      imsiprofilesList.add(imsiProfiles);</span>
+<span class="nc" id="L171">      LOGGER.debug(&quot;getValueInfoList: value_info {}&quot;, imsiProfiles.toString());</span>
+<span class="nc" id="L172">    }</span>
+<span class="nc" id="L173">    return imsiprofilesList;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

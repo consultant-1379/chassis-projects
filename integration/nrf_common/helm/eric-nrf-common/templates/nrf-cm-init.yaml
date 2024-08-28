@@ -1,0 +1,46 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "eric-nrf-common.name" . }}-{{ .Values.nrfCommon.cmInit.jobName }}
+  labels:
+    chart: {{ template "eric-nrf-common.chart" . }}
+{{- include "eric-nrf-common.joblabels" . | indent 4 }}
+  annotations:
+{{- include "eric-nrf-common.product-info" . | indent 4 }}
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      name: {{ template "eric-nrf-common.name" . }}-{{ .Values.nrfCommon.cmInit.jobName }}
+      labels:
+        chart: {{ template "eric-nrf-common.chart" . }}
+{{- include "eric-nrf-common.joblabels" . | indent 8 }}
+      annotations:
+        sidecar.istio.io/inject: "false"
+{{- include "eric-nrf-common.product-info" . | indent 8 }}
+    spec:
+      {{- if or .Values.global.registry.pullSecret .Values.imageCredentials.registry.pullSecret }}
+      imagePullSecrets:
+      - name: {{ default .Values.global.registry.pullSecret .Values.imageCredentials.registry.pullSecret }}
+      {{- end }}
+      restartPolicy: Never
+      containers:
+      - name: {{ .Values.nrfCommon.cmInit.jobName }}
+        image: {{ default .Values.global.registry.url .Values.imageCredentials.registry.url }}/{{ .Values.imageCredentials.repoPath }}/{{ .Values.images.nrfCommon.name }}:{{ .Values.images.nrfCommon.tag }}
+        imagePullPolicy: {{ default .Values.global.imageCredentials.pullPolicy .Values.imageCredentials.pullPolicy }}
+        command:
+        - /bin/import-cm-schema-conf.sh
+        env:
+        - name: TZ
+          value: {{ .Values.global.timezone }}
+        - name: CM_INIT_ENABLED
+          value: {{ .Values.nrfCommon.cmInit.enabled }}
+        {{- if .Values.global.adpNamespace }}
+        - name: CM_SERVICE_NAME
+          value: {{ .Values.global.adp.cmm_service }}.{{ .Values.global.adpNamespace }}:{{ .Values.global.adp.cmm_service_port_path }}
+        {{- else }}
+        - name: CM_SERVICE_NAME
+          value: {{ .Values.global.adp.cmm_service }}:{{ .Values.global.adp.cmm_service_port_path }}
+        {{- end}}
+        - name: CM_SCHEMA_NAME
+          value: {{ .Values.global.adp.cmm_config_schema_prefix_name }}

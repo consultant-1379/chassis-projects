@@ -1,0 +1,22 @@
+#Following is an example for ausf
+apiVersion: v1
+data:
+  targetnfprofiles-ausf-default.json: |-
+    {
+      "targetNfProfiles": [
+        {
+          "requesterNfType": "AUSF",
+          "targetNfType": "UDM",
+          "targetServiceNames": [
+            "nudm-comm",
+            "nudm-uecm"
+          ],
+          "subscriptionValidityTime": 86400
+        }
+      ]
+    }
+kind: ConfigMap
+metadata:
+  name: targetnfprofiles-ausf
+  labels:
+    nrf-agent-targetnfprofiles: "ausf"

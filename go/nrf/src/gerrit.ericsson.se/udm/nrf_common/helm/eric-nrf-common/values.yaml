@@ -1,0 +1,795 @@
+global:
+  ingressSecret: istio-ingress-certs
+
+  imageCredentials:
+    repository: armdocker.rnd.ericsson.se/proj-ipworks
+
+  cmproxy:
+    cmm_service: "http://eric-cm-mediator:5003/cm/api/v1.1"
+    cmm_config_schema_prefix_name: "ericsson-nrf"
+
+  db:
+    info:
+      configmap:
+        name: "eric-nrf-dbinfo-conf"
+        mountpath: "/etc"
+    multisite:
+      configmap:
+        name: "eric-nrf-multisite-conf"
+        mountpath: "/etc"
+
+  dbproxy:
+    configmap:
+      name: "eric-nrf-dbproxy-attributes"
+      mountpath: "/etc"
+
+rbac:
+  pod_account: "nrf-pod-account"
+  pod_role: "nrf-pod-role"
+  pod_rolebinding: "nrf-rolebinding"
+
+nrfCommon:
+  image:
+    name: nrfcommon
+    tag: latest
+    pullPolicy: IfNotPresent
+  cmInit:
+    jobName: eric-nrf-cm-init
+    enabled: "'true'"
+  cmHook:
+    postDelete:
+      name: eric-nrf-cm-delete
+      enabled: "'true'"
+  dbInit:
+    name: eric-nrf-kvdb-init
+    enabled: "'true'"
+    kvdb_admin_mgr_service: "http://eric-nrf-kvdb-ag-admin-mgr:8080/kvdb-ag/management/v1"
+
+
+nrf_schema:
+  jsonschema:
+    configmap:
+      name: "eric-nrf-jsonschema"
+    nfProfile:
+      fileName: "nfProfile.json"  
+    patchDocument:
+      fileName: "patchDocument.json"
+    subscriptionData:
+      fileName: "subscriptionData.json"
+
+
+eric-data-kvdb-ag:
+  #####################################################################
+  ##                          IMPORTANT!!
+  #####################################################################
+  ##  Set the value of this attribute according to your needs
+  ##  when integrating kvdb-ag as a sub-chart.
+  ##  Its value will determine the names of chart resources!
+  #####################################################################
+  nameOverride: eric-nrf-kvdb-ag
+
+  #####################################################################
+  ##  Traffic ports used by locators and servers
+  #####################################################################
+  servicePorts:
+    kvdbAgLocator: 10334
+    kvdbAgServer: 40404
+
+  #####################################################################
+  ##  Will be used to form resource names
+  #####################################################################
+  suffix:
+    server: server
+    locator: locator
+
+  #####################################################################
+  ##  Configuration for persistent volume claims
+  #####################################################################
+  persistence:
+    data:
+      # Persistent (potentially local) storage for database containers will be created on the path below
+      # This path will also be used as database working directory
+      path: /opt/dbservice/data
+      name: datadir
+      storageClass: standard
+      # Set to false if you do not wish to use persistent storage for database data
+      enabled: true
+      accessMode: ReadWriteOnce
+      locator:
+        allocation: 1Gi
+      server:
+        allocation: 4Gi
+    backup:
+      # Used for intermediate storage of backup pieces during B&R operations.
+      path: /opt/backup
+      name: datadir-backup
+      storageClass: standard
+      # Set the enabled flag to false in case you do not wish to use this type of storage.
+      # Keep in mind that this will prevent you from using B&R functionality
+      enabled: false
+      accessMode: ReadWriteOnce
+      locator:
+        allocation: 2Gi
+      server:
+        allocation: 4Gi
+
+  #####################################################################
+  ##  Default number of locator and server replicas
+  #####################################################################
+  replicas:
+    locator: 2
+    server: 2
+
+  #####################################################################
+  ##  Set to true if you wish to use Istio injection
+  #####################################################################
+  sidecarIstioInject:
+    locator:
+      enabled: false
+    server:
+      enabled: false
+
+  #####################################################################
+  ##  Logging settings for different processes started
+  ##  as a part of this chart. Can be updated in runtime.
+  ##  Use DEBUG, INFO, WARN, ERROR
+  #####################################################################
+  logging:
+    initDepend:
+      # Used for init-db container and startup script
+      level: WARN
+    database:
+      level: WARN
+    monitor:
+      level: WARN
+    adminMgr:
+      level: WARN
+
+  #####################################################################
+  ##  JMX settings
+  #####################################################################
+  jmx:
+    port: 1099
+
+  #####################################################################
+  ##  Prometheus settings
+  #####################################################################
+  prometheus:
+    path: prometheus
+    port: 8081
+    scrape: true
+    metricsPrefix: 'kvdb_ag'
+
+  #####################################################################
+  ##  Access control configuration
+  #####################################################################
+  accessControl:
+    enabled: false
+    name: kvdb-ag-security
+    path: /etc/kvdb-ag-security
+    secretName: kvdb-ag-security
+
+  #######################################################################
+  ##                          IMPORTANT!!
+  #######################################################################
+  ##  If you wish to use a custom partition resolver, set enabled to true
+  #######################################################################
+  partitioner:
+    enabled: false
+
+  #######################################################################
+  ##                          IMPORTANT!!
+  #######################################################################
+  ##  As an application integration this chart, you will probably want
+  ##  to tailor cache.xml file according to your needs
+  #######################################################################
+  configFiles:
+    cacheXml: |-
+      <?xml version="1.0" encoding="UTF-8"?>
+      <cache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns="http://geode.apache.org/schema/cache"
+             xsi:schemaLocation="http://geode.apache.org/schema/cache http://geode.apache.org/schema/cache/cache-1.0.xsd"
+             version="1.0">
+          <cache-server max-connections="800" tcp-no-delay="true" socket-buffer-size="32768" max-threads="24" load-poll-interval="5000"/>
+          <pdx read-serialized="true" persistent="true">
+              <pdx-serializer>
+                  <class-name>
+                      org.apache.geode.pdx.ReflectionBasedAutoSerializer
+                  </class-name>
+                  <parameter name="classes">
+                      <string>ericsson.core.nrf.dbproxy.clientcache.schema.*</string>
+                  </parameter>
+              </pdx-serializer>
+          </pdx>
+          <region name="ericsson-nrf-nfprofiles">
+            <region-attributes refid="REPLICATE_PERSISTENT"/>
+            <index name="ExpiredTimeIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet"
+                    expression="value.expiredTime"/>
+            <index name="LastUpdateTimeIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet"
+                    expression="value.lastUpdateTime"/>
+            <index name="ProvisionedIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet"
+                    expression="value.provisioned"/>
+            <index name="NfStatusIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet"
+                    expression="value.helper.nfStatus"/>
+            <index name="NfTypeIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet"
+                    expression="value.helper.nfType"/>
+            <index name="NfInstanceIdIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet"
+                    expression="value.helper.nfInstanceId"/>
+            <index name="FqdnIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet"
+                    expression="value.helper.fqdn"/>
+            <index name="SnssaiSstIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.sNssais snssai"
+                    expression="snssai.sst"/>
+            <index name="SnssaiSdIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.sNssais snssai"
+                    expression="snssai.sd"/>
+            <index name="NsiIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.nsiList nsi"
+                    expression="nsi"/>
+            <index name="UdrSupiStartIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.udrInfo.supiRanges supi"
+                    expression="supi.start"/>
+            <index name="UdrSupiEndIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.udrInfo.supiRanges supi"
+                    expression="supi.end"/>
+            <index name="UdrSupiAbsenceIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet"
+                    expression="value.helper.udrInfo.supiMatchAll"/>
+            <index name="UdrGpsiRangeStartIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.udrInfo.gpsiRanges gpsi"
+                    expression="gpsi.start"/>
+            <index name="UdrGpsiRangeEndIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.udrInfo.gpsiRanges gpsi"
+                    expression="gpsi.end"/>
+            <index name="UdrGpsiRangeAbsenceIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet"
+                    expression="value.helper.udrInfo.gpsiMatchAll"/>
+            <index name="UdrExternalGroupIdRangeStartIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.udrInfo.externalGroupIdentifiersRanges external_group_identity"
+                    expression="external_group_identity.start"/>
+            <index name="UdrExternalGroupIdRangeEndIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.udrInfo.externalGroupIdentifiersRanges external_group_identity"
+                    expression="external_group_identity.end"/>
+            <index name="UdrSupportedDataSetIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.udrInfo.supportedDataSets data_set"
+                    expression="data_set"/>
+            <index name="UdrGroupIdIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet"
+                    expression="value.helper.udrInfo.groupId"/>
+            <index name="UdmSupiStartIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.udmInfo.supiRanges supi"
+                    expression="supi.start"/>
+            <index name="UdmSupiEndIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.udmInfo.supiRanges supi"
+                    expression="supi.end"/>
+            <index name="UdmSupiAbsenceIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet"
+                    expression="value.helper.udmInfo.supiMatchAll"/>
+            <index name="UdmGpsiRangeStartIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.udmInfo.gpsiRanges gpsi"
+                    expression="gpsi.start"/>
+            <index name="UdmGpsiRangeEndIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.udmInfo.gpsiRanges gpsi"
+                    expression="gpsi.end"/>
+            <index name="UdmGpsiRangeAbsenceIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet"
+                    expression="value.helper.udmInfo.gpsiMatchAll"/>
+            <index name="UdmExternalGroupIdRangeStartIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.udmInfo.externalGroupIdentifiersRanges external_group_identity"
+                    expression="external_group_identity.start"/>
+            <index name="UdmExternalGroupIdRangeEndIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.udmInfo.externalGroupIdentifiersRanges external_group_identity"
+                    expression="external_group_identity.end"/>
+            <index name="UdmRoutingIndicatorIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.udmInfo.routingIndicators routing_indicator"
+                    expression="routing_indicator"/>
+            <index name="UdmGroupIdIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet"
+                    expression="value.helper.udmInfo.groupId"/>
+            <index name="AusfSupiStartIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.ausfInfo.supiRanges supi"
+                    expression="supi.start"/>
+            <index name="AusfSupiEndIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.ausfInfo.supiRanges supi"
+                    expression="supi.end"/>
+            <index name="AusfSupiAbsenceIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet"
+                    expression="value.helper.ausfInfo.supiMatchAll"/>
+            <index name="AusfRoutingIndicatorIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.ausfInfo.routingIndicators routing_indicator"
+                    expression="routing_indicator"/>
+            <index name="AusfGroupIdIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet"
+                    expression="value.helper.ausfInfo.groupId"/>
+            <index name="AmfTaiListPlmnMccIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.amfInfo.taiList tai"
+                    expression="tai.plmnId.mcc"/>
+            <index name="AmfTaiListPlmnMncIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.amfInfo.taiList tai"
+                    expression="tai.plmnId.mnc"/>
+            <index name="AmfTaiListTacIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.amfInfo.taiList tai"
+                    expression="tai.tac"/>
+            <index name="AmfTaiRangeListPlmnMccIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.amfInfo.taiRangeList tai_range"
+                    expression="tai_range.plmnId.mcc"/>
+            <index name="AmfTaiRangeListPlmnMncIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.amfInfo.taiRangeList tai_range"
+                    expression="tai_range.plmnId.mnc"/>
+            <index name="AmfTaiRangeListTacRangeStartIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.amfInfo.taiRangeList tai_range, tai_range.tacRangeList tac_range"
+                    expression="tac_range.start"/>
+            <index name="AmfTaiRangeListTacRangeEndIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.amfInfo.taiRangeList tai_range, tai_range.tacRangeList tac_range"
+                    expression="tac_range.end"/>
+            <index name="AmfRegionIdIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet"
+                    expression="value.helper.amfInfo.amfRegionId"/>
+            <index name="AmfSetIdIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet"
+                    expression="value.helper.amfInfo.amfSetId"/>
+            <index name="AmfGuamiPlmnMccIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.amfInfo.guamiList guami"
+                    expression="guami.plmnId.mcc"/>
+            <index name="AmfGuamiPlmnMncIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.amfInfo.guamiList guami"
+                    expression="guami.plmnId.mnc"/>
+            <index name="AmfGuamiAmfIdIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.amfInfo.guamiList guami"
+                    expression="guami.amfId"/>
+            <index name="AmfFailurePlmnMccIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.amfInfo.backupInfoAmfFailure guami_failure"
+                    expression="guami_failure.plmnId.mcc"/>
+            <index name="AmfFailurePlmnMncIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.amfInfo.backupInfoAmfFailure guami_failure"
+                    expression="guami_failure.plmnId.mnc"/>
+            <index name="AmfFailureAmfIdIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.amfInfo.backupInfoAmfFailure guami_failure"
+                    expression="guami_failure.amfId"/>
+            <index name="AmfRemovalPlmnMccIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.amfInfo.backupInfoAmfRemoval guami_removal"
+                    expression="guami_removal.plmnId.mcc"/>
+            <index name="AmfRemovalPlmnMncIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.amfInfo.backupInfoAmfRemoval guami_removal"
+                    expression="guami_removal.plmnId.mnc"/>
+            <index name="AmfRemovalAmfIdIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.amfInfo.backupInfoAmfRemoval guami_removal"
+                    expression="guami_removal.amfId"/>
+            <index name="SmfSnssaiDnnIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.smfInfo.sNssaiSmfInfoList snssai_smf_info, snssai_smf_info.dnnSmfInfoList dnn_smf_info"
+                    expression="dnn_smf_info.dnn"/>
+            <index name="SmfSnssaiSstIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.smfInfo.sNssaiSmfInfoList snssai_smf_info"
+                    expression="snssai_smf_info.sNssai.sst"/>
+            <index name="SmfSnssaiSdIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.smfInfo.sNssaiSmfInfoList snssai_smf_info"
+                    expression="snssai_smf_info.sNssai.sd"/>
+            <index name="SmfDnnIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.smfInfo.dnnList dnn"
+                    expression="dnn"/>
+            <index name="SmfTaiListPlmnMccIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.smfInfo.taiList tai"
+                    expression="tai.plmnId.mcc"/>
+            <index name="SmfTaiListPlmnMncIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.smfInfo.taiList tai"
+                    expression="tai.plmnId.mnc"/>
+            <index name="SmfTaiListTacIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.smfInfo.taiList tai"
+                    expression="tai.tac"/>
+            <index name="SmfTaiRangeListPlmnMccIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.smfInfo.taiRangeList tai_range"
+                    expression="tai_range.plmnId.mcc"/>
+            <index name="SmfTaiRangeListPlmnMncIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.smfInfo.taiRangeList tai_range"
+                    expression="tai_range.plmnId.mnc"/>
+            <index name="SmfTaiRangeListTacRangeStartIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.smfInfo.taiRangeList tai_range, tai_range.tacRangeList tac_range"
+                    expression="tac_range.start"/>
+            <index name="SmfTaiRangeListTacRangeEndIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.smfInfo.taiRangeList tai_range, tai_range.tacRangeList tac_range"
+                    expression="tac_range.end"/>
+            <index name="SmfPgwFqdnIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet"
+                    expression="value.helper.smfInfo.pgwFqdn"/>
+            <index name="UpfSnssaiSstIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.upfInfo.sNssaiUpfInfoList snssai_upf_info"
+                    expression="snssai_upf_info.sNssai.sst"/>
+            <index name="UpfSnssaiSdIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.upfInfo.sNssaiUpfInfoList snssai_upf_info"
+                    expression="snssai_upf_info.sNssai.sd"/>
+            <index name="UpfDnnIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.upfInfo.sNssaiUpfInfoList snssai_upf_info, snssai_upf_info.dnnUpfInfoList dnn_upf_info"
+                    expression="dnn_upf_info.dnn"/>
+            <index name="UpfDnaiIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.upfInfo.sNssaiUpfInfoList snssai_upf_info, snssai_upf_info.dnnUpfInfoList dnn_upf_info, dnn_upf_info.dnaiList dnai"
+                    expression="dnai"/>
+            <index name="UpfSmfServingAreaIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.upfInfo.smfServingArea smf_serving_area"
+                    expression="smf_serving_area"/>
+            <index name="PcfDnnIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.pcfInfo.dnnList dnn"
+                    expression="dnn"/>
+            <index name="PcfSupiStartIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.pcfInfo.supiRanges supi"
+                    expression="supi.start"/>
+            <index name="PcfSupiEndIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.pcfInfo.supiRanges supi"
+                    expression="supi.end"/>
+            <index name="PcfSupiAbsenceIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet"
+                    expression="value.helper.pcfInfo.supiMatchAll"/>
+            <index name="PcfGroupIdIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet"
+                    expression="value.helper.pcfInfo.groupId"/>
+            <index name="BsfDnnIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.bsfInfo.dnnList dnn"
+                    expression="dnn"/>
+            <index name="BsfIpDomainIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.bsfInfo.ipDomainList ip_domain"
+                    expression="ip_domain"/>
+            <index name="ChfSupiStartIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.chfInfo.supiRangeList supi"
+                    expression="supi.start"/>
+            <index name="ChfSupiEndIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.chfInfo.supiRangeList supi"
+                    expression="supi.end"/>
+            <index name="ChfSupiAbsenceIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet"
+                    expression="value.helper.chfInfo.supiMatchAll"/>
+            <index name="ChfGpsiRangeStartIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.chfInfo.gpsiRangeList gpsi"
+                    expression="gpsi.start"/>
+            <index name="ChfGpsiRangeEndIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.chfInfo.gpsiRangeList gpsi"
+                    expression="gpsi.end"/>
+            <index name="ChfGpsiRangeAbsenceIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet"
+                    expression="value.helper.chfInfo.gpsiMatchAll"/>
+            <index name="ChfPlmnRangeStartIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.chfInfo.plmnRangeList plmn_range"
+                    expression="plmn_range.start"/>
+            <index name="ChfPlmnRangeEndIndex" key-index="false" type="range" from-clause="/ericsson-nrf-nfprofiles.entrySet, value.helper.chfInfo.plmnRangeList plmn_range"
+                    expression="plmn_range.end"/>
+          </region>
+          <region name="ericsson-nrf-subscriptions">
+              <region-attributes refid="REPLICATE_PERSISTENT"/>
+              <index name="noCondIndex" key-index="false" type="range" from-clause="/ericsson-nrf-subscriptions.entrySet"
+                     expression="value.noCond"/>
+              <index name="nfStatusNotificationUriIndex" key-index="false" type="range" from-clause="/ericsson-nrf-subscriptions.entrySet"
+                     expression="value.nfStatusNotificationUri"/>
+              <index name="nfInstanceIdIndex" key-index="false" type="range" from-clause="/ericsson-nrf-subscriptions.entrySet"
+                     expression="value.nfInstanceId"/>
+              <index name="nfTypeIndex" key-index="false" type="range" from-clause="/ericsson-nrf-subscriptions.entrySet"
+                     expression="value.nfType"/>
+              <index name="serviceNameIndex" key-index="false" type="range" from-clause="/ericsson-nrf-subscriptions.entrySet"
+                     expression="value.serviceName"/>
+              <index name="amfsubkey1Index" key-index="false" type="range" from-clause="/ericsson-nrf-subscriptions.entrySet, value.amfCond.values amf"
+                    expression="amf.sub_key1"/>
+              <index name="amfsubkey2Index" key-index="false" type="range" from-clause="/ericsson-nrf-subscriptions.entrySet, value.amfCond.values amf"
+                    expression="amf.sub_key2"/>
+              <index name="guamisubkey1Index" key-index="false" type="range" from-clause="/ericsson-nrf-subscriptions.entrySet, value.guamiList.values guami"
+                    expression="guami.sub_key1"/>
+              <index name="guamisubkey2Index" key-index="false" type="range" from-clause="/ericsson-nrf-subscriptions.entrySet, value.guamiList.values guami"
+                    expression="guami.sub_key2"/>
+              <index name="snssaisubkey1Index" key-index="false" type="range" from-clause="/ericsson-nrf-subscriptions.entrySet, value.snssaiList.values snssai"
+                    expression="snssai.sub_key1"/>
+              <index name="snssaisubkey2Index" key-index="false" type="range" from-clause="/ericsson-nrf-subscriptions.entrySet, value.snssaiList.values snssai"
+                    expression="snssai.sub_key2"/>
+              <index name="nsiIndex" key-index="false" type="range" from-clause="/ericsson-nrf-subscriptions.entrySet, value.nsiList nsi"
+                    expression="nsi"/>
+              <index name="nfGroupsubkey1Index" key-index="false" type="range" from-clause="/ericsson-nrf-subscriptions.entrySet, value.nfGroupCond.values nfGroup"
+                    expression="nfGroup.sub_key1"/>
+              <index name="nfGroupsubkey2Index" key-index="false" type="range" from-clause="/ericsson-nrf-subscriptions.entrySet, value.nfGroupCond.values nfGroup"
+                    expression="nfGroup.sub_key2"/>
+              <index name="validityTimeIndex" key-index="false" type="range" from-clause="/ericsson-nrf-subscriptions.entrySet"
+                     expression="value.validityTime"/>
+          </region>
+          <region name="ericsson-nrf-nrfaddresses">
+              <region-attributes refid="REPLICATE_PERSISTENT"/>
+              <index name="key1Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfaddresses p"
+                     expression="p.key1"/>
+              <index name="key2Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfaddresses p"
+                     expression="p.key2"/>
+              <index name="key3Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfaddresses p"
+                     expression="p.key3"/>
+              <index name="key4Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfaddresses p"
+                     expression="p.key4"/>
+              <index name="key5Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfaddresses p"
+                     expression="p.key5"/>
+          </region>
+          <region name="ericsson-nrf-groupprofiles">
+              <region-attributes refid="REPLICATE_PERSISTENT"/>
+              <index name="nftypeIndex" key-index="false" type="range" from-clause="/ericsson-nrf-groupprofiles p"
+                     expression="p.nf_type[*]"/>
+              <index name="groupId" key-index="false" type="range" from-clause="/ericsson-nrf-groupprofiles p"
+                     expression="p.group_id[*]"/>
+              <index name="profileType" key-index="false" type="range" from-clause="/ericsson-nrf-groupprofiles p"
+                     expression="p.profile_type"/>					
+          </region>
+          <region name="ericsson-nrf-imsiprefixprofiles">
+              <region-attributes refid="REPLICATE_PERSISTENT"/>
+              <index name="valueInfoIndex" key-index="false" type="range" from-clause="/ericsson-nrf-imsiprefixprofiles p"
+                     expression="p.value_info[*]"/>
+          </region>
+          <region name="ericsson-nrf-nrfprofiles">
+              <region-attributes refid="REPLICATE_PERSISTENT"/>
+              <index name="nrfprofilekey1Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p"
+                     expression="p.key1"/>
+              <index name="nrfprofilekey3Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p"
+                     expression="p.key3"/>
+              <index name="nrfprofileamfkey1subkey1Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.amf_key1.values AMFK1"
+                     expression="AMFK1.sub_key1"/>
+              <index name="nrfprofileamfkey1subkey2Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.amf_key1.values AMFK1"
+                     expression="AMFK1.sub_key2"/>
+              <index name="nrfprofileamfkey1subkey3Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.amf_key1.values AMFK1"
+                     expression="AMFK1.sub_key3"/>
+              <index name="nrfprofileamfkey1subkey4Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.amf_key1.values AMFK1"
+                     expression="AMFK1.sub_key4"/>
+              <index name="nrfprofileamfkey1subkey5Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.amf_key1.values AMFK1"
+                     expression="AMFK1.sub_key5"/>
+              <index name="nrfprofileamfkey2subkey1Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.amf_key2.values AMFK2"
+                     expression="AMFK2.sub_key1"/>
+              <index name="nrfprofileamfkey2subkey2Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.amf_key2.values AMFK2"
+                     expression="AMFK2.sub_key2"/>
+              <index name="nrfprofileamfkey2subkey3Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.amf_key2.values AMFK2"
+                     expression="AMFK2.sub_key3"/>
+              <index name="nrfprofileamfkey2subkey4Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.amf_key2.values AMFK2"
+                     expression="AMFK2.sub_key4"/>
+              <index name="nrfprofileamfkey2subkey5Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.amf_key2.values AMFK2"
+                     expression="AMFK2.sub_key5"/>
+              <index name="nrfprofileamfkey3subkey1Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.amf_key3.values AMFK3"
+                     expression="AMFK3.sub_key1"/>
+              <index name="nrfprofileamfkey3subkey2Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.amf_key3.values AMFK3"
+                     expression="AMFK3.sub_key2"/>
+              <index name="nrfprofileamfkey3subkey3Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.amf_key3.values AMFK3"
+                     expression="AMFK3.sub_key3"/>
+              <index name="nrfprofileamfkey3subkey4Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.amf_key3.values AMFK3"
+                     expression="AMFK3.sub_key4"/>
+              <index name="nrfprofileamfkey3subkey5Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.amf_key3.values AMFK3"
+                     expression="AMFK3.sub_key5"/>
+              <index name="nrfprofileamfkey4subkey1Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.amf_key4.values AMFK4"
+                     expression="AMFK4.sub_key1"/>
+              <index name="nrfprofileamfkey4subkey2Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.amf_key4.values AMFK4"
+                     expression="AMFK4.sub_key2"/>
+              <index name="nrfprofileamfkey4subkey3Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.amf_key4.values AMFK4"
+                     expression="AMFK4.sub_key3"/>
+              <index name="nrfprofileamfkey4subkey4Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.amf_key4.values AMFK4"
+                     expression="AMFK4.sub_key4"/>
+              <index name="nrfprofileamfkey4subkey5Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.amf_key4.values AMFK4"
+                     expression="AMFK4.sub_key5"/>
+              <index name="nrfprofilesmfkey1subkey1Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.smf_key1.values SMFK1"
+                     expression="SMFK1.sub_key1"/>
+              <index name="nrfprofilesmfkey1subkey2Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.smf_key1.values SMFK1"
+                     expression="SMFK1.sub_key2"/>
+              <index name="nrfprofilesmfkey1subkey3Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.smf_key1.values SMFK1"
+                     expression="SMFK1.sub_key3"/>
+              <index name="nrfprofilesmfkey1subkey4Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.smf_key1.values SMFK1"
+                     expression="SMFK1.sub_key4"/>
+              <index name="nrfprofilesmfkey1subkey5Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.smf_key1.values SMFK1"
+                     expression="SMFK1.sub_key5"/>
+              <index name="nrfprofilesmfkey2subkey1Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.smf_key2.values SMFK2"
+                     expression="SMFK2.sub_key1"/>
+              <index name="nrfprofilesmfkey2subkey2Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.smf_key2.values SMFK2"
+                     expression="SMFK2.sub_key2"/>
+              <index name="nrfprofilesmfkey2subkey3Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.smf_key2.values SMFK2"
+                     expression="SMFK2.sub_key3"/>
+              <index name="nrfprofilesmfkey2subkey4Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.smf_key2.values SMFK2"
+                     expression="SMFK2.sub_key4"/>
+              <index name="nrfprofilesmfkey2subkey5Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.smf_key2.values SMFK2"
+                     expression="SMFK2.sub_key5"/>
+              <index name="nrfprofilesmfkey3subkey1Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.smf_key3.values SMFK3"
+                     expression="SMFK3.sub_key1"/>
+              <index name="nrfprofilesmfkey3subkey2Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.smf_key3.values SMFK3"
+                     expression="SMFK3.sub_key2"/>
+              <index name="nrfprofilesmfkey3subkey3Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.smf_key3.values SMFK3"
+                     expression="SMFK3.sub_key3"/>
+              <index name="nrfprofilesmfkey3subkey4Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.smf_key3.values SMFK3"
+                     expression="SMFK3.sub_key4"/>
+              <index name="nrfprofilesmfkey3subkey5Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.smf_key3.values SMFK3"
+                     expression="SMFK3.sub_key5"/>
+              <index name="nrfprofileudmkey1subkey1Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.udm_key1.values UDMK1"
+                     expression="UDMK1.sub_key1"/>
+              <index name="nrfprofileudmkey1subkey2Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.udm_key1.values UDMK1"
+                     expression="UDMK1.sub_key2"/>
+              <index name="nrfprofileudmkey1subkey3Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.udm_key1.values UDMK1"
+                     expression="UDMK1.sub_key3"/>
+              <index name="nrfprofileudmkey1subkey4Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.udm_key1.values UDMK1"
+                     expression="UDMK1.sub_key4"/>
+              <index name="nrfprofileudmkey1subkey5Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.udm_key1.values UDMK1"
+                     expression="UDMK1.sub_key5"/>
+              <index name="nrfprofileudmkey2subkey1Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.udm_key2.values UDMK2"
+                     expression="UDMK2.sub_key1"/>
+              <index name="nrfprofileudmkey2subkey2Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.udm_key2.values UDMK2"
+                     expression="UDMK2.sub_key2"/>
+              <index name="nrfprofileudmkey2subkey3Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.udm_key2.values UDMK2"
+                     expression="UDMK2.sub_key3"/>
+              <index name="nrfprofileudmkey2subkey4Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.udm_key2.values UDMK2"
+                     expression="UDMK2.sub_key4"/>
+              <index name="nrfprofileudmkey2subkey5Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.udm_key2.values UDMK2"
+                     expression="UDMK2.sub_key5"/>
+              <index name="nrfprofileausfkey1subkey1Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.ausf_key1.values AUSFK1"
+                     expression="AUSFK1.sub_key1"/>
+              <index name="nrfprofileausfkey1subkey2Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.ausf_key1.values AUSFK1"
+                     expression="AUSFK1.sub_key2"/>
+              <index name="nrfprofileausfkey1subkey3Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.ausf_key1.values AUSFK1"
+                     expression="AUSFK1.sub_key3"/>
+              <index name="nrfprofileausfkey1subkey4Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.ausf_key1.values AUSFK1"
+                     expression="AUSFK1.sub_key4"/>
+              <index name="nrfprofileausfkey1subkey5Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.ausf_key1.values AUSFK1"
+                     expression="AUSFK1.sub_key5"/>
+              <index name="nrfprofileausfkey2subkey1Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.ausf_key2.values AUSFK2"
+                     expression="AUSFK2.sub_key1"/>
+              <index name="nrfprofileausfkey2subkey2Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.ausf_key2.values AUSFK2"
+                     expression="AUSFK2.sub_key2"/>
+              <index name="nrfprofileausfkey2subkey3Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.ausf_key2.values AUSFK2"
+                     expression="AUSFK2.sub_key3"/>
+              <index name="nrfprofileausfkey2subkey4Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.ausf_key2.values AUSFK2"
+                     expression="AUSFK2.sub_key4"/>
+              <index name="nrfprofileausfkey2subkey5Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.ausf_key2.values AUSFK2"
+                     expression="AUSFK2.sub_key5"/>
+              <index name="nrfprofilepcfkey1subkey1Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.pcf_key1.values PCFK1"
+                     expression="PCFK1.sub_key1"/>
+              <index name="nrfprofilepcfkey1subkey2Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.pcf_key1.values PCFK1"
+                     expression="PCFK1.sub_key2"/>
+              <index name="nrfprofilepcfkey1subkey3Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.pcf_key1.values PCFK1"
+                     expression="PCFK1.sub_key3"/>
+              <index name="nrfprofilepcfkey1subkey4Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.pcf_key1.values PCFK1"
+                     expression="PCFK1.sub_key4"/>
+              <index name="nrfprofilepcfkey1subkey5Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.pcf_key1.values PCFK1"
+                     expression="PCFK1.sub_key5"/>
+              <index name="nrfprofilepcfkey2subkey1Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.pcf_key2.values PCFK2"
+                     expression="PCFK2.sub_key1"/>
+              <index name="nrfprofilepcfkey2subkey2Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.pcf_key2.values PCFK2"
+                     expression="PCFK2.sub_key2"/>
+              <index name="nrfprofilepcfkey2subkey3Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.pcf_key2.values PCFK2"
+                     expression="PCFK2.sub_key3"/>
+              <index name="nrfprofilepcfkey2subkey4Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.pcf_key2.values PCFK2"
+                     expression="PCFK2.sub_key4"/>
+              <index name="nrfprofilepcfkey2subkey5Index" key-index="false" type="range" from-clause="/ericsson-nrf-nrfprofiles p, p.pcf_key2.values PCFK2"
+                     expression="PCFK2.sub_key5"/>
+          </region>
+          <region name="ericsson-nrf-gpsiprofiles">
+              <region-attributes refid="REPLICATE_PERSISTENT"/>
+              <index name="nftypeIndex" key-index="false" type="range" from-clause="/ericsson-nrf-gpsiprofiles p"
+                     expression="p.nf_type[*]"/>
+              <index name="groupId" key-index="false" type="range" from-clause="/ericsson-nrf-gpsiprofiles p"
+                     expression="p.group_id[*]"/>
+              <index name="profileType" key-index="false" type="range" from-clause="/ericsson-nrf-gpsiprofiles p"
+                     expression="p.profile_type"/>
+          </region>
+          <region name="ericsson-nrf-gpsiprefixprofiles">
+              <region-attributes refid="REPLICATE_PERSISTENT"/>
+              <index name="valueInfoIndex" key-index="false" type="range" from-clause="/ericsson-nrf-gpsiprefixprofiles p"
+                     expression="p.value_info[*]"/>
+          </region>
+          <region name="ericsson-nrf-multisiteinfo">
+              <region-attributes refid="REPLICATE_PERSISTENT"/>
+              <index name="InstanceIdIndex" key-index="false" type="range" from-clause="/ericsson-nrf-multisiteinfo.entrySet"
+                     expression="value.id"/>
+              <index name="LastUpdateTimeIndex" key-index="false" type="range" from-clause="/ericsson-nrf-multisiteinfo.entrySet"
+                     expression="value.lastUpdateTime"/>
+          </region>
+          <region name="ericsson-nrf-witnessinfo">
+              <region-attributes refid="REPLICATE_PERSISTENT"/>
+              <index name="InstanceIdIndex" key-index="false" type="range" from-clause="/ericsson-nrf-witnessinfo.entrySet"
+                     expression="value.id"/>
+              <index name="FqdnIndex" key-index="false" type="range" from-clause="/ericsson-nrf-witnessinfo.entrySet"
+                     expression="value.fqdn"/>
+              <index name="LastUpdateTimeIndex" key-index="false" type="range" from-clause="/ericsson-nrf-witnessinfo.entrySet"
+                     expression="value.lastUpdateTime"/>
+          </region>
+          <region name="ericsson-nrf-distributedlock">
+              <region-attributes refid="REPLICATE_PERSISTENT" scope="global" statistics-enabled="true">
+                  <entry-time-to-live>
+                     <expiration-attributes timeout="10" action="destroy">
+                     </expiration-attributes>
+                  </entry-time-to-live>
+              </region-attributes>
+          </region>
+      </cache>
+
+  #####################################################################
+  ##  Multisite configuration
+  #####################################################################
+  multiSite:
+    enabled: false
+    name: multisite
+    runtimeConfigMode:
+      enabled: false
+    nodePortMode:
+      enabled: false
+    locator:
+      remoteLocator:
+      localHost:
+      distributedSystemID:
+    server:
+      gatewayReceiverPort: 31392
+      gatewayReceiverCreateAdditionalParams:
+
+  istio:
+    gateway:
+      enabled: false
+      locatorPort: 91
+      gatewayReceiverPort: 92
+      ingressgateway: eric-nrf-traffic
+    virtualservice:
+      enabled: false
+
+  #####################################################################
+  ##  Values used for Kubernetes probing
+  #####################################################################
+  probing:
+    port: 8080
+    readiness:
+      initialDelaySeconds: 50
+      periodSeconds: 5
+      failureThreshold: 1
+      timeoutSeconds: 2
+    liveness:
+      monitor:
+        initialDelaySeconds: 60
+        periodSeconds: 5
+        failureThreshold: 2
+        timeoutSeconds: 3
+      database:
+        initialDelaySeconds: 60
+        periodSeconds: 5
+        failureThreshold: 2
+        timeoutSeconds: 3
+      jmxExporter:
+        initialDelaySeconds: 60
+        periodSeconds: 5
+        failureThreshold: 2
+        timeoutSeconds: 3
+
+  #####################################################################
+  ##  CPU and memory requests for the containers
+  #####################################################################
+  requests:
+    initDepend:
+      cpu: 200m
+      memory: 128Mi
+    initDb:
+      cpu: 200m
+      memory: 128Mi
+    database:
+      locator:
+        cpu: 1000m
+        memory: 4Gi
+      server:
+        cpu: 4000m
+        memory: 5Gi
+    monitor:
+      cpu: 500m
+      memory: 650Mi
+    jmxExporter:
+      cpu: 200m
+      memory: 512Mi
+
+  #####################################################################
+  ##  CPU and memory limits for the containers
+  #####################################################################
+  limits:
+    initDepend:
+      cpu: 200m
+      memory: 128Mi
+    initDb:
+      cpu: 200m
+      memory: 128Mi
+    database:
+      locator:
+        cpu: 2000m
+        memory: 6Gi
+      server:
+        cpu: 8000m
+        memory: 6Gi
+    monitor:
+      cpu: 500m
+      memory: 650Mi
+    jmxExporter:
+      cpu: 200m
+      memory: 512Mi
+
+  #####################################################################
+  ##  Initial and maximum heap usage of a JVM will be set to the value
+  ##  given below. Should be about 80% of the memory limit set for
+  ##  the container.
+  ##
+  ##  Must not be greater than the container memory limit!!
+  #####################################################################
+  jvmHeap:
+    initDepend: 100m
+    database:
+      locator: 3200m
+      server: 3200m
+    monitor: 384m
+    jmxExporter: 384m
+
+  ######################################################################
+  ##  Provides means to customize JVM arguments (other than heap size)
+  ##
+  ##  Accepted argument format:
+  ##
+  ##  container:
+  ##    - '"value1"'
+  ##    - '"value2"'
+  ##    ..
+  ##    - '"valueN"'
+  ##
+  ######################################################################
+  jvmOptions:
+    initDepend:
+    database:
+      locator:
+      - '"-XX:+UseG1GC"'
+      - '"-XX:MaxGCPauseMillis=10"'
+      - '"-Xlog:gc:file=srvgc.log"'
+      server:
+      - '"-Dgemfire.pdx.mapper.sort-json-field-names=true"'
+      - '"-XX:+UseG1GC"'
+      - '"-XX:MaxGCPauseMillis=10"'
+      - '"-Xlog:gc:file=srvgc.log"'
+      - '"-Dgeode.feature-protobuf-protocol=true"'
+    monitor:
+    jmxExporter:
+
+  #####################################################################
+  ##  Values used when creating config maps or volumes
+  #####################################################################
+  configConsts:
+    static:
+      # Static in a sense that runtime updates of these files aren't supported/advised
+      initDb:
+        # This volume is created from a configMap and mounted to the init-db container.
+        # Contains files that:
+        #   - need to be updated with runtime information before usage
+        #   - need to be writeable by processes running in other containers
+        #   - are not advised to be updated by user in runtime
+        # After the update, all files will be copied to another volume (emptyDir) which
+        # is shared between all containers.
+        path: /usr/src/app/config
+      initDepend:
+        # This volume is created from a configMap and mounted to the init-depend container.
+        path: /usr/src/app/config
+      processed:
+        # This is the emptyDir volume where init-db container copies the files to
+        name: processed
+        path: /etc/config/static
+    dynamic:
+      # Dynamic in a sense that runtime updates of these files are supported
+      name: dynamic
+      path: /etc/config/dynamic
+
+  #####################################################################
+  ## Values used to modify node and pod affinity
+  #####################################################################
+  affinity:
+    nodeAffinity: {}
+    podAffinity: {}
+    podAntiAffinity: {}
+    podAntiAffinityRequired: false
+
+

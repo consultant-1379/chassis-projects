@@ -1,0 +1,259 @@
+{
+   "data": {
+      "ericsson-pm:pm": {      
+         "job": [
+             {
+               "name": "nrf-pm",
+               "type": "measurement-job",
+               "reporting-period": "fifteen-min",
+               "granularity-period": "fifteen-min",
+               "control": "start-stop",
+               "compression-type": "gzip",
+               "measurement-reader": [
+                  {
+                     "name": "nrf-reg-reader",
+                     "group-ref": "nnrf-nf-registration"
+                  },
+                  {
+                     "name": "nrf-subscription-reader",
+                     "group-ref": "nnrf-nf-subscription"
+                  },
+                  {
+                     "name": "nrf-discovery-reader",
+                     "group-ref": "nnrf-nf-discovery"
+                  },
+                  {
+                     "name": "nrf-provision-reader",
+                     "group-ref": "nnrf-nf-provision"
+                  }
+               ],
+               "requested-job-state": "stopped"
+             }
+         ],
+         "group": [
+            {
+              "name": "nnrf-nf-registration",
+              "generation": "5GS",
+              "validity": true,
+              "measured-object": "/nrf-function/management-service-profile",
+              "description": "NRF registration counter group",
+              "version": "0.1.5",
+              "measurement-type": [
+                 {
+                   "id": "nf-registration-requests-total",
+                   "measurement-name": "nf-registration-requests-total",
+                   "size": 8,
+                   "collection-method": "cc",
+                   "description": "Total number of registration requests received from NF Service Consumer(s) in NRF",
+                   "condition": "Incremented when an NF registration request is received from an NF Service Consumer",
+                   "aggregation": "sum",
+                   "measurement-status": "used",
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": true,
+                   "internal-metric-name": "nf_registration_requests_total",
+                   "internal-metric-type": "Counter"					 
+                 },
+                 {
+                   "id": "nf-registration-success-total",
+                   "measurement-name": "nf-registration-success-total",
+                   "size": 8,
+                   "collection-method": "cc",
+                   "description": "Total number of successful registrations from NF Service Consumer(s) in NRF",
+                   "condition": "Incremented when an NF Instance is registered successfully in NRF",
+                   "aggregation": "sum",
+                   "measurement-status": "used",
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": true,
+                   "internal-metric-name": "nf_registration_success_total",
+                   "internal-metric-type": "Counter"	
+                 },
+                 {
+                   "id": "nf-registration-failure-total",
+                   "measurement-name": "nf-registration-failure-total",
+                   "size": 8,
+                   "collection-method": "cc",
+                   "description": "Total number of failed registrations from NF Service Consumer(s) in NRF, including 4xx and 5xx response",
+                   "condition": "Incremented when an NF Instance fails to be registered in NRF",
+                   "aggregation": "sum",
+                   "measurement-status": "used",
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": true,
+                   "internal-metric-name": "nf_registration_failure_total",
+                   "internal-metric-type": "Counter"	
+                 }
+              ]
+            },
+            {
+              "name": "nnrf-nf-subscription",
+              "generation": "5GS",
+              "validity": true,
+              "measured-object": "/nrf-function/management-service-profile",
+              "description": "NRF subscription counter group",
+              "version": "0.1.1",
+              "measurement-type": [
+                 {
+                   "id": "nf-subscription-requests-total",
+                   "measurement-name": "nf-subscription-requests-total",
+                   "size": 8,
+                   "collection-method": "cc",
+                   "description": "Total number of subscription requests received in NRF",
+                   "condition": "Incremented when a request of subscription is received in NRF",
+                   "aggregation": "sum",
+                   "measurement-status": "used",
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": true,
+                   "internal-metric-name": "nf_subscription_requests_total",
+                   "internal-metric-type": "Counter"	
+                 },
+                 {
+                   "id": "nf-subscription-success-total",
+                   "measurement-name": "nf-subscription-success-total",
+                   "size": 8,
+                   "collection-method": "cc",
+                   "description": "Total number of subscriptions created successfully in NRF",
+                   "condition": "Incremented when a subscription is created successfully in NRF",
+                   "aggregation": "sum",
+                   "measurement-status": "used",
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": true,
+                   "internal-metric-name": "nf_subscription_success_total",
+                   "internal-metric-type": "Counter"	
+                 },
+                 {
+                   "id": "nf-subscription-failure-total",
+                   "measurement-name": "nf-subscription-failure-total",
+                   "size": 8,
+                   "collection-method": "cc",
+                   "description": "Total number of subscriptions that failed to be created in NRF, including 4xx and 5xx response",
+                   "condition": "Incremented when a subscription fails to be created in NRF",
+                   "aggregation": "sum",
+                   "measurement-status": "used",
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": true,
+                   "internal-metric-name": "nf_subscription_failure_total",
+                   "internal-metric-type": "Counter"	
+                 }
+              ]
+            },
+            {
+              "name": "nnrf-nf-discovery",
+              "generation": "5GS",
+              "validity": true,
+              "measured-object": "/nrf-function/discovery-service-profile",
+              "description": "NRF discovery counter group",
+              "version": "0.1.5",
+              "measurement-type": [
+                 {
+                   "id": "nf-discovery-requests-total",
+                   "measurement-name": "nf-discovery-requests-total",
+                   "size": 8,
+                   "collection-method": "cc",
+                   "description": "Total number of discovery requests received in NRF",
+                   "condition": "Incremented when an NF discovery request is received from an NF Service Consumer",
+                   "aggregation": "sum",
+                   "measurement-status": "used",
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": true,
+                   "internal-metric-name": "nf_discovery_requests_total",
+                   "internal-metric-type": "Counter"	
+                 },
+                 {
+                   "id": "nf-discovery-success-total",
+                   "measurement-name": "nf-discovery-success-total",
+                   "size": 8,
+                   "collection-method": "cc",
+                   "description": "Total number of successful NF discovery requests in NRF",
+                   "condition": "Incremented when a discovery request is successful, indicating that the NF services matching the input criteria of discovery request are found",
+                   "aggregation": "sum",
+                   "measurement-status": "used",
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": true,
+                   "internal-metric-name": "nf_discovery_success_total",
+                   "internal-metric-type": "Counter"	
+                 },
+                 {
+                   "id": "nf-discovery-failure-total",
+                   "measurement-name": "nf-discovery-failure-total",
+                   "size": 8,
+                   "collection-method": "cc",
+                   "description": "Total number of failed discovery requests in NRF, including 4xx and 5xx response",
+                   "condition": "Incremented when a discovery request fails, for example, no NF service matching the input criteria of discovery request, or the NF Service Consumer is not allowed to discover the NF Service(s) being queried",
+                   "aggregation": "sum",
+                   "measurement-status": "used",
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": true,
+                   "internal-metric-name": "nf_discovery_failure_total",
+                   "internal-metric-type": "Counter"	
+                 }
+              ]
+            },
+            {
+              "name": "nnrf-nf-provision",
+              "generation": "5GS",
+              "validity": true,
+              "measured-object": "/nrf-function/provision-service-profile",
+              "description": "NRF provision counter group",
+              "version": "0.1.0",
+              "measurement-type": [
+                 {
+                   "id": "nf-provision-registration-requests-total",
+                   "measurement-name": "nf-provision-registration-requests-total",
+                   "size": 8,
+                   "collection-method": "cc",
+                   "description": "Total number of NF profile provisioning requests received in NRF",
+                   "condition": "Incremented when a request of provisioning one NF profile is received",
+                   "aggregation": "sum",
+                   "measurement-status": "used",
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": true,
+                   "internal-metric-name": "nf_provision_registration_requests_total",
+                   "internal-metric-type": "Counter"					 
+                 },
+                 {
+                   "id": "nf-provision-registration-success-total",
+                   "measurement-name": "nf-provision-registration-success-total",
+                   "size": 8,
+                   "collection-method": "cc",
+                   "description": "Total number of successful provisioning of NF profile in NRF",
+                   "condition": "Incremented when an NF profile is provisioned successfully in NRF",
+                   "aggregation": "sum",
+                   "measurement-status": "used",
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": true,
+                   "internal-metric-name": "nf_provision_registration_success_total",
+                   "internal-metric-type": "Counter"	
+                 },
+                 {
+                   "id": "nf-provision-registration-failure-total",
+                   "measurement-name": "nf-provision-registration-failure-total",
+                   "size": 8,
+                   "collection-method": "cc",
+                   "description": "Total number of failed provisioning of NF profile in NRF, including 4xx and 5xx response",
+                   "condition": "Incremented when an NF profile is failed to be provisioned in NRF",
+                   "aggregation": "sum",
+                   "measurement-status": "used",
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": true,
+                   "internal-metric-name": "nf_provision_registration_failure_total",
+                   "internal-metric-type": "Counter"	
+                 }
+               ]
+            }
+        ]
+      }
+   },
+   "name": "ADP-GS-PM-BR",
+   "title": "The ADP-GS-PM-BR configuration"
+}

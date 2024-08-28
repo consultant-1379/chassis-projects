@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+// Language Dependent Statements Start
+option java_package = "ericsson.core.nrf.dbproxy.grpc.nfmessage.gpsiprofile";
+option java_outer_classname = "GpsiProfileFilterProto";
+option go_package = "com/dbproxy/nfmessage/gpsiprofile";
+import "nfmessage/gpsiprofile/GpsiProfileIndex.proto";
+package grpc;
+// Language Dependent Statements End
+
+message GpsiProfileFilter {
+    bool and_operation       = 1;
+    GpsiProfileIndex index    = 2;
+}
+

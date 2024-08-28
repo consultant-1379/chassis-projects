@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ericsson.core.nrf.dbproxy.helper.nrfprofile.NRFProfileDelHelperTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2019-09-02T07:45:33" hostname="c3b6544a0f6e" time="0.051">
+  <properties/>
+  <testcase name="createResponseTest" classname="ericsson.core.nrf.dbproxy.helper.nrfprofile.NRFProfileDelHelperTest" time="0.024"/>
+  <testcase name="validateTest" classname="ericsson.core.nrf.dbproxy.helper.nrfprofile.NRFProfileDelHelperTest" time="0.026"/>
+  <system-out><![CDATA[[error 2019/09/02 07:45:33.818 UTC <Test worker> tid=0xc] nrfInstanceId field is empty in NFProfileDelRequest
+
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

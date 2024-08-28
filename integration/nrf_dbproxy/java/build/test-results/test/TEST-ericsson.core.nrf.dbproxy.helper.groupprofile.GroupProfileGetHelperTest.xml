@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ericsson.core.nrf.dbproxy.helper.groupprofile.GroupProfileGetHelperTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2019-09-02T07:45:33" hostname="c3b6544a0f6e" time="0.055">
+  <properties/>
+  <testcase name="createResponseTest" classname="ericsson.core.nrf.dbproxy.helper.groupprofile.GroupProfileGetHelperTest" time="0.033"/>
+  <testcase name="validateTest" classname="ericsson.core.nrf.dbproxy.helper.groupprofile.GroupProfileGetHelperTest" time="0.022"/>
+  <system-out><![CDATA[[error 2019/09/02 07:45:33.912 UTC <Test worker> tid=0xc] Empty group_profile_id is set in GroupProfileGetRequest
+
+[error 2019/09/02 07:45:33.913 UTC <Test worker> tid=0xc] group_profile_id length 1025 is too large, max length is 1024
+
+[error 2019/09/02 07:45:33.921 UTC <Test worker> tid=0xc] Empty GroupProfileFilter is set in filter of GroupProfileGetRequest
+
+[error 2019/09/02 07:45:33.921 UTC <Test worker> tid=0xc] Empty fragmentSessionId is set in NFProfileGetRequest
+
+[error 2019/09/02 07:45:33.922 UTC <Test worker> tid=0xc] Empty GroupProfileGetRequest is received
+
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

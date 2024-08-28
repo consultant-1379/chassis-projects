@@ -1,0 +1,6 @@
+namespace:
+  name_istio: istio-system
+
+global:
+  nf_instance_name: eric
+  ingressSecret: istio-ingress-certs

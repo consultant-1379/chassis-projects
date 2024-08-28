@@ -1,0 +1,29 @@
+[
+  {
+     "faultName": "nrfagentNrfmngtConnectionFailure",
+     "createAlarm": true,
+     "defaultDescription": "NRFAgent Failed to Connect to NRF Management Service",
+     "defaultExpiration": 600,
+     "defaultSeverity": "Major",
+     "vendor": 193,
+     "code": 8060929
+  },
+  {
+     "faultName": "nrfagentNrfdiscoverConnectionFailure",
+     "createAlarm": true,
+     "defaultDescription": "NRFAgent Failed to Connect to NRF Discover Service",
+     "defaultExpiration": 600,
+     "defaultSeverity": "Major",
+     "vendor": 193,
+     "code": 8060930
+  },
+  {
+     "faultName": "nrfagentNoAvailableDestination",
+     "createAlarm": true,
+     "defaultDescription": "NRFAgent Failed to Find Available Destination",
+     "defaultExpiration": 600,
+     "defaultSeverity": "Major",
+     "vendor": 193,
+     "code": 8060931
+  }
+]

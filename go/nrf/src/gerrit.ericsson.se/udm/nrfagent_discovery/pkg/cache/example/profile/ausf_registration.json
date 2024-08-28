@@ -1,0 +1,42 @@
+{
+    "nfInstanceID": "ausf-5g-01",
+    "nfType": "ausf",
+    "plmn": "24080",
+    "sNssai": {
+      "sst": "0",
+      "sd": "0"
+    },
+    "fqdn": "seliius03696.seli.gic.ericsson.se",
+    "ipAddress": [
+      "172.16.208.1"
+    ],
+    "capacity": 100,
+    "nfServiceList": [
+      {
+        "serviceInstanceID": "nausf-auth-01",
+        "serviceName": "nausf-auth",
+        "version": "v1",
+        "Schema": "https://",
+        "fqdn": "seliius03696.seli.gic.ericsson.se",
+        "ipAddress": [
+          "172.16.208.1"
+        ],
+        "port": 30088,
+        "callbackUri": [
+          "https://seliius03696.seli.gic.ericsson.se/notification"
+        ],
+        "allowedPlmns": [
+          "46000"
+        ],
+        "allowedNfTypes": [
+          "amf"
+        ],
+        "allowedNssais": [
+          {
+            "sst": "0",
+            "sd": "0"
+          }
+        ]
+      }
+    ]
+   }

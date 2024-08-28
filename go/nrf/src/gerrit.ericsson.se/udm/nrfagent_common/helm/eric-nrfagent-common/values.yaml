@@ -1,0 +1,37 @@
+# ########################################################################### # 
+#  nrfagent common charts                                                     #
+# ########################################################################### #
+tags:
+  eric-nrfagent-rbac: true
+  eric-nrfagent-ingress-secret: false
+  eric-nrfagent-istio: true
+  eric-nrfagent-pm-job-loader: true
+  eric-nrfagent-initcm: true
+
+global:
+  nf_instance_name: eric
+  ingressSecret: istio-ingress-certs
+
+  cm_uri_prefix: http://eric-cm-mediator:5003/cm/api/v1.1
+  cm_config_schema_prefix_name: "ericsson-nrf-agent"
+  cm_config_log_name: "eric-nrfagentlog"
+
+  imageCredentials:
+    repository: armdocker.rnd.ericsson.se/proj-ipworks
+
+  serviceAccountName: nrfagent-service-account
+
+
+jsonschema:
+  configmap:
+    name: "eric-nrfagent-jsonschema"
+
+nrfagentCommon:
+  image:
+    name: nrfagentinitcm
+    tag: dev
+    pullPolicy: IfNotPresent
+  cmHook:
+    postDelete:
+      name: eric-nrf-agent-delete-cm
+      enabled: "'true'"

@@ -1,0 +1,145 @@
+submodule nrf-submodule-discovery {
+	yang-version "1.1";
+ 
+  // module identification
+    belongs-to ericsson-nrf {
+        prefix "nrfe";
+    }
+
+ // linkage statements
+	import ericsson-yang-extensions { 
+		prefix yexte;
+	}
+
+	import ericsson-yang-types { 
+		prefix typese;
+	} 
+
+	import ericsson-notifications { 
+		prefix notife;
+	}    
+
+	organization "Ericsson AB";
+	contact "Ericsson first line support via email";
+	description "nrf submodule discovery.
+			     Copyright (c) 2018 Ericsson AB. All rights reserved.";
+
+    revision "2019-04-03" {
+	  	description "align design rule";
+	    yexte:version 1;
+		yexte:release 0;
+		yexte:correction 6; 
+	}
+
+    revision "2019-01-16" {
+	  	description "Change uint54 to uint32";
+	    yexte:version 1;
+		yexte:release 0;
+		yexte:correction 6; 
+	}				 
+				 
+    revision "2018-12-12" {
+	  	description "Add local-cache-timeout,local-cache-capacity,local-cache-enable";
+	    yexte:version 1;
+		yexte:release 0;
+		yexte:correction 5; 
+	}				 
+				 
+    revision "2018-11-08" {
+	  	description "Add hierarchy-discovery-mode";
+	    yexte:version 1;
+		yexte:release 0;
+		yexte:correction 4; 
+	}
+    
+    revision "2018-10-15" {
+	  	description "Add default value for discovery-cache-time";
+	    yexte:version 1;
+		yexte:release 0;
+		yexte:correction 3; 
+	}
+	
+    revision "2018-09-03" {
+	  	description "Add discovery_nf_service";
+	    yexte:version 1;
+		yexte:release 0;
+		yexte:correction 2; 
+	}
+
+	revision "2018-08-01" {
+	  	description "Updated nrf prefix";
+	    yexte:version 1;
+		yexte:release 0;
+		yexte:correction 1; 
+	}
+	
+	revision "2018-05-25" {
+	  	description "Initial version. YANG modeling of 5G nrf";
+	    yexte:version 1;
+		yexte:release 0;
+		yexte:correction 0; 
+	}
+
+ 
+ // module definitions
+ grouping discovery-service {
+
+	        leaf administrative-state {
+                status current {
+                    yexte:preliminary; 
+                }               
+                type typese:adm-state; 
+                description "Administrative status of discovery service.";
+            }
+
+            leaf operational-state {
+                status current {
+                    yexte:preliminary; 
+                }                
+                type typese:oper-state; 
+                config false;
+                notife:notifiable-state-data true;
+                description "Operational status of discovery service.";
+            }  
+
+            leaf response-cache-time {
+			    type uint32;
+			    default 86400;
+			    description "Time period for caching discovery result by NF Service Consumer.";  
+            }
+
+            leaf hierarchy-mode{
+			    type enumeration
+                {
+                    enum forward {
+                        value 0;
+                        description "Forwarding mode";
+                    }
+                    enum redirect {
+                        value 1;
+                        description "Redirecting mode";
+                    }                    
+                }
+                default forward;
+			    description "In hierarchical NRFs deployment, the discovery mode on PLMN level NRF.";  
+            }
+            leaf local-cache-enable {
+			    type boolean;
+			    default false;
+			    description "Indicate whether enable local cache when hierarchical NRFs are deployed. When enabled, NRF discovery caches NF Profiles from discovery result from other NRF.";  
+            } 
+            leaf local-cache-timeout {
+			    type uint32;
+			    default 3000;
+			    description "Time period for caching local cache in seconds.";  
+            } 			
+            leaf local-cache-capacity {
+			    type uint32;
+			    default 100;
+			    description "Maximum number of local cache records.";  
+            }            
+        }
+
+}
+
+

@@ -1,0 +1,267 @@
+
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "v1",
+    "title": "UDM Nudm_UEAuthentication Service",
+    "description": "UDM Nudm_UEAuthentication Service"
+  },
+  "servers": [
+    {
+      "description": "UDM N13 API",
+      "url": "https://{apiRoot}/nudm-ueau/v1"
+    }
+  ],
+  "paths": {
+    "/{supi}/security-information/calculate-av": {
+      "post": {
+        "summary": "Authentication Initiation Request for selection of authentication method and if applicable Authentication Vectors",
+        "operationId": "calculate-av",
+        "tags": [
+          "calculate AV"
+        ],
+        "parameters": [
+          {
+            "name": "supi",
+            "in": "path",
+            "description": "SUPI of the user (only IMSI supported this version)",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Supi"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthenticationInfoRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationInfoResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "501": {
+            "description": "Not implemented"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AuthenticationInfoRequest": {
+        "type": "object",
+        "properties": {
+          "servingNetworkName": {
+            "type": "string"
+          },
+          "accessType": {
+            "$ref": "#/components/schemas/AccessType"
+          },
+          "numberOfRequestedAVs": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "resynchronizationInfo": {
+            "$ref": "#/components/schemas/ResynchronizationInfo"
+          }
+        },
+        "required": [
+          "servingNetworkName",
+          "accessType",
+          "numberOfRequestedAVs"
+        ]
+      },
+      "AuthenticationInfoResult": {
+        "type": "object",
+        "properties": {
+          "avEapAkaPrime": {
+            "$ref": "#/components/schemas/AvEapAkaPrime"
+          },
+          "av5GAka": {
+            "$ref": "#/components/schemas/Av5GAka"
+          }
+        }
+      },
+      "ResynchronizationInfo": {
+        "type": "object",
+        "properties": {
+          "rand": {
+            "$ref": "#/components/schemas/Rand"
+          },
+          "auts": {
+            "$ref": "#/components/schemas/Auts"
+          }
+        },
+        "required": [
+          "rand",
+          "auts"
+        ]
+      },
+      "Supi": {
+        "type": "string",
+        "pattern": "(imsi-[0-9]{5,15})"
+      },
+      "AccessType": {
+        "type": "string",
+        "description": "access type",
+        "enum": [
+          "3GPP_ACCESS",
+          "NON_3GPP_ACCESS"
+        ]
+      },
+      "AvEapAkaPrime": {
+        "type": "object",
+        "properties": {
+          "rand": {
+            "$ref": "#/components/schemas/Rand"
+          },
+          "xres": {
+            "$ref": "#/components/schemas/Xres"
+          },
+          "autn": {
+            "$ref": "#/components/schemas/Autn"
+          },
+          "ckPrime": {
+            "$ref": "#/components/schemas/CkPrime"
+          },
+          "ikPrime": {
+            "$ref": "#/components/schemas/IkPrime"
+          }
+        },
+        "required": [
+          "rand",
+          "xres",
+          "autn",
+          "ckPrime",
+          "ikPrime"
+        ]
+      },
+      "Av5GAka": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "rand": {
+              "$ref": "#/components/schemas/Rand"
+            },
+            "xresStar": {
+              "$ref": "#/components/schemas/XresStar"
+            },
+            "autn": {
+              "$ref": "#/components/schemas/Autn"
+            },
+            "kasmeStar": {
+              "$ref": "#/components/schemas/KasmeStar"
+            }
+          },
+          "required": [
+            "rand",
+            "xresStar",
+            "autn",
+            "kasmeStar"
+          ]
+        }
+      },
+      "Autn": {
+        "type": "string",
+        "pattern": "[A-Fa-f0-9]{32}"
+      },
+      "Auts": {
+        "type": "string",
+        "pattern": "[A-Fa-f0-9]{28}"
+      },
+      "CkPrime": {
+        "type": "string",
+        "pattern": "[A-Fa-f0-9]{32}"
+      },
+      "IkPrime": {
+        "type": "string",
+        "pattern": "[A-Fa-f0-9]{32}"
+      },
+      "KasmeStar": {
+        "type": "string",
+        "pattern": "[A-Fa-f0-9]{64}"
+      },
+      "Rand": {
+        "type": "string",
+        "pattern": "[A-Fa-f0-9]{32}"
+      },
+      "Xres": {
+        "type": "string",
+        "pattern": "[A-Fa-f0-9]{8,32}"
+      },
+      "XresStar": {
+        "type": "string",
+        "pattern": "[A-Fa-f0-9]{32}"
+      },
+      "ProblemDetails": {
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "instance": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "Documentation",
+    "url": "http://www.3gpp.org/ftp/Specs/archive/29_series/29.510/29503-040.zip"
+  }
+}

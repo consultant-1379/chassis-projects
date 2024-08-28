@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NFProfileGetExecutor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.executor.nfprofile</a> &gt; <span class="el_source">NFProfileGetExecutor.java</span></div><h1>NFProfileGetExecutor.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.executor.nfprofile;
+
+import ericsson.core.nrf.dbproxy.clientcache.ClientCacheService;
+import ericsson.core.nrf.dbproxy.common.Code;
+import ericsson.core.nrf.dbproxy.common.ExecutionResult;
+import ericsson.core.nrf.dbproxy.config.Attribute;
+import ericsson.core.nrf.dbproxy.config.AttributeConfig;
+import ericsson.core.nrf.dbproxy.executor.Executor;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.common.SearchExpressionProto.AndExpression;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.common.SearchExpressionProto.MetaExpression;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.common.SearchExpressionProto.ORExpression;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.common.SearchParameterProto.SearchAttribute;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.common.SearchParameterProto.SearchParameter;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.common.SearchParameterProto.SearchValue;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.nfprofile.NFProfileFilterProto.NFProfileFilter;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.nfprofile.NFProfileGetRequestProto.NFProfileGetRequest;
+import ericsson.core.nrf.dbproxy.helper.nfprofile.NFProfileGetHelper;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class NFProfileGetExecutor extends Executor {
+
+<span class="nc" id="L26">  private static final Logger LOGGER = LogManager.getLogger(NFProfileGetExecutor.class);</span>
+
+  private static final String OQL_1 = &quot; AND &quot;;
+  private static final String OQL_2 = &quot;.compareTo('&quot;;
+  private static NFProfileGetExecutor instance;
+
+  static {
+<span class="nc" id="L33">    instance = null;</span>
+<span class="nc" id="L34">  }</span>
+
+  private String fromPrefix;
+  private String select;
+  private String where;
+
+  private NFProfileGetExecutor() {
+<span class="nc" id="L41">    super(NFProfileGetHelper.getInstance());</span>
+
+<span class="nc" id="L43">    fromPrefix = &quot;/&quot; + Code.NFPROFILE_INDICE + &quot;.entrySet&quot;;</span>
+<span class="nc" id="L44">    select = &quot;select DISTINCT value FROM &quot;;</span>
+<span class="nc" id="L45">    where = &quot; where &quot;;</span>
+
+<span class="nc" id="L47">  }</span>
+
+  public static synchronized NFProfileGetExecutor getInstance() {
+<span class="nc bnc" id="L50" title="All 2 branches missed.">    if (null == instance) {</span>
+<span class="nc" id="L51">      instance = new NFProfileGetExecutor();</span>
+    }
+<span class="nc" id="L53">    return instance;</span>
+  }
+
+  protected ExecutionResult execute(NFMessage request) {
+<span class="nc" id="L57">    NFProfileGetRequest getRequest = request.getRequest().getGetRequest().getNfProfileGetRequest();</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">    if (!getRequest.getTargetNfInstanceId().isEmpty()) {</span>
+<span class="nc" id="L59">      return ClientCacheService.getInstance()</span>
+<span class="nc" id="L60">          .getByID(Code.NFPROFILE_INDICE, getRequest.getTargetNfInstanceId());</span>
+<span class="nc bnc" id="L61" title="All 2 branches missed.">    } else if (getRequest.hasFilter()) {</span>
+<span class="nc" id="L62">      String queryString = getQueryString(getRequest.getFilter());</span>
+<span class="nc" id="L63">      return ClientCacheService.getInstance().getByFilter(Code.NFPROFILE_INDICE, queryString);</span>
+    } else {
+<span class="nc" id="L65">      return ClientCacheService.getInstance()</span>
+<span class="nc" id="L66">          .getByFragSessionId(Code.NFPROFILE_INDICE, getRequest.getFragmentSessionId());</span>
+    }
+  }
+
+  private String getQueryString(NFProfileFilter filter) {
+<span class="nc" id="L71">    String[] expressions = {fromPrefix, &quot;&quot;};</span>
+<span class="nc bnc" id="L72" title="All 4 branches missed.">    if (filter.hasSearchExpression() &amp;&amp; filter.getSearchExpression().hasAndExpression()) {</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">      if (filter.getSearchExpression().hasAndExpression()) {</span>
+<span class="nc" id="L74">        expressions = constructAndExpression(filter.getSearchExpression().getAndExpression(), true,</span>
+            false, true);
+<span class="nc bnc" id="L76" title="All 2 branches missed.">      } else if (filter.getSearchExpression().hasOrExpression()) {</span>
+<span class="nc" id="L77">        expressions = constructOrExpression(filter.getSearchExpression().getOrExpression());</span>
+      }
+    }
+
+<span class="nc" id="L81">    String query = buildQuery(expressions);</span>
+
+<span class="nc" id="L83">    return addCustomInfo(filter, query);</span>
+  }
+
+  private String buildQuery(String[] expressions) {
+<span class="nc" id="L87">    String query = &quot;&quot;;</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">    if (!expressions[1].isEmpty()) {</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">      if (expressions[0].isEmpty()) {</span>
+<span class="nc" id="L90">        query = select + fromPrefix + where + expressions[1];</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">      } else if (expressions[0].indexOf(&quot;select&quot;) == -1) {</span>
+<span class="nc" id="L92">        query = select + fromPrefix + &quot;, &quot; + expressions[0] + where + expressions[1];</span>
+      } else {
+<span class="nc" id="L94">        query = select + expressions[0] + where + expressions[1];</span>
+      }
+    }
+
+<span class="nc" id="L98">    return query;</span>
+  }
+
+  private String addCustomInfo(NFProfileFilter filter, String query) {
+<span class="nc" id="L102">    boolean exist = false;</span>
+<span class="nc" id="L103">    StringBuilder subWhere = new StringBuilder(this.where);</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">    if (filter.hasExpiredTimeRange()) {</span>
+<span class="nc" id="L105">      long start = filter.getExpiredTimeRange().getStart();</span>
+<span class="nc" id="L106">      long end = filter.getExpiredTimeRange().getEnd();</span>
+<span class="nc" id="L107">      subWhere.append(</span>
+<span class="nc" id="L108">          &quot;value.expiredTime &gt;= &quot; + Long.toString(start) + &quot;L AND value.expiredTime &lt;= &quot; + Long</span>
+<span class="nc" id="L109">              .toString(end) + &quot;L&quot;);</span>
+<span class="nc" id="L110">      exist = true;</span>
+    }
+
+<span class="nc bnc" id="L113" title="All 2 branches missed.">    if (filter.hasLastUpdateTimeRange()) {</span>
+<span class="nc" id="L114">      long start = filter.getLastUpdateTimeRange().getStart();</span>
+<span class="nc" id="L115">      long end = filter.getLastUpdateTimeRange().getEnd();</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">      if (exist) {</span>
+<span class="nc" id="L117">        subWhere.append(OQL_1);</span>
+      }
+<span class="nc" id="L119">      subWhere.append(</span>
+<span class="nc" id="L120">          &quot;value.lastUpdateTime &gt;= &quot; + Long.toString(start) + &quot;L AND value.lastUpdateTime &lt;= &quot;</span>
+<span class="nc" id="L121">              + Long.toString(end) + &quot;L&quot;);</span>
+<span class="nc" id="L122">      exist = true;</span>
+    }
+
+<span class="nc bnc" id="L125" title="All 2 branches missed.">    if (filter.getProvisioned() == Code.REGISTERED_ONLY</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">        || filter.getProvisioned() == Code.PROVISIONED_ONLY) {</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">      if (exist) {</span>
+<span class="nc" id="L128">        subWhere.append(OQL_1);</span>
+      }
+<span class="nc" id="L130">      subWhere.append(&quot;value.provisioned = &quot; + Integer.toString(filter.getProvisioned()));</span>
+    }
+
+<span class="nc bnc" id="L133" title="All 2 branches missed.">    if (filter.hasProvVersion()) {</span>
+<span class="nc" id="L134">      long supiVersion = filter.getProvVersion().getSupiVersion();</span>
+<span class="nc" id="L135">      long gpsiVersion = filter.getProvVersion().getGpsiVersion();</span>
+<span class="nc bnc" id="L136" title="All 2 branches missed.">      if (exist) {</span>
+<span class="nc" id="L137">        subWhere.append(OQL_1);</span>
+      }
+<span class="nc" id="L139">      subWhere.append(&quot;(value.provSupiVersion &gt;= &quot; + Long.toString(supiVersion)</span>
+<span class="nc" id="L140">          + &quot;L OR value.provGpsiVersion &gt;= &quot; + Long.toString(gpsiVersion) + &quot;L)&quot;);</span>
+<span class="nc" id="L141">      exist = true;</span>
+    }
+
+<span class="nc bnc" id="L144" title="All 2 branches missed.">    if (!exist) {</span>
+<span class="nc" id="L145">      return query;</span>
+    }
+
+<span class="nc bnc" id="L148" title="All 2 branches missed.">    if (query.isEmpty()) {</span>
+<span class="nc" id="L149">      return select + fromPrefix + subWhere.toString();</span>
+    } else {
+<span class="nc" id="L151">      return select + &quot;(&quot; + query + &quot;) value&quot; + subWhere.toString();</span>
+    }
+  }
+
+  public String[] constructAndExpression(AndExpression andExpression, boolean inAndExpression,
+      boolean innerExpressionExist, boolean isFirstAnd) {
+<span class="nc" id="L157">    String[] expressions = {&quot;&quot;, &quot;&quot;};</span>
+<span class="nc" id="L158">    List&lt;String&gt; fromExpressionList = new ArrayList&lt;String&gt;();</span>
+<span class="nc bnc" id="L159" title="All 2 branches missed.">    for (MetaExpression metaExpression : andExpression.getMetaExpressionList()) {</span>
+<span class="nc" id="L160">      String[] subExpressions = {&quot;&quot;, &quot;&quot;};</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">      if (metaExpression.hasSearchParameter()) {</span>
+<span class="nc" id="L162">        subExpressions = constructSearchParameterExpression(metaExpression.getSearchParameter());</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">      } else if (metaExpression.hasAndExpression()) {</span>
+<span class="nc bnc" id="L164" title="All 2 branches missed.">        if (expressions[1].isEmpty()) {</span>
+<span class="nc" id="L165">          subExpressions = constructAndExpression(metaExpression.getAndExpression(),</span>
+              inAndExpression, true, false);
+        } else {
+<span class="nc" id="L168">          subExpressions = constructAndExpression(metaExpression.getAndExpression(),</span>
+              inAndExpression, false, false);
+        }
+<span class="nc bnc" id="L171" title="All 2 branches missed.">      } else if (metaExpression.hasOrExpression()) {</span>
+<span class="nc" id="L172">        subExpressions = constructOrExpression(metaExpression.getOrExpression());</span>
+      } else {
+<span class="nc" id="L174">        LOGGER.error(&quot;Empty MetaExpression in the AndExpression = &quot; + andExpression.toString());</span>
+      }
+
+<span class="nc bnc" id="L177" title="All 2 branches missed.">      if (subExpressions[1].isEmpty()) {</span>
+<span class="nc" id="L178">        continue;</span>
+      }
+
+<span class="nc bnc" id="L181" title="All 6 branches missed.">      if (inAndExpression &amp;&amp; !innerExpressionExist &amp;&amp; isFirstAnd) {</span>
+<span class="nc" id="L182">        String innerQuery = buildQuery(expressions);</span>
+<span class="nc bnc" id="L183" title="All 2 branches missed.">        if (innerQuery.isEmpty()) {</span>
+<span class="nc" id="L184">          expressions = subExpressions;</span>
+        } else {
+<span class="nc bnc" id="L186" title="All 2 branches missed.">          if (subExpressions[0].isEmpty()) {</span>
+<span class="nc" id="L187">            expressions[0] = &quot;(&quot; + innerQuery + &quot;) value&quot;;</span>
+          } else {
+<span class="nc" id="L189">            expressions[0] = &quot;(&quot; + innerQuery + &quot;) value, &quot; + subExpressions[0];</span>
+          }
+<span class="nc" id="L191">          expressions[1] = subExpressions[1];</span>
+        }
+<span class="nc" id="L193">      } else {</span>
+<span class="nc bnc" id="L194" title="All 2 branches missed.">        if (!subExpressions[0].isEmpty()) {</span>
+<span class="nc" id="L195">          String[] fromExpressions = subExpressions[0].split(&quot;,&quot;);</span>
+<span class="nc bnc" id="L196" title="All 2 branches missed.">          for (String from : fromExpressions) {</span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">            if (from.isEmpty()) {</span>
+<span class="nc" id="L198">              continue;</span>
+            }
+<span class="nc bnc" id="L200" title="All 2 branches missed.">            if (fromExpressionList.contains(from)) {</span>
+<span class="nc" id="L201">              continue;</span>
+            }
+<span class="nc" id="L203">            fromExpressionList.add(from);</span>
+<span class="nc bnc" id="L204" title="All 2 branches missed.">            if (expressions[0].isEmpty()) {</span>
+<span class="nc" id="L205">              expressions[0] = from;</span>
+            } else {
+<span class="nc" id="L207">              expressions[0] += &quot;,&quot; + from;</span>
+            }
+          }
+        }
+
+<span class="nc bnc" id="L212" title="All 2 branches missed.">        if (!expressions[1].isEmpty()) {</span>
+<span class="nc" id="L213">          expressions[1] += OQL_1;</span>
+        }
+<span class="nc" id="L215">        expressions[1] += subExpressions[1];</span>
+      }
+<span class="nc" id="L217">    }</span>
+
+<span class="nc bnc" id="L219" title="All 4 branches missed.">    if (!inAndExpression &amp;&amp; !expressions[1].isEmpty()) {</span>
+<span class="nc" id="L220">      expressions[1] = &quot;(&quot; + expressions[1] + &quot;)&quot;;</span>
+    }
+
+<span class="nc" id="L223">    return expressions;</span>
+  }
+
+  public String[] constructOrExpression(ORExpression orExpression) {
+<span class="nc" id="L227">    String[] expressions = {&quot;&quot;, &quot;&quot;};</span>
+<span class="nc" id="L228">    List&lt;String&gt; fromExpressionList = new ArrayList&lt;String&gt;();</span>
+<span class="nc bnc" id="L229" title="All 2 branches missed.">    for (MetaExpression metaExpression : orExpression.getMetaExpressionList()) {</span>
+<span class="nc" id="L230">      String[] subExpressions = {&quot;&quot;, &quot;&quot;};</span>
+<span class="nc bnc" id="L231" title="All 2 branches missed.">      if (metaExpression.hasSearchParameter()) {</span>
+<span class="nc" id="L232">        subExpressions = constructSearchParameterExpression(metaExpression.getSearchParameter());</span>
+<span class="nc bnc" id="L233" title="All 2 branches missed.">      } else if (metaExpression.hasAndExpression()) {</span>
+<span class="nc" id="L234">        subExpressions = constructAndExpression(metaExpression.getAndExpression(), false, true,</span>
+            false);
+<span class="nc bnc" id="L236" title="All 2 branches missed.">      } else if (metaExpression.hasOrExpression()) {</span>
+<span class="nc" id="L237">        subExpressions = constructOrExpression(metaExpression.getOrExpression());</span>
+      } else {
+<span class="nc" id="L239">        LOGGER.error(&quot;Empty MetaExpression in the ORExpression = &quot; + orExpression.toString());</span>
+      }
+
+<span class="nc bnc" id="L242" title="All 2 branches missed.">      if (subExpressions[1].isEmpty()) {</span>
+<span class="nc" id="L243">        continue;</span>
+      }
+
+<span class="nc bnc" id="L246" title="All 2 branches missed.">      if (!subExpressions[0].isEmpty()) {</span>
+<span class="nc" id="L247">        String[] fromExpressions = subExpressions[0].split(&quot;,&quot;);</span>
+<span class="nc bnc" id="L248" title="All 2 branches missed.">        for (String from : fromExpressions) {</span>
+<span class="nc bnc" id="L249" title="All 2 branches missed.">          if (from.isEmpty()) {</span>
+<span class="nc" id="L250">            continue;</span>
+          }
+<span class="nc bnc" id="L252" title="All 2 branches missed.">          if (fromExpressionList.contains(from)) {</span>
+<span class="nc" id="L253">            continue;</span>
+          }
+<span class="nc" id="L255">          fromExpressionList.add(from);</span>
+<span class="nc bnc" id="L256" title="All 2 branches missed.">          if (expressions[0].isEmpty()) {</span>
+<span class="nc" id="L257">            expressions[0] = from;</span>
+          } else {
+<span class="nc" id="L259">            expressions[0] += &quot;,&quot; + from;</span>
+          }
+        }
+      }
+
+<span class="nc bnc" id="L264" title="All 2 branches missed.">      if (!expressions[1].isEmpty()) {</span>
+<span class="nc" id="L265">        expressions[1] += &quot; OR &quot;;</span>
+      }
+<span class="nc" id="L267">      expressions[1] += subExpressions[1];</span>
+<span class="nc" id="L268">    }</span>
+
+<span class="nc bnc" id="L270" title="All 2 branches missed.">    if (!expressions[1].isEmpty()) {</span>
+<span class="nc" id="L271">      expressions[1] = &quot;(&quot; + expressions[1] + &quot;)&quot;;</span>
+    }
+
+<span class="nc" id="L274">    return expressions;</span>
+  }
+
+
+  private String[] constructSearchParameterExpression(SearchParameter searchParameter) {
+<span class="nc" id="L279">    SearchAttribute searchAttribute = searchParameter.getAttribute();</span>
+<span class="nc" id="L280">    Attribute attribute = AttributeConfig.getInstance().get(searchAttribute.getName());</span>
+<span class="nc" id="L281">    String name = attribute.getWhere();</span>
+<span class="nc" id="L282">    int operation = searchAttribute.getOperation();</span>
+
+<span class="nc" id="L284">    String[] expressions = {&quot;&quot;, &quot;&quot;};</span>
+<span class="nc" id="L285">    SearchValue searchValue = searchParameter.getValue();</span>
+<span class="nc bnc" id="L286" title="All 2 branches missed.">    if (searchValue.hasNum()) {</span>
+<span class="nc" id="L287">      String op = &quot;&quot;;</span>
+<span class="nc bnc" id="L288" title="All 6 branches missed.">      switch (operation) {</span>
+        case Code.OPERATOR_LT:
+<span class="nc" id="L290">          op = &quot; &lt; &quot;;</span>
+<span class="nc" id="L291">          break;</span>
+        case Code.OPERATOR_LE:
+<span class="nc" id="L293">          op = &quot; &lt;= &quot;;</span>
+<span class="nc" id="L294">          break;</span>
+        case Code.OPERATOR_EQ:
+<span class="nc" id="L296">          op = &quot; = &quot;;</span>
+<span class="nc" id="L297">          break;</span>
+        case Code.OPERATOR_GE:
+<span class="nc" id="L299">          op = &quot; &gt;= &quot;;</span>
+<span class="nc" id="L300">          break;</span>
+        case Code.OPERATOR_GT:
+<span class="nc" id="L302">          op = &quot; &gt; &quot;;</span>
+<span class="nc" id="L303">          break;</span>
+        default:
+<span class="nc" id="L305">          LOGGER.warn(&quot;Invalid operation = &quot; + Long.toString(operation) + &quot;, ignore this attribute &quot;</span>
+<span class="nc" id="L306">              + searchAttribute.getName());</span>
+<span class="nc" id="L307">          return expressions;</span>
+      }
+<span class="nc" id="L309">      expressions[0] = attribute.getFrom();</span>
+<span class="nc" id="L310">      expressions[1] = name + op + Long.toString(searchValue.getNum().getValue()) + &quot;L&quot;;</span>
+<span class="nc bnc" id="L311" title="All 2 branches missed.">    } else if (searchValue.hasStr()) {</span>
+<span class="nc" id="L312">      String str = searchValue.getStr().getValue();</span>
+<span class="nc bnc" id="L313" title="All 7 branches missed.">      switch (operation) {</span>
+        case Code.OPERATOR_LT:
+<span class="nc" id="L315">          expressions[1] = name + OQL_2 + str + &quot;') &lt; 0&quot;;</span>
+<span class="nc" id="L316">          break;</span>
+        case Code.OPERATOR_LE:
+<span class="nc" id="L318">          expressions[1] = name + OQL_2 + str + &quot;') &lt;= 0&quot;;</span>
+<span class="nc" id="L319">          break;</span>
+        case Code.OPERATOR_EQ:
+<span class="nc" id="L321">          expressions[1] = name + OQL_2 + str + &quot;') = 0&quot;;</span>
+<span class="nc" id="L322">          break;</span>
+        case Code.OPERATOR_GE:
+<span class="nc" id="L324">          expressions[1] = name + OQL_2 + str + &quot;') &gt;= 0&quot;;</span>
+<span class="nc" id="L325">          break;</span>
+        case Code.OPERATOR_GT:
+<span class="nc" id="L327">          expressions[1] = name + OQL_2 + str + &quot;') &gt; 0&quot;;</span>
+<span class="nc" id="L328">          break;</span>
+        case Code.OPERATOR_REGEX:
+<span class="nc" id="L330">          expressions[1] = &quot;'&quot; + str + &quot;'.matches(&quot; + name + &quot;.toString()) = true&quot;;</span>
+<span class="nc" id="L331">          break;</span>
+        default:
+<span class="nc" id="L333">          LOGGER</span>
+<span class="nc" id="L334">              .warn(&quot;Invalid operation = &quot; + Long.toString(operation) + &quot;, ignore this attribute&quot;);</span>
+<span class="nc" id="L335">          return expressions;</span>
+      }
+<span class="nc" id="L337">      expressions[0] = attribute.getFrom();</span>
+<span class="nc" id="L338">    } else {</span>
+<span class="nc" id="L339">      LOGGER.debug(&quot;Empty search value for the attribute &quot; + searchAttribute.getName());</span>
+    }
+
+<span class="nc" id="L342">    return expressions;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+// Language Dependent Statements Start
+option java_package = "ericsson.core.nrf.dbproxy.grpc.nfmessage.groupprofile";
+option java_outer_classname = "GroupProfileDelRequestProto";
+option go_package = "com/dbproxy/nfmessage/groupprofile";
+package grpc;
+// Language Dependent Statements End
+import "nfmessage/imsiprefixprofile/ImsiprefixProfile.proto";
+
+message GroupProfileDelRequest {
+    string group_profile_id = 1; 
+    repeated ImsiprefixProfile imsi_prefix_delete    = 2;
+}
+

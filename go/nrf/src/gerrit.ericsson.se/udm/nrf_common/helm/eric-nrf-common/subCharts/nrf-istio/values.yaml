@@ -1,0 +1,16 @@
+# Default values for nrf-gateway.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+service:
+  name_nrf_mgmt: eric-nrf-management 
+  name_nrf_disc: eric-nrf-discovery
+  name_nrf_prov: eric-nrf-provision
+
+istio:
+  gatewayName: eric-nrf-traffic-gateway
+  ingressGatewayName: eric-nrf-traffic
+  ingressGatewayPort: 80
+
+  provision_gatewayName: eric-nrf-provisioning-gateway
+  provision_ingressGatewayName: eric-nrf-provisioning 
+  provision_ingressGatewayPort: 80

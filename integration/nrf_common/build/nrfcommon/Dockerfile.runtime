@@ -1,0 +1,13 @@
+FROM armdocker.rnd.ericsson.se/proj-ipworks/buildtool-java:v2 as builder
+COPY ["kvdb", "/tmp/kvdb"]
+COPY ["configureGeode", "/tmp/configureGeode"]
+RUN cd /tmp/kvdb && ./gradlew clean && ./gradlew build
+RUN cd /tmp/configureGeode && ./gradlew clean && ./gradlew build && ./gradlew install
+
+FROM armdocker.rnd.ericsson.se/proj-ipworks/sles-java-tools:v2
+RUN mkdir -p /cm-schema
+COPY script/import-cm-schema-conf.sh script/delete-cm-schema-conf.sh /bin/
+COPY --from=builder /tmp/kvdb/build/libs/kvdb-1.0.jar /bin
+COPY --from=builder /tmp/configureGeode/build/install/ConfigureGeode/lib /bin/lib
+COPY config/ericsson-nrf.json config/ericsson-nrf.yang.tar.gz /cm-schema/
+CMD ["/bin/import-cm-schema-conf.sh"]

@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GeodeConfig.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.config</a> &gt; <span class="el_source">GeodeConfig.java</span></div><h1>GeodeConfig.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.config;
+
+import ericsson.core.nrf.dbproxy.common.Code;
+import java.io.File;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class GeodeConfig {
+
+<span class="fc" id="L18">  private static final Logger LOGGER = LogManager.getLogger(GeodeConfig.class);</span>
+
+  private static final String LOG_1 = &quot;, new name = &quot;;
+  private static int maxTransmitFragmentSize;
+  private static int remoteCachePutCount;
+  private static int remoteCacheClearInterval;
+  private String kvdb_locator_name;
+  private List&lt;String&gt; kvdb_locator_ip_list;
+  private int kvdb_locator_port;
+  private String[] region_list;
+  private String pool_name;
+  private int free_connection_timeout;
+  private int idle_timeout;
+  private int load_conditioning_interval;
+  private int max_connections;
+  private int min_connections;
+  private int ping_interval;
+  private boolean pr_single_hop_enabled;
+  private int read_timeout;
+  private int retry_attempts;
+  private int socket_buffer_size;
+  private int socket_connect_timeout;
+  private boolean subscription_enabled;
+  private int subscription_redundancy;
+  private boolean thread_local_connections;
+
+<span class="nc" id="L44">  public GeodeConfig() {</span>
+<span class="nc" id="L45">    kvdb_locator_ip_list = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L46">    kvdb_locator_port = 0;</span>
+<span class="nc" id="L47">    kvdb_locator_name = &quot;&quot;;</span>
+<span class="nc" id="L48">    resetInternalValues();</span>
+<span class="nc" id="L49">  }</span>
+
+  public static int getRemoteCachePutCount() {
+<span class="nc" id="L52">    return remoteCachePutCount;</span>
+  }
+
+  public static int getRemoteCacheClearInterval() {
+<span class="nc" id="L56">    return remoteCacheClearInterval;</span>
+  }
+
+  public static int getMaxTransmitFragmentSize() {
+<span class="fc" id="L60">    return maxTransmitFragmentSize;</span>
+  }
+
+  private void resetInternalValues() {
+<span class="nc" id="L64">    pool_name = &quot;connection-pool&quot;;</span>
+<span class="nc" id="L65">    free_connection_timeout = 3000;</span>
+<span class="nc" id="L66">    idle_timeout = 5000;</span>
+<span class="nc" id="L67">    load_conditioning_interval = 120000;</span>
+<span class="nc" id="L68">    max_connections = 5000;</span>
+<span class="nc" id="L69">    min_connections = 10;</span>
+<span class="nc" id="L70">    ping_interval = 10000;</span>
+<span class="nc" id="L71">    pr_single_hop_enabled = false;</span>
+<span class="nc" id="L72">    read_timeout = 3000;</span>
+<span class="nc" id="L73">    retry_attempts = -1;</span>
+<span class="nc" id="L74">    socket_buffer_size = 32768;</span>
+<span class="nc" id="L75">    socket_connect_timeout = 3000;</span>
+<span class="nc" id="L76">    subscription_enabled = true;</span>
+<span class="nc" id="L77">    subscription_redundancy = -1;</span>
+<span class="nc" id="L78">    thread_local_connections = false;</span>
+<span class="nc" id="L79">    maxTransmitFragmentSize = 3145728;</span>
+<span class="nc" id="L80">    remoteCacheClearInterval = 1000;</span>
+<span class="nc" id="L81">    remoteCachePutCount = 100;</span>
+<span class="nc" id="L82">  }</span>
+
+  public boolean initialize() {
+    try {
+<span class="nc" id="L86">      String dbInfoConf = EnvironmentConfig.getInstance().getDBInfoConf();</span>
+<span class="nc" id="L87">      String dbContent = FileUtils.readFileToString(new File(dbInfoConf), &quot;UTF-8&quot;);</span>
+<span class="nc" id="L88">      JSONObject dbJsonObject = new JSONObject(dbContent);</span>
+
+<span class="nc" id="L90">      kvdb_locator_name = dbJsonObject.getString(&quot;locator-server-name&quot;);</span>
+<span class="nc" id="L91">      String locatorPort = dbJsonObject.getString(&quot;locator-server-port&quot;);</span>
+
+<span class="nc" id="L93">      String regionNames = dbJsonObject.getString(&quot;region-names&quot;);</span>
+<span class="nc" id="L94">      region_list = regionNames.split(&quot;;&quot;);</span>
+
+<span class="nc" id="L96">      InetAddress[] address = InetAddress.getAllByName(kvdb_locator_name);</span>
+<span class="nc bnc" id="L97" title="All 2 branches missed.">      for (int i = 0; i &lt; address.length; i++) {</span>
+<span class="nc" id="L98">        kvdb_locator_ip_list.add(address[i].getCanonicalHostName());</span>
+      }
+
+<span class="nc" id="L101">      kvdb_locator_port = Integer.parseInt(locatorPort);</span>
+
+<span class="nc" id="L103">      String internalConf = EnvironmentConfig.getInstance().getInternalConf();</span>
+<span class="nc" id="L104">      String content = FileUtils.readFileToString(new File(internalConf), &quot;UTF-8&quot;);</span>
+<span class="nc" id="L105">      JSONObject jsonObject = new JSONObject(content);</span>
+
+<span class="nc" id="L107">      pool_name = jsonObject.getString(&quot;name&quot;);</span>
+<span class="nc" id="L108">      free_connection_timeout = jsonObject.getInt(&quot;free-connection-timeout&quot;);</span>
+<span class="nc" id="L109">      idle_timeout = jsonObject.getInt(&quot;idle-timeout&quot;);</span>
+<span class="nc" id="L110">      load_conditioning_interval = jsonObject.getInt(&quot;load-conditioning-interval&quot;);</span>
+<span class="nc" id="L111">      max_connections = jsonObject.getInt(&quot;max-connections&quot;);</span>
+<span class="nc" id="L112">      min_connections = jsonObject.getInt(&quot;min-connections&quot;);</span>
+<span class="nc" id="L113">      ping_interval = jsonObject.getInt(&quot;ping-interval&quot;);</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">      if (jsonObject.getString(&quot;pr-single-hop-enabled&quot;).equals(&quot;true&quot;)) {</span>
+<span class="nc" id="L115">        pr_single_hop_enabled = true;</span>
+      } else {
+<span class="nc" id="L117">        pr_single_hop_enabled = false;</span>
+      }
+<span class="nc" id="L119">      read_timeout = jsonObject.getInt(&quot;read-timeout&quot;);</span>
+<span class="nc" id="L120">      retry_attempts = jsonObject.getInt(&quot;retry-attempts&quot;);</span>
+<span class="nc" id="L121">      socket_buffer_size = jsonObject.getInt(&quot;socket-buffer-size&quot;);</span>
+<span class="nc" id="L122">      socket_connect_timeout = jsonObject.getInt(&quot;socket-connect-timeout&quot;);</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">      if (jsonObject.getString(&quot;subscription-enabled&quot;).equals(&quot;true&quot;)) {</span>
+<span class="nc" id="L124">        subscription_enabled = true;</span>
+      } else {
+<span class="nc" id="L126">        subscription_enabled = false;</span>
+      }
+<span class="nc" id="L128">      subscription_redundancy = jsonObject.getInt(&quot;subscription-redundancy&quot;);</span>
+<span class="nc" id="L129">      if (jsonObject.getString(&quot;thread-local-connections&quot;)</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">          .equals(&quot;true&quot;)) {</span>
+<span class="nc" id="L131">        thread_local_connections = true;</span>
+      } else {
+<span class="nc" id="L133">        thread_local_connections = false;</span>
+      }
+<span class="nc" id="L135">      maxTransmitFragmentSize = jsonObject.getInt(&quot;max-transmit-fragment-size&quot;);</span>
+<span class="nc" id="L136">      remoteCachePutCount = jsonObject.getInt(&quot;remote-cache-put-threshold&quot;);</span>
+<span class="nc" id="L137">      remoteCacheClearInterval = jsonObject.getInt(&quot;remote-cache-clear-interval&quot;);</span>
+
+<span class="nc" id="L139">    } catch (IOException | JSONException | NullPointerException | SecurityException | NumberFormatException e) {</span>
+<span class="nc" id="L140">      LOGGER.error(e.toString());</span>
+<span class="nc" id="L141">      LOGGER.warn(&quot;Fail to parse &quot; + EnvironmentConfig.getInstance().getInternalConf());</span>
+<span class="nc" id="L142">      resetInternalValues();</span>
+<span class="nc" id="L143">    } catch (Exception e) {</span>
+<span class="nc" id="L144">      LOGGER.error(e.toString());</span>
+<span class="nc" id="L145">      LOGGER.warn(&quot;Fail to parse &quot; + EnvironmentConfig.getInstance().getInternalConf());</span>
+<span class="nc" id="L146">      resetInternalValues();</span>
+<span class="nc" id="L147">    }</span>
+
+<span class="nc" id="L149">    LOGGER.debug(toString());</span>
+
+<span class="nc" id="L151">    return validate();</span>
+  }
+
+  private boolean validate() {
+
+<span class="nc bnc" id="L156" title="All 2 branches missed.">    if (kvdb_locator_name.isEmpty()) {</span>
+<span class="nc" id="L157">      LOGGER.error(&quot;kvdb_locator_name is empty&quot;);</span>
+<span class="nc" id="L158">      return false;</span>
+    }
+
+<span class="nc bnc" id="L161" title="All 2 branches missed.">    if (kvdb_locator_ip_list.size() == 0) {</span>
+<span class="nc" id="L162">      LOGGER.error(&quot;No available kvdb locator ip&quot;);</span>
+<span class="nc" id="L163">      return false;</span>
+    }
+
+<span class="nc bnc" id="L166" title="All 2 branches missed.">    if (kvdb_locator_port &lt;= 0) {</span>
+<span class="nc" id="L167">      LOGGER.error(&quot;kvdb_locator_port &quot; + Integer.toString(kvdb_locator_port) + &quot; is invalid&quot;);</span>
+<span class="nc" id="L168">      return false;</span>
+    }
+
+<span class="nc bnc" id="L171" title="All 2 branches missed.">    if (region_list.length == 0) {</span>
+<span class="nc" id="L172">      LOGGER.error(&quot;region_list is empty&quot;);</span>
+<span class="nc" id="L173">      return false;</span>
+    }
+
+<span class="nc" id="L176">    LOGGER.trace(&quot;Geode Configuration Validation is Successful&quot;);</span>
+<span class="nc" id="L177">    return true;</span>
+  }
+
+  public String getLocatorName() {
+<span class="nc" id="L181">    return kvdb_locator_name;</span>
+  }
+
+  public void addLocatorIP(String ip) {
+<span class="nc" id="L185">    kvdb_locator_ip_list.add(ip);</span>
+<span class="nc" id="L186">  }</span>
+
+  public List&lt;String&gt; getLocatorIPList() {
+<span class="nc" id="L189">    return kvdb_locator_ip_list;</span>
+  }
+
+  public int getLocatorPort() {
+<span class="nc" id="L193">    return kvdb_locator_port;</span>
+  }
+
+  public void setLocatorPort(int port) {
+<span class="nc" id="L197">    kvdb_locator_port = port;</span>
+<span class="nc" id="L198">  }</span>
+
+  public String[] getRegionList() {
+<span class="nc" id="L201">    return region_list;</span>
+  }
+
+  public String getPoolName() {
+<span class="nc" id="L205">    return pool_name;</span>
+  }
+
+  public int getFreeConnectionTimeout() {
+<span class="nc" id="L209">    return free_connection_timeout;</span>
+  }
+
+  public int getIdleTimeout() {
+<span class="nc" id="L213">    return idle_timeout;</span>
+  }
+
+  public int getLoadConditioningInterval() {
+<span class="nc" id="L217">    return load_conditioning_interval;</span>
+  }
+
+  public int getMaxConnections() {
+<span class="nc" id="L221">    return max_connections;</span>
+  }
+
+  public int getMinConnections() {
+<span class="nc" id="L225">    return min_connections;</span>
+  }
+
+  public int getPingInterval() {
+<span class="nc" id="L229">    return ping_interval;</span>
+  }
+
+  public boolean isPrSingleHopEnabled() {
+<span class="nc" id="L233">    return pr_single_hop_enabled;</span>
+  }
+
+  public int getReadTimeout() {
+<span class="nc" id="L237">    return read_timeout;</span>
+  }
+
+  public int getRetryAttempts() {
+<span class="nc" id="L241">    return retry_attempts;</span>
+  }
+
+  public int getSocketBufferSize() {
+<span class="nc" id="L245">    return socket_buffer_size;</span>
+  }
+
+  public int getSocketConnectTimeout() {
+<span class="nc" id="L249">    return socket_connect_timeout;</span>
+  }
+
+  public boolean isSubscriptionEnabled() {
+<span class="nc" id="L253">    return subscription_enabled;</span>
+  }
+
+  public int getSubscriptionRedundancy() {
+<span class="nc" id="L257">    return subscription_redundancy;</span>
+  }
+
+  public boolean isThreadLocalConnections() {
+<span class="nc" id="L261">    return thread_local_connections;</span>
+  }
+
+  public String toString() {
+<span class="nc" id="L265">    StringBuilder sb = new StringBuilder(&quot;&quot;);</span>
+<span class="nc" id="L266">    sb.append(&quot;kvdb_locator_name = &quot; + kvdb_locator_name + kvdb_locator_ip_list.toString() + &quot;,&quot;);</span>
+<span class="nc" id="L267">    sb.append(&quot;kvdb_locator_port = &quot; + Integer.toString(kvdb_locator_port) + &quot;,&quot;);</span>
+<span class="nc" id="L268">    sb.append(&quot;region_name = &quot; + Arrays.toString(region_list) + &quot;,&quot;);</span>
+<span class="nc" id="L269">    sb.append(&quot;pool_name = &quot; + pool_name + &quot;,&quot;);</span>
+<span class="nc" id="L270">    sb.append(&quot;free_connection_timeout = &quot; + Integer.toString(free_connection_timeout) + &quot;,&quot;);</span>
+<span class="nc" id="L271">    sb.append(&quot;idle_timeout = &quot; + Integer.toString(idle_timeout) + &quot;,&quot;);</span>
+<span class="nc" id="L272">    sb.append(&quot;load_conditioning_interval = &quot; + Integer.toString(load_conditioning_interval) + &quot;,&quot;);</span>
+<span class="nc" id="L273">    sb.append(&quot;max_connections = &quot; + Integer.toString(max_connections) + &quot;,&quot;);</span>
+<span class="nc" id="L274">    sb.append(&quot;min_connections = &quot; + Integer.toString(min_connections) + &quot;,&quot;);</span>
+<span class="nc" id="L275">    sb.append(&quot;ping_interval = &quot; + Integer.toString(ping_interval) + &quot;,&quot;);</span>
+<span class="nc" id="L276">    sb.append(&quot;pr_single_hop_enabled = &quot; + pr_single_hop_enabled + &quot;,&quot;);</span>
+<span class="nc" id="L277">    sb.append(&quot;read_timeout = &quot; + Integer.toString(read_timeout) + &quot;,&quot;);</span>
+<span class="nc" id="L278">    sb.append(&quot;retry_attempts = &quot; + Integer.toString(retry_attempts) + &quot;,&quot;);</span>
+<span class="nc" id="L279">    sb.append(&quot;socket_buffer_size = &quot; + Integer.toString(socket_buffer_size) + &quot;,&quot;);</span>
+<span class="nc" id="L280">    sb.append(&quot;socket_connect_timeout = &quot; + Integer.toString(socket_connect_timeout) + &quot;,&quot;);</span>
+<span class="nc" id="L281">    sb.append(&quot;subscription_enabled = &quot; + subscription_enabled + &quot;,&quot;);</span>
+<span class="nc" id="L282">    sb.append(&quot;subscription_redundancy = &quot; + subscription_redundancy + &quot;,&quot;);</span>
+<span class="nc" id="L283">    sb.append(&quot;thread_local_connections = &quot; + thread_local_connections + &quot;,&quot;);</span>
+<span class="nc" id="L284">    sb.append(&quot;maxTransmitFragmentSize = &quot; + maxTransmitFragmentSize + &quot;,&quot;);</span>
+<span class="nc" id="L285">    sb.append(&quot;remote_cache_put_threshold = &quot; + remoteCachePutCount + &quot;,&quot;);</span>
+<span class="nc" id="L286">    sb.append(&quot;remoteCacheClearInterval = &quot; + remoteCacheClearInterval);</span>
+
+<span class="nc" id="L288">    return sb.toString();</span>
+  }
+
+  public int compare(GeodeConfig geodeConfig) {
+
+<span class="nc bnc" id="L293" title="All 2 branches missed.">    if (kvdb_locator_name.compareTo(geodeConfig.getLocatorName()) != 0) {</span>
+<span class="nc" id="L294">      LOGGER.warn(</span>
+          &quot;KVDB locator name is changed, old name = &quot; + kvdb_locator_name + LOG_1 + geodeConfig
+<span class="nc" id="L296">              .getLocatorName());</span>
+<span class="nc" id="L297">      return Code.KVDB_LOCATOR_NAME_CHANGED;</span>
+    }
+
+<span class="nc bnc" id="L300" title="All 2 branches missed.">    if (kvdb_locator_port != geodeConfig.getLocatorPort()) {</span>
+<span class="nc" id="L301">      LOGGER.warn(&quot;KVDB locator port is changed, old port = &quot; + Integer.toString(kvdb_locator_port)</span>
+<span class="nc" id="L302">          + &quot;, new port = &quot; + Integer.toString(geodeConfig.getLocatorPort()));</span>
+<span class="nc" id="L303">      return Code.KVDB_LOCATOR_PORT_CHANGED;</span>
+    }
+
+<span class="nc bnc" id="L306" title="All 2 branches missed.">    if (!Arrays.equals(region_list, geodeConfig.getRegionList())) {</span>
+<span class="nc" id="L307">      LOGGER.warn(</span>
+<span class="nc" id="L308">          &quot;region list is changed, old = &quot; + region_list + LOG_1 + geodeConfig.getRegionList());</span>
+<span class="nc" id="L309">      return Code.KVDB_REGION_NAME_CHANGED;</span>
+    }
+
+<span class="nc" id="L312">    boolean found = false;</span>
+<span class="nc bnc" id="L313" title="All 2 branches missed.">    for (String locatorIp : kvdb_locator_ip_list) {</span>
+<span class="nc bnc" id="L314" title="All 2 branches missed.">      if (geodeConfig.getLocatorIPList().contains(locatorIp)) {</span>
+<span class="nc" id="L315">        found = true;</span>
+<span class="nc" id="L316">        break;</span>
+      }
+<span class="nc" id="L318">    }</span>
+
+<span class="nc bnc" id="L320" title="All 2 branches missed.">    if (!found) {</span>
+<span class="nc" id="L321">      LOGGER.warn(&quot;KVDB locator ip is changed, old ip list = &quot; + kvdb_locator_ip_list.toString()</span>
+<span class="nc" id="L322">          + &quot;, new ip list = &quot; + geodeConfig.getLocatorIPList().toString());</span>
+<span class="nc" id="L323">      return Code.KVDB_LOCATOR_IP_CHANGED;</span>
+    }
+
+<span class="nc" id="L326">    LOGGER.debug(&quot;Geode configuration is same as before&quot;);</span>
+<span class="nc" id="L327">    return Code.NOT_CHANGED;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

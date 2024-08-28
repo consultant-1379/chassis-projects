@@ -1,0 +1,115 @@
+eric-data-kvdb-ag:
+  replicas:
+    locator: 1
+    server: 1
+
+  persistence:
+    data:
+      # Set to false if you do not wish to use persistent storage for database data
+      enabled: true
+      accessMode: ReadWriteOnce
+    backup:
+      # Set the enabled flag to false in case you do not wish to use this type of storage.
+      # Keep in mind that this will prevent you from using B&R functionality
+      enabled: false
+      accessMode: ReadWriteOnce
+      locator:
+        allocation: 2Gi
+      server:
+        allocation: 4Gi
+
+  jvmHeap:
+    initDepend: 100m
+    database:
+      locator: 512m
+      server: 512m
+    monitor: 256m
+    jmxExporter: 128m
+
+  jvmOptions:
+    initDepend:
+    database:
+      locator:
+      - '"-XX:+UseG1GC"'
+      - '"-XX:MaxGCPauseMillis=10"'
+      - '"-Xlog:gc:file=srvgc.log"'
+      server:
+      - '"-XX:+UseG1GC"'
+      - '"-XX:MaxGCPauseMillis=10"'
+      - '"-Xlog:gc:file=srvgc.log"'
+    monitor:
+    jmxExporter:
+
+  requests:
+    initDepend:
+      cpu: null
+      memory: null
+    initDb:
+      cpu: null
+      memory: null
+    database:
+      locator:
+        cpu: null
+        memory: null
+      server:
+        cpu: null
+        memory: null
+    monitor:
+      cpu: null
+      memory: null
+    jmxExporter:
+      cpu: null
+      memory: null
+
+  probing:
+    readiness:
+      initialDelaySeconds: 50
+    liveness:
+      monitor:
+        initialDelaySeconds: 60
+      database:
+        initialDelaySeconds: 60
+      jmxExporter:
+        initialDelaySeconds: 60
+
+hpa:
+  minReplicas: 1
+
+mgmt:  
+  replicacount: 1
+  resources:
+    requests:
+      memory: 100Mi
+      cpu: 100m
+    limits:
+      memory: 400Mi
+      cpu: 200m        
+
+disc:
+  replicacount: 1
+  resources:
+    requests:
+      memory: 100Mi
+      cpu: 100m
+    limits:
+      memory: 400Mi
+      cpu: 200m  
+
+prov:
+  replicacount: 1
+  resources:
+    requests:
+      memory: 100Mi 
+      cpu: 100m
+    limits:
+      memory: 400Mi 
+      cpu: 200m
+
+dbproxy:
+  resources:
+    requests:
+      memory: 300Mi
+      cpu: 50m
+    limits:
+      memory: 600Mi
+      cpu: 100m

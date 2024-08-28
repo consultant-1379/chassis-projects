@@ -1,0 +1,14 @@
+FROM armdocker.rnd.ericsson.se/proj-ipworks/sles-tools:v1
+RUN \
+  zypper --non-interactive install python3 && \
+  zypper --non-interactive install python3-pip && \
+  pip3 install kubernetes==8.0.1 -i http://pypi.douban.com/simple --trusted-host pypi.douban.com && \
+  cd /home && \
+  curl -k -O https://raw.githubusercontent.com/kiwigrid/k8s-sidecar/0.0.5/sidecar/sidecar.py && \
+  chmod +x sidecar.py
+
+
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /home
+CMD ["python3", "-u", "sidecar.py"]

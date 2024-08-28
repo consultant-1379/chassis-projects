@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ericsson-nrf-pm-job-instances 0.1.7 -->
+<!-- modified: 2019-07-11 -->
+<config xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+  <pm xmlns="urn:rdns:com:ericsson:oammodel:ericsson-pm">
+    <job>
+      <name>eric-nrf-job-1min</name>
+      <type>measurement-job</type>
+      <reporting-period>one-min</reporting-period>
+      <granularity-period>one-min</granularity-period>
+      <requested-job-state>active</requested-job-state>
+      <control>start-stop</control>
+      <compression-type xmlns:typese="urn:rdns:com:ericsson:oammodel:ericsson-yang-types">typese:gzip</compression-type>
+      <measurement-reader>
+        <name>eric-nrf-nnrf-nfm-job</name>
+        <group-ref>eric-nrf-nnrf-nfm-group</group-ref>
+      </measurement-reader>
+      <measurement-reader>
+        <name>eric-nrf-nnrf-disc-job</name>
+        <group-ref>eric-nrf-nnrf-disc-group</group-ref>
+      </measurement-reader>
+      <measurement-reader>
+        <name>eric-nrf-nnrf-prov-job</name>
+        <group-ref>eric-nrf-nnrf-prov-group</group-ref>
+      </measurement-reader>
+    </job>
+    <job>
+      <name>eric-nrf-job</name>
+      <type>measurement-job</type>
+      <reporting-period>fifteen-min</reporting-period>
+      <granularity-period>fifteen-min</granularity-period>
+      <requested-job-state>active</requested-job-state>
+      <control>start-stop</control>
+      <compression-type xmlns:typese="urn:rdns:com:ericsson:oammodel:ericsson-yang-types">typese:gzip</compression-type>
+      <measurement-reader>
+        <name>eric-nrf-nnrf-nfm-job</name>
+        <group-ref>eric-nrf-nnrf-nfm-group</group-ref>
+      </measurement-reader>
+      <measurement-reader>
+        <name>eric-nrf-nnrf-disc-job</name>
+        <group-ref>eric-nrf-nnrf-disc-group</group-ref>
+      </measurement-reader>
+      <measurement-reader>
+        <name>eric-nrf-nnrf-prov-job</name>
+        <group-ref>eric-nrf-nnrf-prov-group</group-ref>
+      </measurement-reader>
+    </job>
+  </pm>
+</config>

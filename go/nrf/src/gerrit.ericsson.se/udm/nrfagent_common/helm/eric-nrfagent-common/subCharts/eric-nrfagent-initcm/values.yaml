@@ -1,0 +1,15 @@
+initcm:
+  name: eric-nrf-agent-init-cm
+
+image:
+  name: "nrfagentinitcm"
+  tag: dev
+  pullPolicy: IfNotPresent
+
+global:
+  cm_uri_prefix: http://eric-cm-mediator:5003/cm/api/v1.1
+  nf_instance_name: eric
+
+  imageCredentials:
+    repository: armdocker.rnd.ericsson.se/proj-ipworks
+

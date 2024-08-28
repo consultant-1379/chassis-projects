@@ -1,0 +1,231 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "{{ .Values.disc.service.metrics_port }}"  
+  name: {{  .Values.disc.service.name }}
+  labels:
+    app: {{  .Values.disc.service.name }}
+spec:
+  type: {{ .Values.global.serviceType }}
+  ports:
+  - port: 3000
+    name: http2-withoutls
+  - port: 3001
+    name: http-withoutls
+  - port: 3002
+    name: http-withtls
+  - port: {{  .Values.disc.service.metrics_port  }}
+    name: http-metrics
+  - port: {{ .Values.dbproxy.service.port }}
+    name: grpc-dbproxy
+  selector:
+    app: {{  .Values.disc.service.name }}
+---
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{  .Values.disc.service.name }}
+spec:
+  selector:
+    matchLabels:
+      app: {{  .Values.disc.service.name }}
+  replicas: {{ .Values.disc.replicacount }}
+  template:
+    metadata:
+      labels:
+        app: {{  .Values.disc.service.name }}
+      annotations:
+        sidecar.istio.io/inject: "{{ .Values.global.sidecarInjected }}"
+    spec:
+      volumes:
+      - name: {{ .Values.global.db.info.configmap.name }}
+        configMap:
+          name: {{ .Values.global.db.info.configmap.name }}
+      - name: {{ .Values.global.db.multisite.configmap.name }}
+        configMap:
+          name: {{ .Values.global.db.multisite.configmap.name }}
+      - name: {{ .Values.dbproxy.configmap.name }}
+        configMap:
+          name: {{ .Values.dbproxy.configmap.name }}
+      - name: {{ .Values.dbproxy.cmproxy.volume.name }}
+        emptyDir: {}
+      - name: {{ .Values.disc.internalConf.configmap.name }}
+        configMap:
+          name: {{ .Values.disc.internalConf.configmap.name }}
+      - name: {{ .Values.global.dbproxy.configmap.name }}
+        configMap:
+          name: {{ .Values.global.dbproxy.configmap.name }}
+      containers:
+      - name: {{ .Values.dbproxy.service.name }}
+        image: {{ .Values.global.imageCredentials.repository }}/{{ .Values.dbproxy.image.name }}:{{ .Values.dbproxy.image.tag }}
+        imagePullPolicy: {{ .Values.dbproxy.image.pullPolicy }}
+        command:
+        - /home/dbproxy/start_dbproxy.sh
+        args:
+        - -Djava.ext.dirs=lib
+        - ericsson.core.nrf.dbproxy.DBProxyServer
+        ports:
+        - containerPort: {{ .Values.dbproxy.service.port }}
+          name: grpc-serverport
+        resources:
+          requests:
+            memory: {{ .Values.dbproxy.resources.requests.memory }}
+            cpu: {{ .Values.dbproxy.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.dbproxy.resources.limits.memory }}
+            cpu: {{ .Values.dbproxy.resources.limits.cpu }}
+        env:
+        - name: DBPROXY_GRPC_PORT
+          value: {{ .Values.dbproxy.service.port | quote }}
+        - name: LOG4J_CONFIGURATION_FILE
+          value: {{ .Values.dbproxy.configmap.mountpath }}/{{ .Values.dbproxy.configmap.name }}/nrf-disc-log4j2.xml
+        - name: DB_INFO_CONF
+          value: {{ .Values.global.db.info.configmap.mountpath }}/{{ .Values.global.db.info.configmap.name }}/eric-nrf-dbinfo-conf.json
+        - name: DBPROXY_INTERNAL_CONF
+          value: {{ .Values.dbproxy.configmap.mountpath }}/{{ .Values.dbproxy.configmap.name }}/dbproxy-internal.json
+        - name: DBPROXY_ATTRIBUTES_CONF
+          value: {{ .Values.global.dbproxy.configmap.mountpath }}/{{ .Values.global.dbproxy.configmap.name }}/attributes.json
+        - name: CPU_LIMIT
+          valueFrom:
+            resourceFieldRef:
+              containerName: "{{ .Values.dbproxy.service.name }}"
+              resource: limits.cpu
+        - name: MEMORY_LIMIT
+          valueFrom:
+            resourceFieldRef:
+              containerName: "{{ .Values.dbproxy.service.name }}"
+              resource: limits.memory
+        - name: GC_DEBUG
+          value: {{ .Values.dbproxy.gc_debug | quote }}
+        volumeMounts:
+        - name: {{ .Values.global.db.info.configmap.name }}
+          mountPath: {{ .Values.global.db.info.configmap.mountpath }}/{{ .Values.global.db.info.configmap.name }}
+        - name: {{ .Values.dbproxy.configmap.name }}
+          readOnly: true
+          mountPath: {{ .Values.dbproxy.configmap.mountpath }}/{{ .Values.dbproxy.configmap.name }}
+        - name: {{ .Values.dbproxy.cmproxy.volume.name }}
+          mountPath: {{ .Values.dbproxy.cmproxy.volume.mountpath }}/{{ .Values.dbproxy.cmproxy.volume.name }}
+        - name: {{ .Values.global.dbproxy.configmap.name }}
+          mountPath: {{ .Values.global.dbproxy.configmap.mountpath }}/{{ .Values.global.dbproxy.configmap.name }}
+      - name: {{  .Values.disc.service.name }}
+        image: {{ .Values.global.imageCredentials.repository }}/{{ .Values.disc.image.name }}:{{ .Values.disc.image.tag }}
+        imagePullPolicy: {{ .Values.disc.image.pullPolicy }}
+        command:
+        - /bin/nrfdisc
+        args:
+        - -maxstreams
+        - {{ .Values.disc.args.maxstreams }}
+        ports:
+        - containerPort: 3000
+          name: http2-withoutls
+        - containerPort: 3001
+          name: http-withoutls
+        - containerPort: 3002
+          name: http-withtls
+        - containerPort:  {{  .Values.disc.service.metrics_port  }}
+          name: http-metrics    
+        resources:
+          requests:
+            memory: {{ .Values.disc.resources.requests.memory }}
+            cpu: {{ .Values.disc.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.disc.resources.limits.memory }}
+            cpu: {{ .Values.disc.resources.limits.cpu }}
+        env:
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: POD_NAME
+          valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: ISTIO_NAMESPACE
+          value: {{ .Values.namespace.name_istio }}
+        - name: SIDECAR_INJECTED
+          value: "{{ .Values.global.sidecarInjected }}"                
+        - name: WORK_MODE
+          value: {{ .Values.disc.service.work_mode }}
+        - name: SERVICE_VERSION
+          value: {{ .Chart.Version | replace "+" "_" }}
+        - name: MESSAGE_BUS_KAFKA
+          value: {{ .Values.global.cmproxy.kafka_connection }}
+        - name: CMM_SERVICE
+          value: {{ .Values.global.cmproxy.cmm_service }}
+        - name: CMM_CONFIG_SCHEMA_NAME
+          value: {{ .Values.global.cmproxy.cmm_config_schema_prefix_name }}
+        - name: CMM_CONFIG_MODULE_NAME
+          value: {{ .Values.global.cmproxy.cmm_config_module_name }}
+        - name: CMM_CONFIG_TOPIC
+          value: {{ .Values.global.cmproxy.cmm_config_topic }}
+        - name: FM_FAULT_MAPPING_FILE
+          value: {{ .Values.fmproxy.faultMappingFileName }}
+        - name: CM_DBPROXY_CONFIG_DIR
+          value: {{ .Values.dbproxy.cmproxy.volume.mountpath }}/{{ .Values.dbproxy.cmproxy.volume.name }}
+        - name: CM_DBPROXY_CONFIG_FILE
+          value: {{ .Values.dbproxy.cmproxy.cm_dbproxy_config }}
+        - name: INTERNAL_CONF_DIR
+          value: {{ .Values.disc.internalConf.configmap.mountpath }}
+        - name: INTERNAL_CONF_FILE
+          value: {{ .Values.disc.internalConf.configmap.fileName }}
+        - name: DB_MULTISITE_INFO_CONF_DIR
+          value: {{ .Values.global.db.multisite.configmap.mountpath }}/{{ .Values.global.db.multisite.configmap.name }}
+        - name: DB_MULTISITE_INFO_CONF_FILE
+          value: eric-nrf-multiSite-conf.json
+        - name: DBPROXY_ATTRIBUTES_CONF
+          value: {{ .Values.global.dbproxy.configmap.mountpath }}/{{ .Values.global.dbproxy.configmap.name }}/attributes.json
+        - name: DB_INFO_CONF
+          value: {{ .Values.global.db.info.configmap.mountpath }}/{{ .Values.global.db.info.configmap.name }}/eric-nrf-dbinfo-conf.json
+        - name: CPU_REQUEST
+          valueFrom:
+            resourceFieldRef:
+              containerName: "{{ .Values.disc.service.name }}"
+              resource: requests.cpu
+        livenessProbe:
+          exec:
+            command:
+            - curl
+            - -f
+            - http://localhost:3001/health-check
+          initialDelaySeconds: {{ .Values.disc.liveness.initialDelay }}
+          periodSeconds: {{ .Values.disc.liveness.period }}
+        readinessProbe:
+          exec:
+            command:
+            - curl
+            - -f
+            - http://localhost:3001/readiness
+          initialDelaySeconds: {{ .Values.disc.readiness.initialDelay }}
+          periodSeconds: {{ .Values.disc.readiness.period }}
+          successThreshold: {{ .Values.disc.readiness.successThreshold }}
+          failureThreshold: {{ .Values.disc.readiness.failureThreshold }}
+        volumeMounts:
+        - name: {{ .Values.global.db.multisite.configmap.name }}
+          mountPath: {{ .Values.global.db.multisite.configmap.mountpath }}/{{ .Values.global.db.multisite.configmap.name }}
+        - name: {{ .Values.dbproxy.cmproxy.volume.name }}
+          mountPath: {{ .Values.dbproxy.cmproxy.volume.mountpath }}/{{ .Values.dbproxy.cmproxy.volume.name }}
+        - name: {{ .Values.disc.internalConf.configmap.name }}
+          mountPath: {{ .Values.disc.internalConf.configmap.mountpath }}
+        - name: {{ .Values.global.dbproxy.configmap.name }}
+          mountPath: {{ .Values.global.dbproxy.configmap.mountpath }}/{{ .Values.global.dbproxy.configmap.name }}
+        - name: {{ .Values.global.db.info.configmap.name }}
+          mountPath: {{ .Values.global.db.info.configmap.mountpath }}/{{ .Values.global.db.info.configmap.name }}
+      initContainers:
+      - name: {{ .Values.disc.service.name }}-init-container
+        image: {{ .Values.global.imageCredentials.repository }}/{{ .Values.disc.image.name }}:{{ .Values.disc.image.tag }}
+        imagePullPolicy: {{ .Values.disc.image.pullPolicy }}
+        args:
+        - /bin/check-disc-cm-conf.sh
+        env:
+        - name: CM_CHECK_ENABLED
+          value: {{ .Values.disc.service.cm_check_enable }}
+        - name: CM_SERVICE_NAME
+          value: {{ .Values.global.cmproxy.cmm_service }}
+        - name: CM_SCHEMA_PREFIXNAME
+          value: {{ .Values.global.cmproxy.cmm_config_schema_prefix_name }}

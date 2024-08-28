@@ -1,0 +1,22 @@
+# Set the base image to redhat 
+FROM armdocker.rnd.ericsson.se/rhel7.4
+
+# Copy reposiroty file into base image, so the tools can be installed.
+COPY ./build/ericsson-yum-server.repo /etc/yum.repos.d/ericsson-yum-server.repo
+
+ENV PROTOBUF_VERSION=3.5.1
+ENV GOLANG_VERSION=1.10.1
+ENV PATH=$PATH:/usr/local/go/bin:/go/bin
+ENV GOPATH=/go
+
+RUN yum install -y wget unzip git && \
+    cd /tmp && \
+    wget -O protoc.zip https://github.com/google/protobuf/releases/download/v${PROTOBUF_VERSION}/protoc-${PROTOBUF_VERSION}-linux-x86_64.zip &&  \
+    unzip protoc.zip -d /usr/local/ && rm protoc.zip && \
+    wget -O go.tgz https://dl.google.com/go/go${GOLANG_VERSION}.linux-amd64.tar.gz && \
+    tar -xzf go.tgz && mv go /usr/local/ && rm go.tgz && \
+    mkdir -p /go/src && \
+    go get -u github.com/golang/protobuf/protoc-gen-go && \
+    yum erase -y wget unzip git && \
+    yum clean all
+

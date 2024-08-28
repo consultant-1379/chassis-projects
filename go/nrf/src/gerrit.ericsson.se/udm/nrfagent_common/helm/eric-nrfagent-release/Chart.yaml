@@ -1,0 +1,4 @@
+apiVersion: v1
+description: Ericsson nrfagent helm chart for Kubernetes
+name: eric-nrfagent-release
+version: 0.5.10

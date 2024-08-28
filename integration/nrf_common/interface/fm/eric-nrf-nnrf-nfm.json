@@ -1,0 +1,62 @@
+[
+  {
+     "faultName": "nrfMngtNrfConnectionFailure",
+     "createAlarm": true,
+     "defaultDescription": "NRF Management Service Failed to Connect to Another NRF",
+     "defaultExpiration": 600,
+     "defaultSeverity": "Major",
+     "vendor": 193,
+     "code": 7929857,
+     "specificProblem": "NRF eric-nrf-nnrf-nfm Failed to Connect to Another NRF"
+  },
+  {
+     "faultName": "nrfMngtServiceOverloaded",
+     "createAlarm": true,
+     "defaultDescription": "NRF Management service is overloaded",
+     "defaultExpiration": 60,
+     "defaultSeverity": "Major",
+     "vendor": 193,
+     "code": 7929858,
+     "specificProblem": "NRF eric-nrf-nnrf-nfm Service Overloaded"
+  },
+  {
+     "faultName": "nrfDataReplicationConnectionFailure",
+     "createAlarm": true,
+     "defaultDescription": "NRF Management service Data Replication Connection to Peer NRF is Broken",
+     "defaultExpiration": 600,
+     "defaultSeverity": "Major",
+     "vendor": 193,
+     "code": 7929859,
+     "specificProblem": "NRF eric-nrf-nnrf-nfm Failed to Connect to Replication NRF"
+  },
+  {
+     "faultName": "nrfMngtDatabaseConnectionFailure",
+     "createAlarm": true,
+     "defaultDescription": "NRF Management Service Failed to Connect to Database",
+     "defaultExpiration": 600,
+     "defaultSeverity": "Critical",
+     "vendor": 193,
+     "code": 7929860,
+     "specificProblem": "NRF eric-nrf-nnrf-nfm Failed to Connect to Database"
+  },
+  {
+     "faultName": "nrfMngtNrfRegistrationFailure",
+     "createAlarm": true,
+     "defaultDescription": "NRF Management Service Failed to Register to PLMN NRF(s)",
+     "defaultExpiration": 60,
+     "defaultSeverity": "Major",
+     "vendor": 193,
+     "code": 7929861,
+     "specificProblem": "NRF eric-nrf-management Registration Failure in Another NRF"
+  },
+  {
+     "faultName": "nrfMngtRemoteTimeOut",
+     "createAlarm": true,
+     "defaultDescription": "NRF Management Service Response Timeout Exceed Threshold",
+     "defaultExpiration": 0,
+     "defaultSeverity": "Major",
+     "vendor": 193,
+     "code": 7929862,
+     "specificProblem": "NRF eric-nrf-nnrf-nfm Service Response Timeout Exceed Threshold"
+  }
+]

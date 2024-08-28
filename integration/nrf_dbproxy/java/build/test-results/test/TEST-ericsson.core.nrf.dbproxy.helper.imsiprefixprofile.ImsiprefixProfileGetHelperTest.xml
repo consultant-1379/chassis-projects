@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ericsson.core.nrf.dbproxy.helper.imsiprefixprofile.ImsiprefixProfileGetHelperTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2019-09-02T07:45:33" hostname="c3b6544a0f6e" time="0.009">
+  <properties/>
+  <testcase name="createResponseTest" classname="ericsson.core.nrf.dbproxy.helper.imsiprefixprofile.ImsiprefixProfileGetHelperTest" time="0.005"/>
+  <testcase name="validateTest" classname="ericsson.core.nrf.dbproxy.helper.imsiprefixprofile.ImsiprefixProfileGetHelperTest" time="0.004"/>
+  <system-out><![CDATA[[error 2019/09/02 07:45:33.830 UTC <Test worker> tid=0xc] value 0 searchImsi is set in ImsiperfixProfileGetRequest
+
+[error 2019/09/02 07:45:33.830 UTC <Test worker> tid=0xc] SEARCH_IMSI_MAX_VALUE searchImsi is set in ImsiperfixProfileGetRequest
+
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

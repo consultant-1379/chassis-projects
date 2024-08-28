@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-nrfagent-config
+data:
+  nrfagent_conf.json: |-
+    {
+      "EnableIpv6": false,
+      "EnableIpv6ToIpv4": false,
+      "DefaultValidityPeriod": 7200,
+      "DefaultRequesterNfList": ["AUSF", "UDM", "UDR", "NEF", "PCF"],
+      "LoadThreshold": 10,
+      "RegWaitTime": 3,
+      "HTTP2Conns": 2,
+      "HTTP2Timeout": 60,
+      "KeepCacheRetryCount": 10
+    }

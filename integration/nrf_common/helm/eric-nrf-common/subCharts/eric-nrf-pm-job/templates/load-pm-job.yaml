@@ -1,0 +1,58 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "eric-nrf-pm-job.name" . }}-{{ .Values.pmJob.loader_name }}
+  labels:
+    chart: {{ template "eric-nrf-pm-job.chart" . }}
+{{- include "eric-nrf-pm-job.joblabels" . | indent 4 }}
+  annotations:
+{{- include "eric-nrf-pm-job.product-info" . | indent 4 }}
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      name: {{ template "eric-nrf-pm-job.name" . }}-{{ .Values.pmJob.loader_name }}
+      labels:
+        chart: {{ template "eric-nrf-pm-job.chart" . }}
+{{- include "eric-nrf-pm-job.joblabels" . | indent 8 }}
+      annotations:
+        sidecar.istio.io/inject: "false"
+{{- include "eric-nrf-pm-job.product-info" . | indent 8 }}
+    spec:
+      {{- if or .Values.global.registry.pullSecret .Values.imageCredentials.registry.pullSecret }}
+      imagePullSecrets:
+      - name: {{ default .Values.global.registry.pullSecret .Values.imageCredentials.registry.pullSecret }}
+      {{- end }}
+      restartPolicy: Never
+      containers:
+      - name: {{ .Values.pmJob.loader_name }}
+        image: {{ default .Values.global.registry.url .Values.imageCredentials.registry.url }}/{{ .Values.imageCredentials.repoPath }}/{{ .Values.images.pmJob.name }}:{{ .Values.images.pmJob.tag }}
+        imagePullPolicy: {{ default .Values.global.imageCredentials.pullPolicy .Values.imageCredentials.pullPolicy }}
+        command:
+        - /bin/nrfpmjobloader
+        args:
+        - load
+        env:
+        - name: TZ
+          value: {{ .Values.global.timezone }}
+        {{- if .Values.global.adpNamespace }}
+        - name: CMM_SERVICE
+          value: {{ .Values.global.adp.cmm_service }}.{{ .Values.global.adpNamespace }}:{{ .Values.global.adp.cmm_service_port_path }}
+        {{- else }}
+        - name: CMM_SERVICE
+          value: {{ .Values.global.adp.cmm_service }}:{{ .Values.global.adp.cmm_service_port_path }}
+        {{- end}}
+        - name: PM_BR_SCHEMA_NAME
+          value: {{ .Values.pmJob.pm_br_schema_name }}
+        - name: PM_BR_CONF_NAME
+          value: {{ .Values.pmJob.pm_br_conf_name }}
+        - name: PM_BR_SKELETON_FILE
+          value: {{ .Values.pmJob.pm_br_skeleton_file }}
+        - name: PM_BR_SERVICE_FILE
+          value: {{ .Values.pmJob.pm_br_service_file }}
+        - name: POD_IP
+          valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+        - name: NF_TYPE
+          value: {{ .Values.pmJob.nf_type }}

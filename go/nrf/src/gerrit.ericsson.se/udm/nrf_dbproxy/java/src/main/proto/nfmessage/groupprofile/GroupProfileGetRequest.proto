@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+// Language Dependent Statements Start
+option java_package = "ericsson.core.nrf.dbproxy.grpc.nfmessage.groupprofile";
+option java_outer_classname = "GroupProfileGetRequestProto";
+option go_package = "com/dbproxy/nfmessage/groupprofile";
+package grpc;
+import "nfmessage/groupprofile/GroupProfileFilter.proto";
+// Language Dependent Statements End
+
+message GroupProfileGetRequest {
+    oneof data {
+	    string group_profile_id       = 1;
+        GroupProfileFilter filter     = 2;
+        string fragment_session_id    = 3;
+    }
+}

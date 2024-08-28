@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ericsson.core.nrf.dbproxy.helper.gpsiprofile.GpsiProfilePutHelperTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2019-09-02T07:45:33" hostname="c3b6544a0f6e" time="0.017">
+  <properties/>
+  <testcase name="createResponseTest" classname="ericsson.core.nrf.dbproxy.helper.gpsiprofile.GpsiProfilePutHelperTest" time="0.003"/>
+  <testcase name="validateTest" classname="ericsson.core.nrf.dbproxy.helper.gpsiprofile.GpsiProfilePutHelperTest" time="0.014"/>
+  <system-out><![CDATA[[error 2019/09/02 07:45:33.936 UTC <Test worker> tid=0xc] gpsi_profile_id field is empty in GpsiProfilePutRequest
+
+[error 2019/09/02 07:45:33.937 UTC <Test worker> tid=0xc] gpsi_profile_id length 1025 is too large, max length is 1024
+
+[error 2019/09/02 07:45:33.937 UTC <Test worker> tid=0xc] gpsiProfileData field is empty in GpsiProfilePutRequest
+
+[error 2019/09/02 07:45:33.939 UTC <Test worker> tid=0xc] profileType is not PROFILE_TYPE_GROUPID or PROFILE_TYPE_INSTANCEID.
+
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

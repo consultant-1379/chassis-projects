@@ -1,0 +1,149 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: {{ template "eric-nrf-service-mesh.name" . }}-{{ .Values.istio.gatewayName }}
+  labels:
+{{- include "eric-nrf-service-mesh.labels" . | indent 4 }}
+  annotations:
+{{- include "eric-nrf-service-mesh.product-info" . | indent 4 }}
+spec:
+  selector:
+    istio: {{ .Values.istio.ingressGatewayName }}  # use istio default controller
+  servers:
+  - port:
+      number: {{ .Values.istio.ingressGatewayPort }}
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+  {{- if .Values.global.istio.tlsHandledByServiceMesh }}
+  - port:
+      number: {{ .Values.istio.ingressGatewayHTTPSPort }}
+      name: https
+      protocol: HTTPS
+    tls:
+      mode: {{ .Values.global.istio.ingresstls.mode }}
+      minProtocolVersion: {{ .Values.global.istio.ingresstls.minProtocolVersion }}
+      maxProtocolVersion: {{ .Values.global.istio.ingresstls.maxProtocolVersion }}
+      serverCertificate: {{ .Values.global.istio.ingresstls.certsPath }}{{ .Values.global.istio.ingresstls.serverCertificate }}
+      privateKey: {{ .Values.global.istio.ingresstls.certsPath }}{{ .Values.global.istio.ingresstls.privateKey }}
+      caCertificates: {{ .Values.global.istio.ingresstls.caCertsPath }}{{ .Values.global.istio.ingresstls.caCertificates }}
+      {{- if .Values.global.istio.ingresstls.cipherSuites }}
+      cipherSuites:
+      {{- range $val := .Values.global.istio.ingresstls.cipherSuites }}
+      - {{ $val | quote }}
+      {{- end }}
+      {{- end}}
+    hosts:
+    - "*"
+  {{- end}}
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: {{ template "eric-nrf-service-mesh.name" . }}-{{ .Values.istio.provision_gatewayName }}
+  labels:
+{{- include "eric-nrf-service-mesh.labels" . | indent 4 }}
+  annotations:
+{{- include "eric-nrf-service-mesh.product-info" . | indent 4 }}
+spec:
+  selector:
+    istio: {{ .Values.istio.provision_ingressGatewayName }}  # use nrf provision istio controller
+  servers:
+  - port:
+      number: {{ .Values.istio.provision_ingressGatewayPort }}
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+  {{- if .Values.global.istio.tlsHandledByServiceMesh }}
+  - port:
+      number: {{ .Values.istio.provision_ingressGatewayHTTPSPort }}
+      name: https
+      protocol: HTTPS
+    tls:
+      mode: {{ .Values.global.istio.ingresstls.mode }}
+      minProtocolVersion: {{ .Values.global.istio.ingresstls.minProtocolVersion }}
+      maxProtocolVersion: {{ .Values.global.istio.ingresstls.maxProtocolVersion }}
+      serverCertificate: {{ .Values.global.istio.ingresstls.certsPath }}{{ .Values.global.istio.ingresstls.serverCertificate }}
+      privateKey: {{ .Values.global.istio.ingresstls.certsPath }}{{ .Values.global.istio.ingresstls.privateKey }}
+      caCertificates: {{ .Values.global.istio.ingresstls.caCertsPath }}{{ .Values.global.istio.ingresstls.caCertificates }}
+      {{- if .Values.global.istio.ingresstls.cipherSuites }}
+      cipherSuites:
+      {{- range $val := .Values.global.istio.ingresstls.cipherSuites }}
+      - {{ $val | quote }}
+      {{- end }}
+      {{- end}}
+    hosts:
+    - "*"
+  {{- end}}
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ template "eric-nrf-service-mesh.name" . }}-{{ .Values.istio.virtualServiceName }}
+  labels:
+{{- include "eric-nrf-service-mesh.labels" . | indent 4 }}
+  annotations:
+{{- include "eric-nrf-service-mesh.product-info" . | indent 4 }}
+spec:
+  hosts:
+  - '*'
+  gateways:
+  - {{ template "eric-nrf-service-mesh.name" . }}-{{ .Values.istio.gatewayName }}
+  http:
+  - match:
+    - uri:
+        prefix: /nnrf-nfm
+    route:
+    - destination:
+        host: {{ .Values.service.name_nrf_mgmt }}
+        port:
+          number: 3000
+    retries:
+      attempts: {{ .Values.service.retry_nrf_mgmt }}
+  - match:
+    - uri:
+        prefix: /nnrf-disc
+    route:
+    - destination:
+        host: {{ .Values.service.name_nrf_disc }}
+        port:
+          number: 3000
+    retries:
+      attempts: {{ .Values.service.retry_nrf_disc }}
+  - match:
+    - uri:
+        prefix: /oauth2
+    route:
+    - destination:
+        host: {{ .Values.service.name_nrf_accesstoken }}
+        port:
+          number: 3000
+    retries:
+      attempts: {{ .Values.service.retry_nrf_accesstoken }}
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ template "eric-nrf-service-mesh.name" . }}-{{ .Values.istio.provision_virtualServiceName }}
+  labels:
+{{- include "eric-nrf-service-mesh.labels" . | indent 4 }}
+  annotations:
+{{- include "eric-nrf-service-mesh.product-info" . | indent 4 }}
+spec:
+  hosts:
+  - '*'
+  gateways:
+  - {{ template "eric-nrf-service-mesh.name" . }}-{{ .Values.istio.provision_gatewayName }}
+  http:
+  - match:
+    - uri:
+        prefix: /nnrf-prov
+    route:
+    - destination:
+        host: {{ .Values.service.name_nrf_prov }}
+        port:
+          number: 3000
+    retries:
+      attempts: {{ .Values.service.retry_nrf_prov }}

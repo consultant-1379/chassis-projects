@@ -1,0 +1,80 @@
+submodule nrf-submodule-provisioning {
+	yang-version "1.1";
+ 
+  // module identification
+    belongs-to ericsson-nrf {
+        prefix "nrfe";
+    }
+
+ // linkage statements
+	import ericsson-yang-extensions { 
+		prefix yexte;
+	}
+
+    import ietf-inet-types {
+        prefix inet;
+    }
+
+    import ericsson-5gcudmpol-common {
+	    prefix udmp5gce;
+    }             
+	
+	organization "Ericsson AB";
+	contact "Ericsson first line support via email";
+	description "nrf submodule discovery.
+			     Copyright (c) 2018 Ericsson AB. All rights reserved.";
+
+	revision "2019-04-24" {
+	  	description "Change to use ip-endpoint";
+	    yexte:version 0;
+		yexte:release 1;
+		yexte:correction 2; 
+	}
+
+	revision "2018-11-08" {
+	  	description "Change address id type";
+	    yexte:version 0;
+		yexte:release 1;
+		yexte:correction 1; 
+	}
+    	
+	revision "2018-09-17" {
+	  	description "Initial version. YANG modeling of 5G nrf provisioning";
+	    yexte:version 0;
+		yexte:release 1;
+		yexte:correction 0; 
+	}
+
+ 
+ // module definitions
+ grouping provisioning-service {  
+
+            list prov-address {
+			    key "id";
+                 leaf id {
+                    type uint32 {
+                    }
+                    mandatory true;
+                    description "unique id";
+                }
+                               
+                leaf scheme {
+                    type string {
+                    }
+                    mandatory true;
+                    description "Protocol scheme eg http, https";
+                }
+
+                leaf fqdn {
+                    type string {
+                    }
+                    description "FQDN of the NF where the service is hosted";
+                }
+                uses udmp5gce:ip-endpoint;           
+            }
+
+
+   }
+}
+
+

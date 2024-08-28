@@ -1,0 +1,17 @@
+{
+    "service-names": "serviceName",
+    "target-nf-type": "nfType",
+    "target-plmn-list": [
+	    {
+			"mcc": "mcc",
+			"mnc": "mnc"
+		}
+	],
+    "dnn": "dnn",
+    "smf-serving-area": "smfServingArea",
+    "routing-indicator": "routingIndicators",
+    "nsi-list": "nsiList",
+    "group-id-list": "groupId",
+    "ip-domain": "ipDomainList",
+    "upf-iwk-eps-ind": "iwkEpsInd"
+}

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+// Language Dependent Statements Start
+option java_package = "ericsson.core.nrf.dbproxy.grpc.nfmessage.subscription";
+option java_outer_classname = "SubscriptionGetRequestProto";
+option go_package = "com/dbproxy/nfmessage/subscription";
+package grpc;
+import "nfmessage/subscription/SubscriptionFilter.proto";
+// Language Dependent Statements End
+
+message SubscriptionGetRequest {
+    oneof data {
+        string subscription_id    = 1;
+        SubscriptionFilter filter = 2;
+    }
+}

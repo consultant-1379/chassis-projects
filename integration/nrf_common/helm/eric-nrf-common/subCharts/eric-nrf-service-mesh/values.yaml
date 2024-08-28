@@ -1,0 +1,65 @@
+# Default values for nrf-gateway.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+global:
+  istio:
+    tlsHandledByServiceMesh: true
+    ingresstls:
+      mode: MUTUAL
+      minProtocolVersion: TLSV1_2
+      maxProtocolVersion: TLSV1_3
+      cipherSuites: {}
+      secretName: eric-ccrc-sbi-server-certs
+      certsPath: /etc/istio/ingressgateway-certs/
+      serverCertificate: tls.crt
+      privateKey: tls.key
+      caSecretName: eric-ccrc-sbi-server-ca-certs
+      caCertsPath: /etc/istio/ingressgateway-ca-certs/
+      caCertificates: ca-chain.cert.pem
+    destinationtls:
+      mode: MUTUAL
+      secretName: eric-ccrc-sbi-client-certs
+      certsPath: /etc/istio/egress-certs/
+      clientCertificate: tls.crt
+      privateKey: tls.key
+      caSecretName: eric-ccrc-sbi-client-ca-certs
+      caCertsPath: /etc/istio/egress-ca-cert/
+      caCertificates: ca-chain.cert.pem
+
+service:
+  name_nrf_mgmt: eric-nrf-management
+  retry_nrf_mgmt: 0
+  name_nrf_disc: eric-nrf-discovery
+  retry_nrf_disc: 0
+  name_nrf_accesstoken: eric-nrf-accesstoken
+  retry_nrf_accesstoken: 0
+  name_nrf_prov: eric-nrf-provision
+  retry_nrf_prov: 0
+
+istio:
+  gatewayName: traffic-gateway
+  ingressGatewayName: eric-nrf-traffic
+  ingressGatewayPort: 80
+  ingressGatewayHTTPSPort: 443
+  virtualServiceName: virtualservice
+
+  provision_gatewayName: provisioning-gateway
+  provision_ingressGatewayName: eric-nrf-provisioning 
+  provision_ingressGatewayPort: 80
+  provision_ingressGatewayHTTPSPort: 443
+  provision_virtualServiceName: provisioning-virtualservice
+
+  egress:
+    serviceEntryName: sbi-traffic
+    destinationRuleName: sbi-traffic
+    defaultHost: "*.3gppnetwork.org"
+    defaultPort: 443
+
+#####################################################################
+##                          IMPORTANT!!
+#####################################################################
+##  Set the value of this attribute according to your needs
+##  when integrating nrf discovery as a sub-chart.
+##  Its value will determine the names of chart resources!
+#####################################################################
+nameOverride:

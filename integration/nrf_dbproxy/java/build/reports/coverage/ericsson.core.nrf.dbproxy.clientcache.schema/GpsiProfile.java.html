@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GpsiProfile.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.clientcache.schema</a> &gt; <span class="el_source">GpsiProfile.java</span></div><h1>GpsiProfile.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.clientcache.schema;
+
+import com.google.protobuf.ByteString;
+import ericsson.core.nrf.dbproxy.common.Code;
+import java.util.HashMap;
+
+public class GpsiProfile {
+
+  private String gpsi_profile_id;
+  private HashMap nf_type;
+  private HashMap group_id;
+  private int profile_type;
+  private Long gpsi_version;
+  private ByteString raw_gpsi_profile;
+
+<span class="fc" id="L16">  public GpsiProfile() {</span>
+<span class="fc" id="L17">    this.gpsi_profile_id = &quot;&quot;;</span>
+<span class="fc" id="L18">    this.nf_type = new HashMap();</span>
+<span class="fc" id="L19">    this.group_id = new HashMap();</span>
+<span class="fc" id="L20">    this.profile_type = Code.PROFILE_TYPE_EMPTY;</span>
+<span class="fc" id="L21">    this.gpsi_version = 0L;</span>
+<span class="fc" id="L22">    this.raw_gpsi_profile = ByteString.EMPTY;</span>
+<span class="fc" id="L23">  }</span>
+
+  public String getGpsiProfileID() {
+<span class="fc" id="L26">    return gpsi_profile_id;</span>
+  }
+
+  public void setGpsiProfileID(String gpsiProfileId) {
+<span class="fc" id="L30">    this.gpsi_profile_id = gpsiProfileId;</span>
+<span class="fc" id="L31">  }</span>
+
+
+  public void addNFType(String nfType) {
+<span class="nc" id="L35">    this.nf_type.put(nfType, 1);</span>
+<span class="nc" id="L36">  }</span>
+
+  public void addGroupID(String groupId) {
+<span class="nc" id="L39">    this.group_id.put(groupId, 1);</span>
+<span class="nc" id="L40">  }</span>
+
+  public void setProfileType(int profileType) {
+<span class="nc" id="L43">    this.profile_type = profileType;</span>
+<span class="nc" id="L44">  }</span>
+
+  public Long getGpsiVersion() {
+<span class="fc" id="L47">    return this.gpsi_version;</span>
+  }
+
+  public void setGpsiVersion(Long gpsiVersion) {
+<span class="nc" id="L51">    this.gpsi_version = gpsiVersion;</span>
+<span class="nc" id="L52">  }</span>
+
+  public ByteString getData() {
+<span class="fc" id="L55">    return raw_gpsi_profile;</span>
+  }
+
+  public void setData(ByteString rawGpsiProfile) {
+<span class="fc" id="L59">    this.raw_gpsi_profile = rawGpsiProfile;</span>
+<span class="fc" id="L60">  }</span>
+
+  public String toString() {
+<span class="nc" id="L63">    String nfTypeStr = &quot;&quot;;</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">    if (!nf_type.isEmpty()) {</span>
+<span class="nc" id="L65">      nfTypeStr = nf_type.toString();</span>
+    }
+<span class="nc" id="L67">    String groupIdStr = &quot;&quot;;</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">    if (!group_id.isEmpty()) {</span>
+<span class="nc" id="L69">      groupIdStr = group_id.toString();</span>
+    }
+<span class="nc" id="L71">    return &quot;GpsiProfile{&quot; +</span>
+        &quot;gpsi_profile_id=&quot; + gpsi_profile_id +
+        &quot;, nf_type=&quot; + nfTypeStr +
+        &quot;, group_id=&quot; + groupIdStr +
+        &quot;, profile_type=&quot; + profile_type +
+        &quot;, gpsi_version=&quot; + gpsi_version +
+<span class="nc" id="L77">        &quot;, raw_gpsi_profile=&quot; + raw_gpsi_profile.toString() +</span>
+        '}';
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

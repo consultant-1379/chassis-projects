@@ -1,0 +1,96 @@
+{
+  "homeNrf": {
+    "forward": {
+      "retryTime": 1,
+      "retryWaitTime": 1
+    }
+  },
+  "httpServer": {
+    "idleTimeout": 1,
+    "activeTimeout": 2,
+    "httpWithXVersion": false
+  },
+  "dbProxy": {
+    "connectionNum": 100,
+    "grpcContextTimeout": 3
+  },
+  "regionNrf": {
+    "forward": {
+      "retryTime": 1,
+      "retryWaitTime": 1
+    },
+    "redirect": {
+      "retryTime": 1,
+      "retryWaitTime": 1
+    }
+  },
+  "plmnNrf": {
+    "forward": {
+      "retryTime": 1,
+      "retryWaitTime": 1
+    }
+  },
+  "discCache": {
+    "discCacheEnable": true,
+    "discCacheTimeThreshold": 0
+  },
+  "timeStatistics": {
+    "enableTimeStatistics": false,
+    "statisticsNum": 100
+  },
+  "PriorityPolicy": {
+    "PriorityGroup": [
+      {
+        "GroupId": 1,
+        "GroupPriority": 1,
+        "PriorityStart": 0,
+        "PriorityEnd": 7,
+        "GroupLength": 8
+      },
+      {
+        "GroupId": 2,
+        "GroupPriority": 2,
+        "PriorityStart": 8,
+        "PriorityEnd": 15,
+        "GroupLength": 8
+      },
+      {
+        "GroupId": 3,
+        "GroupPriority": 3,
+        "PriorityStart": 16,
+        "PriorityEnd": 23,
+        "GroupLength": 8
+      }
+    ],
+    "DefaultMessagePriority": 16
+  },
+  "OverloadProtection": {
+    "Enabled": true,
+    "OverloadControlLevel": 32768,
+    "OverloadTriggerLatencyThreshold": 10,
+    "OverloadControlLatencyThreshold": 9,
+    "OverloadTriggerSampleWindow": 20000,
+    "OverloadControlSampleWindow": 20000,
+    "IdleInterval": 1000,
+    "IdleRecoverRatio": 32,
+    "CounterReportInterval": 500,
+    "OverloadAlarmClearWindow": 20,
+    "WorkEngine": [
+      {
+        "GroupPriority": 1,
+        "QueueCapacity": 4096,
+        "WorkerNumber": 256
+      },
+      {
+        "GroupPriority": 2,
+        "QueueCapacity": 4096,
+        "WorkerNumber": 256
+      },
+      {
+        "GroupPriority": 3,
+        "QueueCapacity": 4096,
+        "WorkerNumber": 256
+      }
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ericsson.core.nrf.dbproxy.helper.nfprofile.NFProfileGetHelperTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2019-09-02T07:45:34" hostname="c3b6544a0f6e" time="0.02">
+  <properties/>
+  <testcase name="createResponseTest" classname="ericsson.core.nrf.dbproxy.helper.nfprofile.NFProfileGetHelperTest" time="0.01"/>
+  <testcase name="validateTest" classname="ericsson.core.nrf.dbproxy.helper.nfprofile.NFProfileGetHelperTest" time="0.01"/>
+  <system-out><![CDATA[[error 2019/09/02 07:45:34.064 UTC <Test worker> tid=0xc] Fail to format to JSON, java.lang.ClassCastException: java.lang.String cannot be cast to org.apache.geode.pdx.PdxInstance
+
+[error 2019/09/02 07:45:34.070 UTC <Test worker> tid=0xc] Empty NFProfileGetRequest is received
+
+[error 2019/09/02 07:45:34.074 UTC <Test worker> tid=0xc] Empty NFProfileGetRequest is received
+
+[error 2019/09/02 07:45:34.075 UTC <Test worker> tid=0xc] Empty NFProfileGetRequest is received
+
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,932 @@
+[
+  {
+    "name": "NfExpiredTimeIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfprofiles.entrySet",
+    "expression": "value.expiredTime"
+  },
+  {
+    "name": "NfLastUpdateTimeIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfprofiles.entrySet",
+    "expression": "value.lastUpdateTime"
+  },
+  {
+    "name": "NfProvisionedIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfprofiles.entrySet",
+    "expression": "value.provisioned"
+  },
+  {
+    "name": "NfNfStatusIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfprofiles.entrySet",
+    "expression": "value.body.nfStatus"
+  },
+  {
+    "name": "NFNfTypeIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfprofiles.entrySet",
+    "expression": "value.body.nfType"
+  },
+  {
+    "name": "NfNfInstanceIdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfprofiles.entrySet",
+    "expression": "value.body.nfInstanceId"
+  },
+  {
+    "name": "NHNfTypeIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet",
+    "expression": "value.helper.nfType"
+  },
+  {
+    "name": "NHNfInstanceIdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet",
+    "expression": "value.helper.nfInstanceId"
+  },
+  {
+    "name": "NHFqdnIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet",
+    "expression": "value.helper.fqdn"
+  },
+  {
+    "name": "SnssaiSstIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.sNssais snssai",
+    "expression": "snssai.sst"
+  },
+  {
+    "name": "SnssaiSdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.sNssais snssai",
+    "expression": "snssai.sd"
+  },
+  {
+    "name": "NHNsiIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.nsiList nsi",
+    "expression": "nsi"
+  },
+  {
+    "name": "NHUdrSupiAbsenceIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet",
+    "expression": "value.helper.udrInfo.supiMatchAll"
+  },
+  {
+    "name": "NHUdrGpsiRangeAbsenceIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet",
+    "expression": "value.helper.udrInfo.gpsiMatchAll"
+  },
+  {
+    "name": "NHUdrSupportedDataSetIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.udrInfo.supportedDataSets data_set",
+    "expression": "data_set"
+  },
+  {
+    "name": "NHUdrGroupIdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet",
+    "expression": "value.helper.udrInfo.groupId"
+  },
+  {
+    "name": "NHUdmSupiAbsenceIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet",
+    "expression": "value.helper.udmInfo.supiMatchAll"
+  },
+  {
+    "name": "NHUdmGpsiRangeAbsenceIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet",
+    "expression": "value.helper.udmInfo.gpsiMatchAll"
+  },
+  {
+    "name": "NHUdmRoutingIndicatorIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.udmInfo.routingIndicators routing_indicator",
+    "expression": "routing_indicator"
+  },
+  {
+    "name": "NHUdmGroupIdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet",
+    "expression": "value.helper.udmInfo.groupId"
+  },
+  {
+    "name": "NHAusfSupiAbsenceIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet",
+    "expression": "value.helper.ausfInfo.supiMatchAll"
+  },
+  {
+    "name": "NHAusfRoutingIndicatorIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.ausfInfo.routingIndicators routing_indicator",
+    "expression": "routing_indicator"
+  },
+  {
+    "name": "NHAusfGroupIdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet",
+    "expression": "value.helper.ausfInfo.groupId"
+  },
+  {
+    "name": "NHAmfTaiListPlmnMccIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.amfInfo.taiList tai",
+    "expression": "tai.plmnId.mcc"
+  },
+  {
+    "name": "NHAmfTaiListPlmnMncIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.amfInfo.taiList tai",
+    "expression": "tai.plmnId.mnc"
+  },
+  {
+    "name": "NHAmfTaiListTacIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.amfInfo.taiList tai",
+    "expression": "tai.tac"
+  },
+  {
+    "name": "NHAmfTaiRangeListPlmnMccIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.amfInfo.taiRangeList tai_range",
+    "expression": "tai_range.plmnId.mcc"
+  },
+  {
+    "name": "NHAmfTaiRangeListPlmnMncIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.amfInfo.taiRangeList tai_range",
+    "expression": "tai_range.plmnId.mnc"
+  },
+  {
+    "name": "NHAmfRegionIdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet",
+    "expression": "value.helper.amfInfo.amfRegionId"
+  },
+  {
+    "name": "NHAmfSetIdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet",
+    "expression": "value.helper.amfInfo.amfSetId"
+  },
+  {
+    "name": "NHAmfGuamiPlmnMccIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.amfInfo.guamiList guami",
+    "expression": "guami.plmnId.mcc"
+  },
+  {
+    "name": "NHAmfGuamiPlmnMncIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.amfInfo.guamiList guami",
+    "expression": "guami.plmnId.mnc"
+  },
+  {
+    "name": "NHAmfGuamiAmfIdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.amfInfo.guamiList guami",
+    "expression": "guami.amfId"
+  },
+  {
+    "name": "NHAmfFailurePlmnMccIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.amfInfo.backupInfoAmfFailure guami_failure",
+    "expression": "guami_failure.plmnId.mcc"
+  },
+  {
+    "name": "NHAmfFailurePlmnMncIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.amfInfo.backupInfoAmfFailure guami_failure",
+    "expression": "guami_failure.plmnId.mnc"
+  },
+  {
+    "name": "NHAmfFailureAmfIdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.amfInfo.backupInfoAmfFailure guami_failure",
+    "expression": "guami_failure.amfId"
+  },
+  {
+    "name": "NHAmfRemovalPlmnMccIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.amfInfo.backupInfoAmfRemoval guami_removal",
+    "expression": "guami_removal.plmnId.mcc"
+  },
+  {
+    "name": "NHAmfRemovalPlmnMncIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.amfInfo.backupInfoAmfRemoval guami_removal",
+    "expression": "guami_removal.plmnId.mnc"
+  },
+  {
+    "name": "NHAmfRemovalAmfIdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.amfInfo.backupInfoAmfRemoval guami_removal",
+    "expression": "guami_removal.amfId"
+  },
+  {
+    "name": "NHSmfSnssaiDnnIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.smfInfo.sNssaiSmfInfoList snssai_smf_info, snssai_smf_info.dnnSmfInfoList dnn_smf_info",
+    "expression": "dnn_smf_info.dnn"
+  },
+  {
+    "name": "NHSmfSnssaiSstIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.smfInfo.sNssaiSmfInfoList snssai_smf_info",
+    "expression": "snssai_smf_info.sNssai.sst"
+  },
+  {
+    "name": "NHSmfSnssaiSdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.smfInfo.sNssaiSmfInfoList snssai_smf_info",
+    "expression": "snssai_smf_info.sNssai.sd"
+  },
+  {
+    "name": "NHSmfDnnIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.smfInfo.dnnList dnn",
+    "expression": "dnn"
+  },
+  {
+    "name": "NHSmfTaiListPlmnMccIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.smfInfo.taiList tai",
+    "expression": "tai.plmnId.mcc"
+  },
+  {
+    "name": "NHSmfTaiListPlmnMncIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.smfInfo.taiList tai",
+    "expression": "tai.plmnId.mnc"
+  },
+  {
+    "name": "NHSmfTaiListTacIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.smfInfo.taiList tai",
+    "expression": "tai.tac"
+  },
+  {
+    "name": "NHSmfTaiRangeListPlmnMccIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.smfInfo.taiRangeList tai_range",
+    "expression": "tai_range.plmnId.mcc"
+  },
+  {
+    "name": "NHSmfTaiRangeListPlmnMncIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.smfInfo.taiRangeList tai_range",
+    "expression": "tai_range.plmnId.mnc"
+  },
+  {
+    "name": "NHSmfPgwFqdnIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet",
+    "expression": "value.helper.smfInfo.pgwFqdn"
+  },
+  {
+    "name": "NHUpfSnssaiSstIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.upfInfo.sNssaiUpfInfoList snssai_upf_info",
+    "expression": "snssai_upf_info.sNssai.sst"
+  },
+  {
+    "name": "NHUpfSnssaiSdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.upfInfo.sNssaiUpfInfoList snssai_upf_info",
+    "expression": "snssai_upf_info.sNssai.sd"
+  },
+  {
+    "name": "NHUpfDnnIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.upfInfo.sNssaiUpfInfoList snssai_upf_info, snssai_upf_info.dnnUpfInfoList dnn_upf_info",
+    "expression": "dnn_upf_info.dnn"
+  },
+  {
+    "name": "NHUpfDnaiIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.upfInfo.sNssaiUpfInfoList snssai_upf_info, snssai_upf_info.dnnUpfInfoList dnn_upf_info, dnn_upf_info.dnaiList dnai",
+    "expression": "dnai"
+  },
+  {
+    "name": "NHUpfSmfServingAreaIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.upfInfo.smfServingArea smf_serving_area",
+    "expression": "smf_serving_area"
+  },
+  {
+    "name": "NHPcfDnnIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.pcfInfo.dnnList dnn",
+    "expression": "dnn"
+  },
+  {
+    "name": "NHPcfSupiAbsenceIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet",
+    "expression": "value.helper.pcfInfo.supiMatchAll"
+  },
+  {
+    "name": "NHPcfGpsiAbsenceIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet",
+    "expression": "value.helper.pcfInfo.gpsiMatchAll"
+  },
+  {
+    "name": "NHPcfGroupIdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet",
+    "expression": "value.helper.pcfInfo.groupId"
+  },
+  {
+    "name": "NHBsfDnnIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.bsfInfo.dnnList dnn",
+    "expression": "dnn"
+  },
+  {
+    "name": "NHBsfIpDomainIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet, value.helper.bsfInfo.ipDomainList ip_domain",
+    "expression": "ip_domain"
+  },
+  {
+    "name": "NHChfSupiAbsenceIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet",
+    "expression": "value.helper.chfInfo.supiMatchAll"
+  },
+  {
+    "name": "NHChfGpsiRangeAbsenceIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nfhelper.entrySet",
+    "expression": "value.helper.chfInfo.gpsiMatchAll"
+  },
+  {
+    "name": "noCondIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-subscriptions.entrySet",
+    "expression": "value.noCond"
+  },
+  {
+    "name": "nfStatusNotificationUriIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-subscriptions.entrySet",
+    "expression": "value.nfStatusNotificationUri"
+  },
+  {
+    "name": "SubNfInstanceIdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-subscriptions.entrySet",
+    "expression": "value.nfInstanceId"
+  },
+  {
+    "name": "SubNfTypeIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-subscriptions.entrySet",
+    "expression": "value.nfType"
+  },
+  {
+    "name": "serviceNameIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-subscriptions.entrySet",
+    "expression": "value.serviceName"
+  },
+  {
+    "name": "amfsubkey1Index",
+    "type": "range",
+    "region": "/ericsson-nrf-subscriptions.entrySet, value.amfCond.values amf",
+    "expression": "amf.sub_key1"
+  },
+  {
+    "name": "amfsubkey2Index",
+    "type": "range",
+    "region": "/ericsson-nrf-subscriptions.entrySet, value.amfCond.values amf",
+    "expression": "amf.sub_key2"
+  },
+  {
+    "name": "guamisubkey1Index",
+    "type": "range",
+    "region": "/ericsson-nrf-subscriptions.entrySet, value.guamiList.values guami",
+    "expression": "guami.sub_key1"
+  },
+  {
+    "name": "guamisubkey2Index",
+    "type": "range",
+    "region": "/ericsson-nrf-subscriptions.entrySet, value.guamiList.values guami",
+    "expression": "guami.sub_key2"
+  },
+  {
+    "name": "snssaisubkey1Index",
+    "type": "range",
+    "region": "/ericsson-nrf-subscriptions.entrySet, value.snssaiList.values snssai",
+    "expression": "snssai.sub_key1"
+  },
+  {
+    "name": "snssaisubkey2Index",
+    "type": "range",
+    "region": "/ericsson-nrf-subscriptions.entrySet, value.snssaiList.values snssai",
+    "expression": "snssai.sub_key2"
+  },
+  {
+    "name": "SubNsiIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-subscriptions.entrySet, value.nsiList nsi",
+    "expression": "nsi"
+  },
+  {
+    "name": "nfGroupsubkey1Index",
+    "type": "range",
+    "region": "/ericsson-nrf-subscriptions.entrySet, value.nfGroupCond.values nfGroup",
+    "expression": "nfGroup.sub_key1"
+  },
+  {
+    "name": "nfGroupsubkey2Index",
+    "type": "range",
+    "region": "/ericsson-nrf-subscriptions.entrySet, value.nfGroupCond.values nfGroup",
+    "expression": "nfGroup.sub_key2"
+  },
+  {
+    "name": "validityTimeIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-subscriptions.entrySet",
+    "expression": "value.validityTime"
+  },
+  {
+    "name": "key1Index",
+    "type": "range",
+    "region": "/ericsson-nrf-nrfaddresses p",
+    "expression": "p.key1"
+  },
+  {
+    "name": "key2Index",
+    "type": "range",
+    "region": "/ericsson-nrf-nrfaddresses p",
+    "expression": "p.key2"
+  },
+  {
+    "name": "key3Index",
+    "type": "range",
+    "region": "/ericsson-nrf-nrfaddresses p",
+    "expression": "p.key3"
+  },
+  {
+    "name": "key4Index",
+    "type": "range",
+    "region": "/ericsson-nrf-nrfaddresses p",
+    "expression": "p.key4"
+  },
+  {
+    "name": "key5Index",
+    "type": "range",
+    "region": "/ericsson-nrf-nrfaddresses p",
+    "expression": "p.key5"
+  },
+  {
+    "name": "GPNftypeIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-groupprofiles p",
+    "expression": "p.nf_type[*]"
+  },
+  {
+    "name": "GPGroupId",
+    "type": "range",
+    "region": "/ericsson-nrf-groupprofiles p",
+    "expression": "p.group_id[*]"
+  },
+  {
+    "name": "GPProfileType",
+    "type": "range",
+    "region": "/ericsson-nrf-groupprofiles p",
+    "expression": "p.profile_type"
+  },
+  {
+    "name": "ImsiValueInfoIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-imsiprefixprofiles p",
+    "expression": "p.value_info[*]"
+  },
+  {
+    "name": "NrfExpiredTimeIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nrfprofiles.entrySet",
+    "expression": "value.expiredTime"
+  },
+  {
+    "name": "NrfProvisionedIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nrfprofiles.entrySet",
+    "expression": "value.provisioned"
+  },
+  {
+    "name": "NrfNfStatusIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nrfprofiles.entrySet",
+    "expression": "value.body.nfStatus"
+  },
+  {
+    "name": "NrfNfTypeIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nrfprofiles.entrySet",
+    "expression": "value.body.nfType"
+  },
+  {
+    "name": "NrfNfInstanceIdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-nrfprofiles.entrySet",
+    "expression": "value.body.nfInstanceId"
+  },
+  {
+    "name": "GpsiNftypeIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-gpsiprofiles p",
+    "expression": "p.nf_type[*]"
+  },
+  {
+    "name": "gpsiGroupId",
+    "type": "range",
+    "region": "/ericsson-nrf-gpsiprofiles p",
+    "expression": "p.group_id[*]"
+  },
+  {
+    "name": "GpsiProfileType",
+    "type": "range",
+    "region": "/ericsson-nrf-gpsiprofiles p",
+    "expression": "p.profile_type"
+  },
+  {
+    "name": "GpsiValueInfoIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-gpsiprefixprofiles p",
+    "expression": "p.value_info[*]"
+  },
+  {
+    "name": "MSInstanceIdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-multisiteinfo.entrySet",
+    "expression": "value.id"
+  },
+  {
+    "name": "MSLastUpdateTimeIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-multisiteinfo.entrySet",
+    "expression": "value.lastUpdateTime"
+  },
+  {
+    "name": "WIInstanceIdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-witnessinfo.entrySet",
+    "expression": "value.id"
+  },
+  {
+    "name": "WIFqdnIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-witnessinfo.entrySet",
+    "expression": "value.fqdn"
+  },
+  {
+    "name": "WILastUpdateTimeIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-witnessinfo.entrySet",
+    "expression": "value.lastUpdateTime"
+  },
+  {
+    "name": "RegionnfinfoNfInstanceIdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet",
+    "expression": "value.body.nfInstanceId"
+  },
+  {
+    "name": "NrfInstanceIdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet",
+    "expression": "value.body.nrfInstanceId"
+  },
+  {
+    "name": "RegionnfinfoNfTypeIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet",
+    "expression": "value.body.nfType"
+  },
+  {
+    "name": "HelperNfInstanceIdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet",
+    "expression": "value.helper.nfInstanceId"
+  },
+  {
+    "name": "HelperNfTypeIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet",
+    "expression": "value.helper.nfType"
+  },
+  {
+    "name": "RIUdrSupiAbsenceIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet",
+    "expression": "value.helper.udrInfo.supiMatchAll"
+  },
+  {
+    "name": "RIUdrGpsiRangeAbsenceIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet",
+    "expression": "value.helper.udrInfo.gpsiMatchAll"
+  },
+  {
+    "name": "RIUdrSupportedDataSetIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.udrInfo.supportedDataSets data_set",
+    "expression": "data_set"
+  },
+  {
+    "name": "RIUdrGroupIdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet",
+    "expression": "value.helper.udrInfo.groupId"
+  },
+  {
+    "name": "RIUdmSupiAbsenceIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet",
+    "expression": "value.helper.udmInfo.supiMatchAll"
+  },
+  {
+    "name": "RIUdmGpsiRangeAbsenceIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet",
+    "expression": "value.helper.udmInfo.gpsiMatchAll"
+  },
+  {
+    "name": "RIUdmRoutingIndicatorIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.udmInfo.routingIndicators routing_indicator",
+    "expression": "routing_indicator"
+  },
+  {
+    "name": "RIUdmGroupIdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet",
+    "expression": "value.helper.udmInfo.groupId"
+  },
+  {
+    "name": "RIAusfSupiAbsenceIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet",
+    "expression": "value.helper.ausfInfo.supiMatchAll"
+  },
+  {
+    "name": "RIAusfRoutingIndicatorIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.ausfInfo.routingIndicators routing_indicator",
+    "expression": "routing_indicator"
+  },
+  {
+    "name": "RIAusfGroupIdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet",
+    "expression": "value.helper.ausfInfo.groupId"
+  },
+  {
+    "name": "RIAmfTaiListPlmnMccIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.amfInfo.taiList tai",
+    "expression": "tai.plmnId.mcc"
+  },
+  {
+    "name": "RIAmfTaiListPlmnMncIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.amfInfo.taiList tai",
+    "expression": "tai.plmnId.mnc"
+  },
+  {
+    "name": "RIAmfTaiListTacIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.amfInfo.taiList tai",
+    "expression": "tai.tac"
+  },
+  {
+    "name": "RIAmfTaiRangeListPlmnMccIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.amfInfo.taiRangeList tai_range",
+    "expression": "tai_range.plmnId.mcc"
+  },
+  {
+    "name": "RIAmfTaiRangeListPlmnMncIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.amfInfo.taiRangeList tai_range",
+    "expression": "tai_range.plmnId.mnc"
+  },
+  {
+    "name": "RIAmfRegionIdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet",
+    "expression": "value.helper.amfInfo.amfRegionId"
+  },
+  {
+    "name": "RIAmfSetIdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet",
+    "expression": "value.helper.amfInfo.amfSetId"
+  },
+  {
+    "name": "RIAmfGuamiPlmnMccIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.amfInfo.guamiList guami",
+    "expression": "guami.plmnId.mcc"
+  },
+  {
+    "name": "RIAmfGuamiPlmnMncIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.amfInfo.guamiList guami",
+    "expression": "guami.plmnId.mnc"
+  },
+  {
+    "name": "RIAmfGuamiAmfIdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.amfInfo.guamiList guami",
+    "expression": "guami.amfId"
+  },
+  {
+    "name": "RIAmfFailurePlmnMccIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.amfInfo.backupInfoAmfFailure guami_failure",
+    "expression": "guami_failure.plmnId.mcc"
+  },
+  {
+    "name": "RIAmfFailurePlmnMncIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.amfInfo.backupInfoAmfFailure guami_failure",
+    "expression": "guami_failure.plmnId.mnc"
+  },
+  {
+    "name": "RIAmfFailureAmfIdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.amfInfo.backupInfoAmfFailure guami_failure",
+    "expression": "guami_failure.amfId"
+  },
+  {
+    "name": "RIAmfRemovalPlmnMccIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.amfInfo.backupInfoAmfRemoval guami_removal",
+    "expression": "guami_removal.plmnId.mcc"
+  },
+  {
+    "name": "RIAmfRemovalPlmnMncIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.amfInfo.backupInfoAmfRemoval guami_removal",
+    "expression": "guami_removal.plmnId.mnc"
+  },
+  {
+    "name": "RIAmfRemovalAmfIdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.amfInfo.backupInfoAmfRemoval guami_removal",
+    "expression": "guami_removal.amfId"
+  },
+  {
+    "name": "RISmfSnssaiDnnIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.smfInfo.sNssaiSmfInfoList snssai_smf_info, snssai_smf_info.dnnSmfInfoList dnn_smf_info",
+    "expression": "dnn_smf_info.dnn"
+  },
+  {
+    "name": "RISmfSnssaiSstIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.smfInfo.sNssaiSmfInfoList snssai_smf_info",
+    "expression": "snssai_smf_info.sNssai.sst"
+  },
+  {
+    "name": "RISmfSnssaiSdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.smfInfo.sNssaiSmfInfoList snssai_smf_info",
+    "expression": "snssai_smf_info.sNssai.sd"
+  },
+  {
+    "name": "RISmfDnnIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.smfInfo.dnnList dnn",
+    "expression": "dnn"
+  },
+  {
+    "name": "RISmfTaiListPlmnMccIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.smfInfo.taiList tai",
+    "expression": "tai.plmnId.mcc"
+  },
+  {
+    "name": "RISmfTaiListPlmnMncIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.smfInfo.taiList tai",
+    "expression": "tai.plmnId.mnc"
+  },
+  {
+    "name": "RISmfTaiListTacIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.smfInfo.taiList tai",
+    "expression": "tai.tac"
+  },
+  {
+    "name": "RISmfTaiRangeListPlmnMccIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.smfInfo.taiRangeList tai_range",
+    "expression": "tai_range.plmnId.mcc"
+  },
+  {
+    "name": "RISmfTaiRangeListPlmnMncIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.smfInfo.taiRangeList tai_range",
+    "expression": "tai_range.plmnId.mnc"
+  },
+  {
+    "name": "RISmfPgwFqdnIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet",
+    "expression": "value.helper.smfInfo.pgwFqdn"
+  },
+  {
+    "name": "RIUpfSnssaiSstIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.upfInfo.sNssaiUpfInfoList snssai_upf_info",
+    "expression": "snssai_upf_info.sNssai.sst"
+  },
+  {
+    "name": "RIUpfSnssaiSdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.upfInfo.sNssaiUpfInfoList snssai_upf_info",
+    "expression": "snssai_upf_info.sNssai.sd"
+  },
+  {
+    "name": "RIUpfDnnIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.upfInfo.sNssaiUpfInfoList snssai_upf_info, snssai_upf_info.dnnUpfInfoList dnn_upf_info",
+    "expression": "dnn_upf_info.dnn"
+  },
+  {
+    "name": "RIUpfDnaiIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.upfInfo.sNssaiUpfInfoList snssai_upf_info, snssai_upf_info.dnnUpfInfoList dnn_upf_info, dnn_upf_info.dnaiList dnai",
+    "expression": "dnai"
+  },
+  {
+    "name": "RIUpfSmfServingAreaIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.upfInfo.smfServingArea smf_serving_area",
+    "expression": "smf_serving_area"
+  },
+  {
+    "name": "RIPcfDnnIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.pcfInfo.dnnList dnn",
+    "expression": "dnn"
+  },
+  {
+    "name": "RIPcfSupiAbsenceIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet",
+    "expression": "value.helper.pcfInfo.supiMatchAll"
+  },
+  {
+    "name": "RIPcfGpsiAbsenceIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet",
+    "expression": "value.helper.pcfInfo.gpsiMatchAll"
+  },
+  {
+    "name": "RIPcfGroupIdIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet",
+    "expression": "value.helper.pcfInfo.groupId"
+  },
+  {
+    "name": "RIBsfDnnIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.bsfInfo.dnnList dnn",
+    "expression": "dnn"
+  },
+  {
+    "name": "RIBsfIpDomainIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet, value.helper.bsfInfo.ipDomainList ip_domain",
+    "expression": "ip_domain"
+  },
+  {
+    "name": "RIChfSupiAbsenceIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet",
+    "expression": "value.helper.chfInfo.supiMatchAll"
+  },
+  {
+    "name": "RIChfGpsiRangeAbsenceIndex",
+    "type": "range",
+    "region": "/ericsson-nrf-regionnfinfo.entrySet",
+    "expression": "value.helper.chfInfo.gpsiMatchAll"
+  }
+]

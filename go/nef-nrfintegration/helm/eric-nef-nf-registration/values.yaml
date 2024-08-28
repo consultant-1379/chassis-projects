@@ -1,0 +1,72 @@
+global:
+  timezone: UTC
+  registry:
+    url: selidocker.lmera.ericsson.se
+    # Secret must be manually created in the namespace, no default value
+    #pullSecret: eric-adp-example-secret
+  adp:
+    cm:
+      schemaName: "ericsson-nef"
+      path: "ericsson-nef:nef"
+  logControl:
+    configmapName: eric-cces-logcontrol-configmap
+    monitorFileDir: /etc/cces
+    monitorFilename: logControl.json
+
+# ########################################################################### #
+# Values for eric-nef-nf-registration
+# ########################################################################### #
+## TODO
+productInfo:
+  rstate:
+
+nameOverride: null
+
+imageCredentials:
+  #registry:
+  # overrides global registry url
+    #url: armdocker.companyA.se
+  # Secret must be manually created in the namespace, no default value
+  #pullSecret:
+  repoPath: proj-nef
+  pullPolicy: Always
+
+replicaCount: 2
+
+config:
+  nrfAgentUri: "http://eric-nrf-register-agent:3002"
+  serviceNameMap:
+    dummy-service-fornrfagent: dummy-service-fornrfagent
+    #nef-traffic-influence: nnef-trafficinfluence
+    #nef service name: 3gpp service name
+  heartbeatInterval: 60
+  retryInterval: 10
+  retryTimes: 3
+
+images:
+  nfReg:
+    name: nef-nrfintegration
+    tag: do_not_change_to_be_updated_by_pipeline
+
+resources:
+  nfReg:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+updateStrategy:
+  # type can be OnDelete or RollingUpdate
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 0
+    maxSurge: 1
+
+logging:
+  level: INFO
+
+serviceAccount:
+  name: eric-nef-nf-registration-sa
+  enableRBAC: true

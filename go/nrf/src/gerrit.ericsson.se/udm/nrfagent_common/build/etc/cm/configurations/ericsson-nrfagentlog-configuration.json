@@ -1,0 +1,43 @@
+{
+  "name": "eric-nrfagentlog",
+  "title": "ericsson-nrfagentlog",
+  "data": {
+    "ericsson-nrfagentlog:nrfagentlog": {
+      "nrfagent-service-log": [
+              {
+                   "log-id": "nrf_disc_agent",
+                   "severity": "warning",
+                   "pod-log":
+                   [
+                       {
+                          "pod-id": "127.0.0.1",
+                          "severity": "warning"
+                       }
+                   ]
+              },
+              {
+                   "log-id": "nrf_ntf_agent",
+                   "severity": "warning",
+                   "pod-log":
+                   [
+                       {
+                          "pod-id": "127.0.0.1",
+                          "severity": "warning"
+                       }
+                   ]
+              },
+              {
+                   "log-id": "nrf_reg_agent",
+                   "severity": "warning",
+                   "pod-log":
+                   [
+                       {
+                          "pod-id": "127.0.0.1",
+                          "severity": "warning"
+                       }
+                   ]
+              }
+      ]
+    }
+  }
+}

@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClientCacheService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.clientcache</a> &gt; <span class="el_source">ClientCacheService.java</span></div><h1>ClientCacheService.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.clientcache;
+
+import ericsson.core.nrf.dbproxy.clientcache.region.ClientRegion;
+import ericsson.core.nrf.dbproxy.clientcache.state.ClientCacheServiceInitState;
+import ericsson.core.nrf.dbproxy.clientcache.state.ClientCacheServiceState;
+import ericsson.core.nrf.dbproxy.common.ExecutionResult;
+import ericsson.core.nrf.dbproxy.common.FragmentSessionManagement;
+import ericsson.core.nrf.dbproxy.config.GeodeConfig;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.apache.geode.cache.CacheClosedException;
+import org.apache.geode.cache.CacheTransactionManager;
+import org.apache.geode.cache.CacheWriterException;
+import org.apache.geode.cache.CacheXmlException;
+import org.apache.geode.cache.Region;
+import org.apache.geode.cache.RegionExistsException;
+import org.apache.geode.cache.TimeoutException;
+import org.apache.geode.cache.client.ClientCache;
+import org.apache.geode.cache.client.ClientCacheFactory;
+import org.apache.geode.cache.client.Pool;
+import org.apache.geode.cache.client.PoolFactory;
+import org.apache.geode.cache.client.PoolManager;
+import org.apache.geode.pdx.ReflectionBasedAutoSerializer;
+import org.apache.geode.security.AuthenticationFailedException;
+import org.apache.geode.security.AuthenticationRequiredException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class ClientCacheService {
+
+<span class="nc" id="L32">  private static final Logger LOGGER = LogManager.getLogger(ClientCacheService.class);</span>
+
+  private static ClientCacheService instance;
+
+  static {
+<span class="nc" id="L37">    instance = null;</span>
+  }
+
+  private static ClientCache clientCache;
+
+  static {
+<span class="nc" id="L43">    clientCache = null;</span>
+<span class="nc" id="L44">  }</span>
+
+  private Map&lt;String, ClientRegion&gt; clientRegions;
+
+  private ClientCacheServiceState state;
+  private boolean available;
+  private GeodeConfig config;
+
+<span class="nc" id="L52">  private ClientCacheService() {</span>
+<span class="nc" id="L53">    this.clientRegions = new HashMap&lt;String, ClientRegion&gt;();</span>
+<span class="nc" id="L54">    reset();</span>
+<span class="nc" id="L55">  }</span>
+
+  public static synchronized ClientCacheService getInstance() {
+<span class="nc bnc" id="L58" title="All 2 branches missed.">    if (null == instance) {</span>
+<span class="nc" id="L59">      instance = new ClientCacheService();</span>
+    }
+<span class="nc" id="L61">    return instance;</span>
+  }
+
+  public void setState(ClientCacheServiceState serviceState) {
+<span class="nc" id="L65">    state = serviceState;</span>
+<span class="nc" id="L66">  }</span>
+
+  public void apply(GeodeConfig geodeConfig) {
+<span class="nc" id="L69">    LOGGER.debug(&quot;Apply geode configuration on client cache service&quot;);</span>
+<span class="nc" id="L70">    state.apply(geodeConfig);</span>
+<span class="nc" id="L71">  }</span>
+
+  public int put(String regionName, Object regionKey, Object regionItem) {
+<span class="nc" id="L74">    ClientRegion clientRegion = clientRegions.get(regionName);</span>
+<span class="nc" id="L75">    return clientRegion.put(regionKey, regionItem);</span>
+  }
+
+  public int putAll(String regionName, Map&lt;Object, Object&gt; kvMap) {
+<span class="nc" id="L79">    ClientRegion clientRegion = clientRegions.get(regionName);</span>
+<span class="nc" id="L80">    return clientRegion.putAll(kvMap);</span>
+  }
+
+  public int delete(String regionName, Object regionKey) {
+<span class="nc" id="L84">    ClientRegion clientRegion = clientRegions.get(regionName);</span>
+<span class="nc" id="L85">    return clientRegion.delete(regionKey, true);</span>
+  }
+
+  public int deleteAll(String regionName, List&lt;String&gt; keyList) {
+<span class="nc" id="L89">    ClientRegion clientRegion = clientRegions.get(regionName);</span>
+<span class="nc" id="L90">    return clientRegion.deleteAll(keyList);</span>
+  }
+
+  public int delete(String regionName, Object regionKey, boolean withTransaction) {
+<span class="nc" id="L94">    ClientRegion clientRegion = clientRegions.get(regionName);</span>
+<span class="nc" id="L95">    return clientRegion.delete(regionKey, withTransaction);</span>
+  }
+
+  public ExecutionResult getByID(String regionName, Object regionKey) {
+<span class="nc" id="L99">    ClientRegion clientRegion = clientRegions.get(regionName);</span>
+<span class="nc" id="L100">    return clientRegion.getByID(regionKey);</span>
+  }
+
+  public ExecutionResult getAllByID(String regionName, List&lt;Long&gt; idList) {
+<span class="nc" id="L104">    ClientRegion clientRegion = clientRegions.get(regionName);</span>
+<span class="nc" id="L105">    return clientRegion.getAllByID(idList);</span>
+  }
+
+  public ExecutionResult getByFilter(String regionName, String queryString) {
+<span class="nc" id="L109">    ClientRegion clientRegion = clientRegions.get(regionName);</span>
+<span class="nc" id="L110">    return clientRegion.getByFilter(regionName, queryString);</span>
+  }
+
+  public ExecutionResult getByCountFilter(String regionName, String queryString) {
+<span class="nc" id="L114">    ClientRegion clientRegion = clientRegions.get(regionName);</span>
+<span class="nc" id="L115">    return clientRegion.getByCountFilter(queryString);</span>
+  }
+
+  public ExecutionResult getByFragSessionId(String regionName, String fragmentSessionId) {
+<span class="nc" id="L119">    return FragmentSessionManagement.getInstance().get(regionName, fragmentSessionId);</span>
+  }
+
+  public boolean initialize(GeodeConfig geodeConfig) {
+<span class="nc bnc" id="L123" title="All 2 branches missed.">    if (!createClientCache(geodeConfig)) {</span>
+<span class="nc" id="L124">      return false;</span>
+    }
+
+<span class="nc" id="L127">    String[] regions = geodeConfig.getRegionList();</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">    for (int i = 0; i &lt; regions.length; i++) {</span>
+<span class="nc" id="L129">      ClientRegion region = new ClientRegion(regions[i]);</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">      if (!region.initialize(clientCache, geodeConfig.getPoolName(),</span>
+<span class="nc" id="L131">          geodeConfig.isSubscriptionEnabled())) {</span>
+<span class="nc" id="L132">        return false;</span>
+      }
+<span class="nc" id="L134">      clientRegions.put(regions[i], region);</span>
+    }
+
+<span class="nc" id="L137">    config = geodeConfig;</span>
+<span class="nc" id="L138">    available = true;</span>
+<span class="nc" id="L139">    return true;</span>
+  }
+
+  private boolean createClientCache(GeodeConfig geodeConfig) {
+<span class="nc" id="L143">    ClientCacheFactory factory = new ClientCacheFactory();</span>
+    try {
+<span class="nc" id="L145">      clientCache = factory.setPdxSerializer(</span>
+          new ReflectionBasedAutoSerializer(&quot;ericsson.core.nrf.dbproxy.clientcache.schema.*&quot;))
+<span class="nc" id="L147">          .create();</span>
+<span class="nc" id="L148">    } catch (CacheXmlException | TimeoutException | RegionExistsException | CacheWriterException | IllegalStateException | AuthenticationFailedException | AuthenticationRequiredException e) {</span>
+<span class="nc" id="L149">      LOGGER.error(e.toString());</span>
+<span class="nc" id="L150">      return false;</span>
+<span class="nc" id="L151">    }</span>
+
+<span class="nc" id="L153">    PoolFactory poolFactory = PoolManager.createFactory();</span>
+<span class="nc" id="L154">    List&lt;String&gt; kvdbLocatorIpList = geodeConfig.getLocatorIPList();</span>
+<span class="nc" id="L155">    int kvdbLocatorPort = geodeConfig.getLocatorPort();</span>
+<span class="nc bnc" id="L156" title="All 2 branches missed.">    for (String locatorIp : kvdbLocatorIpList) {</span>
+      try {
+<span class="nc" id="L158">        poolFactory = poolFactory.addLocator(locatorIp, kvdbLocatorPort);</span>
+<span class="nc" id="L159">      } catch (IllegalArgumentException | IllegalStateException e) {</span>
+<span class="nc" id="L160">        LOGGER.error(e.toString());</span>
+<span class="nc" id="L161">        LOGGER.error(</span>
+<span class="nc" id="L162">            &quot;Fail to add locator = &quot; + locatorIp + &quot;:&quot; + Integer.toString(kvdbLocatorPort));</span>
+<span class="nc" id="L163">        return false;</span>
+<span class="nc" id="L164">      } catch (Exception e) {</span>
+<span class="nc" id="L165">        LOGGER.error(e.toString());</span>
+<span class="nc" id="L166">        LOGGER.error(</span>
+<span class="nc" id="L167">            &quot;Fail to add locator = &quot; + locatorIp + &quot;:&quot; + Integer.toString(kvdbLocatorPort));</span>
+<span class="nc" id="L168">        return false;</span>
+<span class="nc" id="L169">      }</span>
+<span class="nc" id="L170">    }</span>
+
+    try {
+<span class="nc" id="L173">      poolFactory.setFreeConnectionTimeout(geodeConfig.getFreeConnectionTimeout())</span>
+<span class="nc" id="L174">          .setIdleTimeout(geodeConfig.getIdleTimeout())</span>
+<span class="nc" id="L175">          .setLoadConditioningInterval(geodeConfig.getLoadConditioningInterval())</span>
+<span class="nc" id="L176">          .setMaxConnections(geodeConfig.getMaxConnections())</span>
+<span class="nc" id="L177">          .setMinConnections(geodeConfig.getMinConnections())</span>
+<span class="nc" id="L178">          .setPingInterval(geodeConfig.getPingInterval())</span>
+<span class="nc" id="L179">          .setPRSingleHopEnabled(geodeConfig.isPrSingleHopEnabled())</span>
+<span class="nc" id="L180">          .setReadTimeout(geodeConfig.getReadTimeout())</span>
+<span class="nc" id="L181">          .setRetryAttempts(geodeConfig.getRetryAttempts())</span>
+<span class="nc" id="L182">          .setSocketBufferSize(geodeConfig.getSocketBufferSize())</span>
+<span class="nc" id="L183">          .setSocketConnectTimeout(geodeConfig.getSocketConnectTimeout())</span>
+<span class="nc" id="L184">          .setSubscriptionEnabled(geodeConfig.isSubscriptionEnabled())</span>
+<span class="nc" id="L185">          .setThreadLocalConnections(geodeConfig.isThreadLocalConnections());</span>
+
+<span class="nc bnc" id="L187" title="All 2 branches missed.">      if (geodeConfig.isSubscriptionEnabled()) {</span>
+<span class="nc" id="L188">        poolFactory.setSubscriptionRedundancy(geodeConfig.getSubscriptionRedundancy());</span>
+      }
+
+<span class="nc" id="L191">      poolFactory.create(geodeConfig.getPoolName());</span>
+<span class="nc" id="L192">    } catch (IllegalStateException e) {</span>
+<span class="nc" id="L193">      LOGGER.error(e.toString());</span>
+<span class="nc" id="L194">      LOGGER.error(&quot;Fail to create pool = &quot; + geodeConfig.getPoolName());</span>
+<span class="nc" id="L195">      return false;</span>
+<span class="nc" id="L196">    } catch (Exception e) {</span>
+<span class="nc" id="L197">      LOGGER.error(e.toString());</span>
+<span class="nc" id="L198">      LOGGER.error(&quot;Fail to create pool = &quot; + geodeConfig.getPoolName());</span>
+<span class="nc" id="L199">      return false;</span>
+<span class="nc" id="L200">    }</span>
+
+<span class="nc" id="L202">    LOGGER.debug(&quot;Create Client Cache successfully&quot;);</span>
+
+<span class="nc" id="L204">    return true;</span>
+  }
+
+  public void clean() {
+<span class="nc" id="L208">    available = false;</span>
+
+    try {
+<span class="nc bnc" id="L211" title="All 2 branches missed.">      if (null != clientCache) {</span>
+<span class="nc" id="L212">        clientCache.close(true);</span>
+      }
+<span class="nc" id="L214">    } catch (CacheClosedException e) {</span>
+<span class="nc" id="L215">      LOGGER.error(e.toString());</span>
+<span class="nc" id="L216">    } catch (Exception e) {</span>
+<span class="nc" id="L217">      LOGGER.error(e.toString());</span>
+<span class="nc" id="L218">    }</span>
+
+<span class="nc" id="L220">    Map&lt;String, Pool&gt; pools = PoolManager.getAll();</span>
+<span class="nc bnc" id="L221" title="All 2 branches missed.">    for (Pool pool : pools.values()) {</span>
+<span class="nc" id="L222">      String name = pool.getName();</span>
+<span class="nc bnc" id="L223" title="All 2 branches missed.">      while (!pool.isDestroyed()) {</span>
+        try {
+<span class="nc" id="L225">          pool.destroy();</span>
+<span class="nc" id="L226">        } catch (Exception e) {</span>
+<span class="nc" id="L227">          LOGGER.error(e.toString());</span>
+<span class="nc" id="L228">          LOGGER.error(&quot;Fail to destroy pool = &quot; + name);</span>
+<span class="nc" id="L229">        }</span>
+
+<span class="nc bnc" id="L231" title="All 2 branches missed.">        if (pool.isDestroyed()) {</span>
+<span class="nc" id="L232">          break;</span>
+        }
+
+        try {
+<span class="nc" id="L236">          LOGGER.warn(&quot;Sleep one second and try to destroy again&quot;);</span>
+<span class="nc" id="L237">          Thread.sleep(1000);</span>
+<span class="nc" id="L238">        } catch (Exception e) {</span>
+<span class="nc" id="L239">          LOGGER.error(e.toString());</span>
+<span class="nc" id="L240">        }</span>
+      }
+<span class="nc" id="L242">    }</span>
+
+<span class="nc" id="L244">    reset();</span>
+<span class="nc" id="L245">  }</span>
+
+  private void reset() {
+<span class="nc" id="L248">    available = false;</span>
+<span class="nc" id="L249">    config = null;</span>
+<span class="nc" id="L250">    clientCache = null;</span>
+<span class="nc" id="L251">    clientRegions.clear();</span>
+<span class="nc" id="L252">    state = ClientCacheServiceInitState.getInstance();</span>
+<span class="nc" id="L253">  }</span>
+
+  public int compare(GeodeConfig geodeConfig) {
+<span class="nc" id="L256">    return config.compare(geodeConfig);</span>
+  }
+
+  public boolean isAvailable() {
+<span class="nc" id="L260">    return available;</span>
+  }
+
+  public CacheTransactionManager getCacheTransactionManager() {
+<span class="nc" id="L264">    return clientCache.getCacheTransactionManager();</span>
+  }
+
+  public Region getRegion(String regionName) {
+<span class="nc" id="L268">    return clientRegions.get(regionName).getRegion();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

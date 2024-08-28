@@ -1,0 +1,4 @@
+apiVersion: v1
+description: nrf common subchart 
+name: eric-nrf-common
+version: 0.0.0

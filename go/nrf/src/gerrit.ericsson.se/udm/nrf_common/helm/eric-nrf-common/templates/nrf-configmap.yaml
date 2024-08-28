@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: ConfigMap
+data:
+{{ (.Files.Glob "config/schema/nfProfile.json").AsConfig | indent 2 }}
+{{ (.Files.Glob "config/schema/patchDocument.json").AsConfig | indent 2 }}
+{{ (.Files.Glob "config/schema/subscriptionData.json").AsConfig | indent 2 }}
+{{ (.Files.Glob "config/schema/subscriptionPatch.json").AsConfig | indent 2 }}
+metadata:
+  name: {{ .Values.nrf_schema.jsonschema.configmap.name }}
+---
+apiVersion: v1
+kind: ConfigMap
+data:
+{{ (.Files.Glob "config/dbproxy/attributes.json").AsConfig | indent 2 }}
+metadata:
+  name: {{ .Values.global.dbproxy.configmap.name }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.global.db.multisite.configmap.name }}
+data:
+  eric-nrf-multiSite-conf.json: |-
+    {
+      "HeartbeatTime": 3,
+      "MonitorTime": 5,
+      "ExpireTime": 10,
+      "Enabled": {{ index .Values "eric-data-kvdb-ag" "multiSite" "enabled" }}
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.global.db.info.configmap.name }}
+data:
+  eric-nrf-dbinfo-conf.json: |
+    {
+        "locator-server-name": "eric-nrf-kvdb-ag-locator",
+        "region-names": "ericsson-nrf-nrfaddresses;ericsson-nrf-nfprofiles;ericsson-nrf-subscriptions;ericsson-nrf-groupprofiles;ericsson-nrf-imsiprefixprofiles;ericsson-nrf-nrfprofiles;ericsson-nrf-gpsiprofiles;ericsson-nrf-gpsiprefixprofiles;ericsson-nrf-cachenfprofiles;ericsson-nrf-multisiteinfo;ericsson-nrf-witnessinfo;ericsson-nrf-distributedlock",
+        "locator-server-port": {{ index .Values "eric-data-kvdb-ag" "servicePorts" "kvdbAgLocator" }}
+    }

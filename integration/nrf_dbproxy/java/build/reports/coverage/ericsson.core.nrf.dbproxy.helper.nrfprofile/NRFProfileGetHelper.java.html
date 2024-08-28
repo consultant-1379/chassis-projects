@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NRFProfileGetHelper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.helper.nrfprofile</a> &gt; <span class="el_source">NRFProfileGetHelper.java</span></div><h1>NRFProfileGetHelper.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.helper.nrfprofile;
+
+import com.google.protobuf.ByteString;
+import ericsson.core.nrf.dbproxy.clientcache.schema.NRFProfile;
+import ericsson.core.nrf.dbproxy.common.Code;
+import ericsson.core.nrf.dbproxy.common.ExecutionResult;
+import ericsson.core.nrf.dbproxy.common.FragmentResult;
+import ericsson.core.nrf.dbproxy.common.FragmentSessionManagement;
+import ericsson.core.nrf.dbproxy.common.FragmentUtil;
+import ericsson.core.nrf.dbproxy.common.SearchResult;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.GetResponse;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.NFMessage;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.nrfprofile.NRFProfileGetRequestProto.NRFProfileGetRequest;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.nrfprofile.NRFProfileGetRequestProto.NRFProfileGetRequest.DataCase;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.nrfprofile.NRFProfileGetResponseProto;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.nrfprofile.NRFProfileGetResponseProto.FragmentNRFProfileInfo;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.nrfprofile.NRFProfileGetResponseProto.NRFProfileGetResponse;
+import ericsson.core.nrf.dbproxy.grpc.nfmessage.nrfprofile.NRFProfileGetResponseProto.NRFProfileInfo;
+import ericsson.core.nrf.dbproxy.helper.Helper;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class NRFProfileGetHelper extends Helper {
+
+<span class="fc" id="L27">  private static final Logger LOGGER = LogManager.getLogger(NRFProfileGetHelper.class);</span>
+
+  private static NRFProfileGetHelper instance;
+
+  private NRFProfileGetHelper() {
+  }
+
+  public static synchronized NRFProfileGetHelper getInstance() {
+<span class="fc bfc" id="L35" title="All 2 branches covered.">    if (null == instance) {</span>
+<span class="fc" id="L36">      instance = new NRFProfileGetHelper();</span>
+    }
+<span class="fc" id="L38">    return instance;</span>
+  }
+
+  public int validate(NFMessage message) {
+
+<span class="fc" id="L43">    NRFProfileGetRequest request = message.getRequest().getGetRequest().getNrfProfileGetRequest();</span>
+<span class="fc" id="L44">    DataCase dataCase = request.getDataCase();</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">    if (dataCase == DataCase.NRF_INSTANCE_ID) {</span>
+<span class="fc" id="L46">      String nrfInstanceId = request.getNrfInstanceId();</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">      if (nrfInstanceId.isEmpty()) {</span>
+<span class="fc" id="L48">        LOGGER.error(&quot;Empty nrfInstanceId is set in NRFProfileGetRequest&quot;);</span>
+<span class="fc" id="L49">        return Code.EMPTY_NRF_INSTANCE_ID;</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">      } else if (nrfInstanceId.length() &gt; Code.KEY_MAX_LENGTH) {</span>
+<span class="fc" id="L51">        LOGGER.error(&quot;nrfInstanceId length {} is too large, max length is {}&quot;,</span>
+<span class="fc" id="L52">            nrfInstanceId.length(), Code.KEY_MAX_LENGTH);</span>
+<span class="fc" id="L53">        return Code.NRF_INSTANCE_ID_LENGTH_EXCEED_MAX;</span>
+      }
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">    } else if (dataCase == DataCase.FILTER) {</span>
+<span class="nc" id="L56">      LOGGER.trace(&quot;NRFProfile filter&quot;);</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">    } else if (dataCase == DataCase.FRAGMENT_SESSION_ID) {</span>
+
+<span class="fc" id="L59">      String fragmentSessionId = request.getFragmentSessionId();</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">      if (fragmentSessionId.isEmpty()) {</span>
+<span class="fc" id="L61">        LOGGER.error(&quot;Empty fragmentSessionId is set in NRFProfileGetRequest&quot;);</span>
+<span class="fc" id="L62">        return Code.EMPTY_FRAGMENT_SESSION_ID;</span>
+      }
+<span class="fc" id="L64">    } else {</span>
+<span class="fc" id="L65">      LOGGER.error(&quot;Empty NRFProfileGetRequest is received&quot;);</span>
+<span class="fc" id="L66">      return Code.NFMESSAGE_PROTOCOL_ERROR;</span>
+    }
+
+<span class="fc" id="L69">    return Code.VALID;</span>
+  }
+
+  public NFMessage createResponse(int code) {
+
+<span class="fc" id="L74">    NRFProfileGetResponse nrfProfileGetResponse = NRFProfileGetResponse.newBuilder()</span>
+<span class="fc" id="L75">        .setCode(code).build();</span>
+<span class="fc" id="L76">    GetResponse getResponse = GetResponse.newBuilder()</span>
+<span class="fc" id="L77">        .setNrfProfileGetResponse(nrfProfileGetResponse).build();</span>
+<span class="fc" id="L78">    return createNFMessage(getResponse);</span>
+  }
+
+  @Override
+  public NFMessage createResponse(ExecutionResult executionResult) {
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">    if (executionResult.getCode() != Code.SUCCESS) {</span>
+<span class="nc" id="L84">      return createResponse(executionResult.getCode());</span>
+    } else {
+<span class="fc" id="L86">      SearchResult searchResult = (SearchResult) executionResult;</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">      if (searchResult.isFragmented()) {</span>
+<span class="fc" id="L88">        FragmentResult fragmentResult = (FragmentResult) searchResult;</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        if (fragmentResult.getFragmentSessionID().isEmpty()) {</span>
+<span class="fc" id="L90">          int firstTransmitNum = FragmentUtil</span>
+<span class="fc" id="L91">              .transmitNumPerTime(fragmentResult, Code.NRFPROFILE_INDICE);</span>
+<span class="pc bpc" id="L92" title="1 of 2 branches missed.">          if (FragmentSessionManagement.getInstance().put(fragmentResult, firstTransmitNum)) {</span>
+<span class="fc" id="L93">            FragmentResult item = new FragmentResult();</span>
+<span class="fc" id="L94">            item.addAll(fragmentResult.getItems().subList(0, firstTransmitNum));</span>
+<span class="fc" id="L95">            item.setFragmentSessionID(fragmentResult.getFragmentSessionID());</span>
+<span class="fc" id="L96">            item.setTotalNumber(fragmentResult.getTotalNumber());</span>
+<span class="fc" id="L97">            item.setTransmittedNumber(fragmentResult.getTransmittedNumber());</span>
+<span class="fc" id="L98">            return createResponse(item);</span>
+          } else {
+<span class="nc" id="L100">            return createResponse(Code.INTERNAL_ERROR);</span>
+          }
+        } else {
+<span class="fc" id="L103">          List&lt;NRFProfileInfo&gt; nrfProfiles = getNRFProfileInfo(fragmentResult.getItems());</span>
+
+<span class="fc" id="L105">          String fragmentSessionId = fragmentResult.getFragmentSessionID();</span>
+<span class="fc" id="L106">          int totalNumber = fragmentResult.getTotalNumber();</span>
+<span class="fc" id="L107">          int transmittedNumber = fragmentResult.getTransmittedNumber();</span>
+<span class="fc" id="L108">          FragmentNRFProfileInfo fragmentInfo = FragmentNRFProfileInfo.newBuilder()</span>
+<span class="fc" id="L109">              .setFragmentSessionId(fragmentSessionId).setTotalNumber(totalNumber)</span>
+<span class="fc" id="L110">              .setTransmittedNumber(transmittedNumber).build();</span>
+
+          NRFProfileGetResponseProto.NRFProfileGetResponse nrfProfileGetResponse = NRFProfileGetResponse
+<span class="fc" id="L113">              .newBuilder().setCode(fragmentResult.getCode()).addAllNrfProfile(nrfProfiles)</span>
+<span class="fc" id="L114">              .setFragmentNrfprofileInfo(fragmentInfo).build();</span>
+<span class="fc" id="L115">          GetResponse getResponse = GetResponse.newBuilder()</span>
+<span class="fc" id="L116">              .setNrfProfileGetResponse(nrfProfileGetResponse).build();</span>
+<span class="fc" id="L117">          return createNFMessage(getResponse);</span>
+        }
+      } else {
+<span class="fc" id="L120">        int provFlag = 0;</span>
+<span class="pc bpc" id="L121" title="1 of 2 branches missed.">        if (searchResult.getItems().size() == 1) {</span>
+<span class="nc" id="L122">          provFlag = (int) getProvFlag(searchResult.getItems().get(0));</span>
+        }
+
+<span class="fc" id="L125">        List&lt;NRFProfileInfo&gt; nrfProfiles = getNRFProfileInfo(searchResult.getItems());</span>
+<span class="fc" id="L126">        NRFProfileGetResponse nrfProfileGetResponse = NRFProfileGetResponse.newBuilder()</span>
+<span class="fc" id="L127">            .setCode(searchResult.getCode()).addAllNrfProfile(nrfProfiles).setProvFlag(provFlag)</span>
+<span class="fc" id="L128">            .build();</span>
+<span class="fc" id="L129">        GetResponse getResponse = GetResponse.newBuilder()</span>
+<span class="fc" id="L130">            .setNrfProfileGetResponse(nrfProfileGetResponse).build();</span>
+<span class="fc" id="L131">        return createNFMessage(getResponse);</span>
+      }
+    }
+
+  }
+
+  private long getProvFlag(Object obj) {
+<span class="nc" id="L138">    NRFProfile nrfProfile = (NRFProfile) obj;</span>
+<span class="nc" id="L139">    long provFlag = nrfProfile.getProvFlag();</span>
+
+<span class="nc" id="L141">    return provFlag;</span>
+  }
+
+  private List&lt;NRFProfileInfo&gt; getNRFProfileInfo(List&lt;Object&gt; items) {
+
+<span class="fc" id="L146">    List&lt;NRFProfileInfo&gt; nrfProfiles = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">    for (Object obj : items) {</span>
+<span class="fc" id="L148">      NRFProfile nrfProfile = (NRFProfile) obj;</span>
+<span class="fc" id="L149">      ByteString data = nrfProfile.getRaw_data();</span>
+<span class="fc" id="L150">      long expiredTime = nrfProfile.getExpireTime();</span>
+
+<span class="fc" id="L152">      NRFProfileInfo item = NRFProfileInfo.newBuilder().setRawNrfProfile(data)</span>
+<span class="fc" id="L153">          .setExpiredTime(expiredTime).build();</span>
+<span class="fc" id="L154">      nrfProfiles.add(item);</span>
+<span class="fc" id="L155">    }</span>
+
+<span class="fc" id="L157">    return nrfProfiles;</span>
+  }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

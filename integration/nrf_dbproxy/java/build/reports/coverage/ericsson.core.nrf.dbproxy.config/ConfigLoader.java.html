@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ConfigLoader.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.config</a> &gt; <span class="el_source">ConfigLoader.java</span></div><h1>ConfigLoader.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.config;
+
+import ericsson.core.nrf.dbproxy.DBProxyServer;
+import ericsson.core.nrf.dbproxy.clientcache.ClientCacheService;
+import java.util.concurrent.Semaphore;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class ConfigLoader {
+
+<span class="nc" id="L11">  private static final Logger LOGGER = LogManager.getLogger(ConfigLoader.class);</span>
+  private static final long CONF_CHECKING_INTERVAL = 15000;
+  private static ConfigLoader instance;
+
+  static {
+<span class="nc" id="L16">    instance = null;</span>
+<span class="nc" id="L17">  }</span>
+
+<span class="nc" id="L19">  private final Semaphore available = new Semaphore(1, true);</span>
+  private long configuration_checking_interval;
+
+<span class="nc" id="L22">  private ConfigLoader() {</span>
+<span class="nc" id="L23">    this.configuration_checking_interval = CONF_CHECKING_INTERVAL;</span>
+<span class="nc" id="L24">  }</span>
+
+  public static synchronized ConfigLoader getInstance() {
+<span class="nc bnc" id="L27" title="All 2 branches missed.">    if (null == instance) {</span>
+<span class="nc" id="L28">      instance = new ConfigLoader();</span>
+    }
+<span class="nc" id="L30">    return instance;</span>
+  }
+
+  public void start() {
+<span class="nc bnc" id="L34" title="All 2 branches missed.">    while (DBProxyServer.getInstance().isRunning()) {</span>
+<span class="nc bnc" id="L35" title="All 2 branches missed.">      if (EnvironmentConfig.getInstance().initialize()</span>
+<span class="nc bnc" id="L36" title="All 2 branches missed.">          &amp;&amp; AttributeConfig.getInstance().load()) {</span>
+<span class="nc" id="L37">        break;</span>
+      }
+
+<span class="nc" id="L40">      EnvironmentConfig.getInstance().reset();</span>
+
+      try {
+<span class="nc" id="L43">        LOGGER.debug(&quot;Fail to read environment parameters, sleep &quot; + Long</span>
+<span class="nc" id="L44">            .toString(ConfigLoader.this.configuration_checking_interval / 1000)</span>
+            + &quot; seconds and try again&quot;);
+<span class="nc" id="L46">        Thread.sleep(ConfigLoader.this.configuration_checking_interval);</span>
+<span class="nc" id="L47">      } catch (Exception e) {</span>
+<span class="nc" id="L48">        LOGGER.error(e.toString());</span>
+<span class="nc" id="L49">      }</span>
+    }
+
+<span class="nc" id="L52">    Thread timer = new Thread(() -&gt; {</span>
+
+<span class="nc bnc" id="L54" title="All 2 branches missed.">      while (DBProxyServer.getInstance().isRunning()) {</span>
+<span class="nc" id="L55">        GeodeConfig geodeConfig = new GeodeConfig();</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">        if (geodeConfig.initialize()) {</span>
+<span class="nc" id="L57">          ConfigLoader.this.acquire();</span>
+<span class="nc" id="L58">          ClientCacheService.getInstance().apply(geodeConfig);</span>
+<span class="nc" id="L59">          ConfigLoader.this.release();</span>
+        }
+        try {
+<span class="nc" id="L62">          LOGGER.debug(</span>
+<span class="nc" id="L63">              &quot;Sleep &quot; + Long.toString(ConfigLoader.this.configuration_checking_interval / 1000)</span>
+                  + &quot; seconds and load geode configuration parameters again&quot;);
+<span class="nc" id="L65">          LOGGER.debug(</span>
+<span class="nc" id="L66">              &quot;KVDB locator ip is got, current ip list = &quot; + geodeConfig.getLocatorIPList()</span>
+<span class="nc" id="L67">                  .toString());</span>
+<span class="nc" id="L68">          Thread.sleep(ConfigLoader.this.configuration_checking_interval);</span>
+<span class="nc" id="L69">        } catch (Exception e) {</span>
+<span class="nc" id="L70">          LOGGER.error(e.toString());</span>
+<span class="nc" id="L71">        }</span>
+<span class="nc" id="L72">      }</span>
+<span class="nc" id="L73">    });</span>
+
+<span class="nc" id="L75">    timer.start();</span>
+<span class="nc" id="L76">  }</span>
+
+  private void acquire() {
+    try {
+<span class="nc" id="L80">      this.available.acquire();</span>
+<span class="nc" id="L81">    } catch (InterruptedException e) {</span>
+<span class="nc" id="L82">      LOGGER.error(e.toString());</span>
+<span class="nc" id="L83">      Thread.currentThread().interrupt();</span>
+<span class="nc" id="L84">    }</span>
+<span class="nc" id="L85">  }</span>
+
+  private void release() {
+<span class="nc" id="L88">    this.available.release();</span>
+<span class="nc" id="L89">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

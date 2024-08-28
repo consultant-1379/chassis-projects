@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "eric-nrf-common.name" . }}-kvdb-init
+  labels:
+    chart: {{ template "eric-nrf-common.chart" . }}
+{{- include "eric-nrf-common.joblabels" . | indent 4 }}
+  annotations:
+{{- include "eric-nrf-common.product-info" . | indent 4 }}
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      name: {{ template "eric-nrf-common.name" . }}-kvdb-init
+      labels:
+        chart: {{ template "eric-nrf-common.chart" . }}
+{{- include "eric-nrf-common.joblabels" . | indent 8 }}
+      annotations:
+        sidecar.istio.io/inject: "false"
+{{- include "eric-nrf-common.product-info" . | indent 8 }}
+    spec:
+      {{- if or .Values.global.registry.pullSecret .Values.imageCredentials.registry.pullSecret }}
+      imagePullSecrets:
+      - name: {{ default .Values.global.registry.pullSecret .Values.imageCredentials.registry.pullSecret }}
+      {{- end }}
+      restartPolicy: Never
+      containers:
+      - name: {{ template "eric-nrf-common.name" . }}-kvdb-init
+        image: {{ default .Values.global.registry.url .Values.imageCredentials.registry.url }}/{{ .Values.imageCredentials.repoPath }}/{{ .Values.images.nrfCommon.name }}:{{ .Values.images.nrfCommon.tag }}
+        imagePullPolicy: {{ default .Values.global.imageCredentials.pullPolicy .Values.imageCredentials.pullPolicy }}
+        command:
+        - java
+        args:
+        - -Djava.ext.dirs=/bin/lib
+        - com.ericsson.nrf.ConfigureGeode
+        env:
+        - name: TZ
+          value: {{ .Values.global.timezone }}
+        - name: ADMIN_MGR_SVC
+          value: "{{ index .Values "eric-data-kvdb-ag" "nameOverride" }}-admin-mgr"

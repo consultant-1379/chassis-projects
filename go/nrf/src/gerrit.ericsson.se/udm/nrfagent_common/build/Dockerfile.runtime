@@ -1,0 +1,6 @@
+FROM armdocker.rnd.ericsson.se/proj-ipworks/sles-tools:v1
+
+RUN  mkdir -p /etc/nrfagent/
+COPY build/etc /etc/nrfagent/
+
+ENTRYPOINT ["/etc/nrfagent/scripts/entrypoint.sh"]

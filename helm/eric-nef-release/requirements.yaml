@@ -1,0 +1,25 @@
+dependencies:
+  - name: eric-nef-common
+    version: 0.25.0
+    repository: "file://./subCharts/eric-nef-common"
+    condition: global.eric-nef-common.enabled
+
+  - name: eric-nef-trafficinfluence
+    version: 0.25.9-20190827112803+fc7f941 
+    repository: https://arm.lmera.ericsson.se/artifactory/proj-nef-dev-helm/
+    condition: global.eric-nef-trafficinfluence.enabled
+
+  - name: nef-evex-singleton
+    version: 0.1.75-20190905071513+29ff034
+    repository: https://arm.lmera.ericsson.se/artifactory/proj-nef-dev-helm/
+    condition: global.nef-evex-singleton.enabled
+
+  - name: eric-nef-bdt
+    version: 0.25.2-20190821091039+0148b70
+    repository: https://arm.lmera.ericsson.se/artifactory/proj-nef-dev-helm/
+    condition: global.eric-nef-bdt.enabled
+
+  - name: eric-nef-cp
+    version: 0.25.0-20190817055654+2f157e3
+    repository: https://arm.lmera.ericsson.se/artifactory/proj-nef-dev-helm/
+    condition: global.eric-nef-cp.enabled

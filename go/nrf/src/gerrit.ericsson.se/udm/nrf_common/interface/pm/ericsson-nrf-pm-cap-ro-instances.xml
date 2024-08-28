@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ericsson-nrf-pm-cap-ro-instances 0.1.0 -->
+<!-- modified: 2018-06-19 -->
+<data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+  <pm xmlns="urn:rdns:com:ericsson:oammodel:ericsson-pm">
+    <measurement-capabilities>
+      <max-no-of-jobs>0</max-no-of-jobs>
+      <job-start-stop-support>none</job-start-stop-support>
+      <measurement-jobs>
+        <max-no-of-measurement-jobs>0</max-no-of-measurement-jobs>
+        <final-rop>false</final-rop/>
+        <job-prioritization-support>false</job-prioritization-support/>
+        <max-no-of-measurements>0</max-no-of-measurements/>
+        <max-no-of-pm-files>1000</max-no-of-pm-files>
+        <aligned-reporting-period>true</aligned-reporting-period>
+        <file-location>/PerformanceManagementReportFiles/</file-location>
+        <file-rp-supported>false</file-rp-supported>
+        <supported-reporting-periods>one-min</supported-reporting-periods>
+        <supported-reporting-periods>five-min</supported-reporting-periods>
+        <supported-reporting-periods>fifteen-min</supported-reporting-periods>
+        <supported-reporting-periods>thirty-min</supported-reporting-periods>
+        <supported-reporting-periods>one-hour</supported-reporting-periods>
+        <supported-reporting-periods>twelve-hour</supported-reporting-periods>
+        <supported-reporting-periods>one-day</supported-reporting-periods>
+        <supported-meas-job-gps>one-min</supported-meas-job-gps>
+        <supported-meas-job-gps>five-min</supported-meas-job-gps>
+        <supported-meas-job-gps>fifteen-min</supported-meas-job-gps>
+        <supported-meas-job-gps>thirty-min</supported-meas-job-gps>
+        <supported-meas-job-gps>one-hour</supported-meas-job-gps>
+        <supported-meas-job-gps>twelve-hour</supported-meas-job-gps>
+        <supported-meas-job-gps>one-day</supported-meas-job-gps>
+        <supported-compression-types xmlns:typese="urn:rdns:com:ericsson:oammodel:ericsson-yang-types">typese:gzip</supported-compression-types>
+        <job-grouping-support>false</job-grouping-support>
+        <rop-filename-timestamp>local-with-utc-offset</rop-filename-timestamp>
+      </measurement-jobs>
+    </measurement-capabilities>
+  </pm>
+</data>

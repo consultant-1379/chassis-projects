@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FragmentUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">db_proxy</a> &gt; <a href="index.source.html" class="el_package">ericsson.core.nrf.dbproxy.common</a> &gt; <span class="el_source">FragmentUtil.java</span></div><h1>FragmentUtil.java</h1><pre class="source lang-java linenums">package ericsson.core.nrf.dbproxy.common;
+
+import ericsson.core.nrf.dbproxy.clientcache.schema.GpsiProfile;
+import ericsson.core.nrf.dbproxy.clientcache.schema.GroupProfile;
+import ericsson.core.nrf.dbproxy.clientcache.schema.NRFProfile;
+import ericsson.core.nrf.dbproxy.config.GeodeConfig;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.QueryResponse;
+import ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceOuterClass.TraceInfo;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.geode.cache.query.SelectResults;
+import org.apache.geode.pdx.JSONFormatter;
+import org.apache.geode.pdx.PdxInstance;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class FragmentUtil {
+
+<span class="fc" id="L19">  private static final Logger LOGGER = LogManager.getLogger(FragmentUtil.class);</span>
+
+<span class="nc" id="L21">  private FragmentUtil() {</span>
+<span class="nc" id="L22">    throw new IllegalStateException(&quot;Utility class&quot;);</span>
+  }
+
+  private static int getMaxTransmitFragmentSize() {
+<span class="fc" id="L26">    int maxTransmitSize = GeodeConfig.getMaxTransmitFragmentSize();</span>
+<span class="pc bpc" id="L27" title="3 of 4 branches missed.">    if (maxTransmitSize &lt; 1 * 500 * 1024 || maxTransmitSize &gt; 3 * 1024 * 1024) {</span>
+<span class="fc" id="L28">      maxTransmitSize = 3 * 1024 * 1024;</span>
+    }
+<span class="fc" id="L30">    return maxTransmitSize;</span>
+  }
+
+  public static boolean isNeedFragment(String regionName, SelectResults&lt;Object&gt; searchResults) {
+<span class="nc" id="L34">    int maxTransmitFragmentSize = getMaxTransmitFragmentSize();</span>
+<span class="nc" id="L35">    int totalTransmitSize = 0;</span>
+<span class="nc bnc" id="L36" title="All 5 branches missed.">    switch (regionName) {</span>
+      case Code.NFPROFILE_INDICE:
+<span class="nc bnc" id="L38" title="All 2 branches missed.">        for (Object object : searchResults) {</span>
+<span class="nc" id="L39">          PdxInstance pdxInstance = (PdxInstance) object;</span>
+<span class="nc" id="L40">          int profileSize = JSONFormatter.toJSON(pdxInstance).getBytes().length;</span>
+<span class="nc" id="L41">          totalTransmitSize += profileSize;</span>
+<span class="nc" id="L42">        }</span>
+<span class="nc" id="L43">        break;</span>
+      case Code.NRFPROFILE_INDICE:
+<span class="nc bnc" id="L45" title="All 2 branches missed.">        for (Object object : searchResults) {</span>
+<span class="nc" id="L46">          NRFProfile nrfProfile = (NRFProfile) object;</span>
+<span class="nc" id="L47">          int profileSize = nrfProfile.getRaw_data().size();</span>
+<span class="nc" id="L48">          totalTransmitSize += profileSize;</span>
+<span class="nc" id="L49">        }</span>
+<span class="nc" id="L50">        break;</span>
+      case Code.GROUPPROFILE_INDICE:
+<span class="nc bnc" id="L52" title="All 2 branches missed.">        for (Object object : searchResults) {</span>
+<span class="nc" id="L53">          GroupProfile groupProfile = (GroupProfile) object;</span>
+<span class="nc" id="L54">          int profileSize = groupProfile.getData().size();</span>
+<span class="nc" id="L55">          totalTransmitSize += profileSize;</span>
+<span class="nc" id="L56">        }</span>
+<span class="nc" id="L57">        break;</span>
+      case Code.GPSIPROFILE_INDICE:
+<span class="nc bnc" id="L59" title="All 2 branches missed.">        for (Object object : searchResults) {</span>
+<span class="nc" id="L60">          GpsiProfile gpsiProfile = (GpsiProfile) object;</span>
+<span class="nc" id="L61">          int profileSize = gpsiProfile.getData().size();</span>
+<span class="nc" id="L62">          totalTransmitSize += profileSize;</span>
+<span class="nc" id="L63">        }</span>
+<span class="nc" id="L64">        break;</span>
+      default:
+        break;
+    }
+<span class="nc" id="L68">    LOGGER.trace(&quot;total transmit size=&quot; + totalTransmitSize + &quot;,Max transmit message size=&quot;</span>
+        + maxTransmitFragmentSize);
+<span class="nc bnc" id="L70" title="All 2 branches missed.">    if (totalTransmitSize &gt; maxTransmitFragmentSize) {</span>
+<span class="nc" id="L71">      return true;</span>
+    }
+<span class="nc" id="L73">    return false;</span>
+  }
+
+  public static int transmitNumPerTime(FragmentResult fragmentResult, String regionName) {
+<span class="fc" id="L77">    int maxTransmitFragmentSize = getMaxTransmitFragmentSize();</span>
+<span class="fc" id="L78">    int transmitNum = 0;</span>
+<span class="fc" id="L79">    int transmitSize = 0;</span>
+<span class="fc" id="L80">    int transmittedNumber = fragmentResult.getTransmittedNumber();</span>
+<span class="fc" id="L81">    List&lt;Object&gt; restFragment = fragmentResult.getItems()</span>
+<span class="fc" id="L82">        .subList(transmittedNumber, fragmentResult.getItems().size());</span>
+<span class="pc bpc" id="L83" title="2 of 5 branches missed.">    switch (regionName) {</span>
+      case Code.NFPROFILE_INDICE:
+<span class="nc bnc" id="L85" title="All 2 branches missed.">        for (Object object : restFragment) {</span>
+<span class="nc" id="L86">          PdxInstance pdxInstance = (PdxInstance) object;</span>
+<span class="nc" id="L87">          int profileSize = JSONFormatter.toJSON(pdxInstance).getBytes().length;</span>
+<span class="nc" id="L88">          transmitSize += profileSize;</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">          if (transmitSize &gt; maxTransmitFragmentSize) {</span>
+<span class="nc" id="L90">            break;</span>
+          }
+<span class="nc" id="L92">          transmitNum++;</span>
+<span class="nc" id="L93">        }</span>
+<span class="nc" id="L94">        break;</span>
+      case Code.NRFPROFILE_INDICE:
+<span class="fc bfc" id="L96" title="All 2 branches covered.">        for (Object object : restFragment) {</span>
+<span class="fc" id="L97">          NRFProfile nrfProfile = (NRFProfile) object;</span>
+<span class="fc" id="L98">          int profileSize = nrfProfile.getRaw_data().size();</span>
+<span class="fc" id="L99">          transmitSize += profileSize;</span>
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">          if (transmitSize &gt; maxTransmitFragmentSize) {</span>
+<span class="nc" id="L101">            break;</span>
+          }
+<span class="fc" id="L103">          transmitNum++;</span>
+<span class="fc" id="L104">        }</span>
+<span class="fc" id="L105">        break;</span>
+      case Code.GROUPPROFILE_INDICE:
+<span class="fc bfc" id="L107" title="All 2 branches covered.">        for (Object object : restFragment) {</span>
+<span class="fc" id="L108">          GroupProfile groupProfile = (GroupProfile) object;</span>
+<span class="fc" id="L109">          int profileSize = groupProfile.getData().size();</span>
+<span class="fc" id="L110">          transmitSize += profileSize;</span>
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">          if (transmitSize &gt; maxTransmitFragmentSize) {</span>
+<span class="nc" id="L112">            break;</span>
+          }
+<span class="fc" id="L114">          transmitNum++;</span>
+<span class="fc" id="L115">        }</span>
+<span class="fc" id="L116">        break;</span>
+      case Code.GPSIPROFILE_INDICE:
+<span class="fc bfc" id="L118" title="All 2 branches covered.">        for (Object object : restFragment) {</span>
+<span class="fc" id="L119">          GpsiProfile gpsiProfile = (GpsiProfile) object;</span>
+<span class="fc" id="L120">          int profileSize = gpsiProfile.getData().size();</span>
+<span class="fc" id="L121">          transmitSize += profileSize;</span>
+<span class="pc bpc" id="L122" title="1 of 2 branches missed.">          if (transmitSize &gt; maxTransmitFragmentSize) {</span>
+<span class="nc" id="L123">            break;</span>
+          }
+<span class="fc" id="L125">          transmitNum++;</span>
+<span class="fc" id="L126">        }</span>
+<span class="fc" id="L127">        break;</span>
+      default:
+        break;
+    }
+<span class="fc" id="L131">    LOGGER.trace(&quot;Transmit profile num =&quot; + transmitNum);</span>
+<span class="fc" id="L132">    return transmitNum;</span>
+  }
+
+  public static boolean isNeedFragment(List&lt;String&gt; response) {
+<span class="fc" id="L136">    int maxTransmitFragmentSize = getMaxTransmitFragmentSize();</span>
+<span class="fc" id="L137">    int totalTransmitSize = 0;</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">    for (int i = 0; i &lt; response.size(); i++) {</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">      if (totalTransmitSize &gt; maxTransmitFragmentSize) {</span>
+<span class="fc" id="L140">        return true;</span>
+      }
+<span class="fc" id="L142">      totalTransmitSize += response.get(i).length();</span>
+    }
+<span class="pc bpc" id="L144" title="1 of 2 branches missed.">    if (totalTransmitSize &gt; maxTransmitFragmentSize) {</span>
+<span class="nc" id="L145">      return true;</span>
+    }
+<span class="fc" id="L147">    return false;</span>
+  }
+
+  public static List&lt;QueryResponse&gt; getFragmentResponse(int code, boolean traceEnabled,
+      TraceInfo traceInfo, List&lt;String&gt; response) {
+<span class="fc" id="L152">    int maxTransmitFragmentSize = getMaxTransmitFragmentSize();</span>
+<span class="fc" id="L153">    int transmitStart = 0;</span>
+<span class="fc" id="L154">    int transmitNum = 0;</span>
+<span class="fc" id="L155">    int transmitMsgSize = 0;</span>
+<span class="fc" id="L156">    List&lt;QueryResponse&gt; responseList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L157">    List&lt;String&gt; fragmentList = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">    for (int i = 0; i &lt; response.size(); i++) {</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">      if (transmitMsgSize &gt;= maxTransmitFragmentSize) {</span>
+<span class="fc" id="L160">        fragmentList.addAll(response.subList(transmitStart, transmitStart + transmitNum - 1));</span>
+        QueryResponse queryResponse;
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">        if (traceEnabled) {</span>
+<span class="nc" id="L163">          queryResponse = QueryResponse.newBuilder().setCode(code).addAllValue(fragmentList)</span>
+<span class="nc" id="L164">              .setTraceInfo(traceInfo).build();</span>
+        } else {
+<span class="fc" id="L166">          queryResponse = QueryResponse.newBuilder().setCode(code).addAllValue(fragmentList)</span>
+<span class="fc" id="L167">              .build();</span>
+        }
+<span class="fc" id="L169">        responseList.add(queryResponse);</span>
+<span class="fc" id="L170">        transmitStart = i - 1;</span>
+<span class="fc" id="L171">        transmitNum = 1;</span>
+<span class="fc" id="L172">        transmitMsgSize = response.get(i - 1).length();</span>
+<span class="fc" id="L173">        fragmentList.clear();</span>
+      }
+<span class="fc" id="L175">      transmitNum++;</span>
+<span class="fc" id="L176">      transmitMsgSize += response.get(i).length();</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">      if (i == response.size() - 1) {</span>
+<span class="fc" id="L178">        fragmentList.addAll(response.subList(transmitStart, response.size()));</span>
+        QueryResponse queryResponse;
+<span class="pc bpc" id="L180" title="1 of 2 branches missed.">        if (traceEnabled) {</span>
+<span class="nc" id="L181">          queryResponse = QueryResponse.newBuilder().setCode(code).addAllValue(fragmentList)</span>
+<span class="nc" id="L182">              .setTraceInfo(traceInfo).build();</span>
+        } else {
+<span class="fc" id="L184">          queryResponse = QueryResponse.newBuilder().setCode(code).addAllValue(fragmentList)</span>
+<span class="fc" id="L185">              .build();</span>
+        }
+<span class="fc" id="L187">        responseList.add(queryResponse);</span>
+      }
+    }
+<span class="fc" id="L190">    return responseList;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

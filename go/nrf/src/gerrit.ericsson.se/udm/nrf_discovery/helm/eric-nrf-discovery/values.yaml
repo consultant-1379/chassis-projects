@@ -1,0 +1,113 @@
+global:
+  serviceType: ClusterIP
+
+  sidecarInjected: "false"
+
+  imageCredentials:
+    repository: armdocker.rnd.ericsson.se/proj-ipworks
+
+  cmproxy:
+    kafka_connection: "eric-data-message-bus-kf:9092"
+    cmm_service: "http://eric-cm-mediator:5003/cm/api/v1.1"
+    cmm_config_schema_prefix_name: "ericsson-nrf"
+    cmm_config_module_name: "ericsson-nrf:nrf"
+    cmm_config_topic: "nrf-agent-cmproxy"
+
+  db:
+    info:
+      configmap:
+        name: "eric-nrf-dbinfo-conf"
+        mountpath: "/etc"
+    multisite:
+      configmap:
+        name: "eric-nrf-multisite-conf"
+        mountpath: "/etc"
+
+  dbproxy:
+    configmap:
+      name: "eric-nrf-dbproxy-attributes"
+      mountpath: "/etc"
+
+fmproxy:
+  faultMappingFileName: "eric-nrf-nnrf-disc.json"
+
+hpa:
+  enabled: true
+  maxReplicas: 8
+  targetCPUUtilizationPercentage: 70
+
+disc:
+  service:
+    name: eric-nrf-discovery
+    metrics_port: 3003
+    work_mode: "nrf_disc"
+    cm_check_enable: "'true'"
+
+  image:
+    name: nrfdisc
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  replicacount: 2
+
+  args:
+    maxstreams: "'600'"
+    test_maxstreams: "'8000'"
+
+  liveness:
+    initialDelay: 120
+    period: 60
+
+  readiness:
+    initialDelay: 3
+    period: 1
+    successThreshold: 1
+    failureThreshold: 2
+
+  cmproxy:
+    messagebus_topic_name: "nrf-disc-service"
+  internalConf:
+    configmap:
+      name: "eric-nrf-discovery-internal-conf"
+      mountpath: "/etc/eric-nrf-disc-internal-conf"
+      fileName: "internalConf.json"
+      
+  resources:
+    requests:
+      memory: 4Gi
+      cpu: 3000m
+    limits:
+      memory: 6Gi
+      cpu: 6000m	
+namespace:
+  name_istio: istio-system
+
+dbproxy:
+  service:
+    name: "eric-nrf-disc-dbproxy"
+    port: 50051
+
+  image:
+    name: nrfdbproxy
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  cmproxy:
+    cm_dbproxy_config: "db_proxy_config.json"
+    volume:
+      name: "eric-nrf-disc-dbproxy-config"
+      mountpath: "/etc"
+
+  configmap:
+    name: "eric-nrf-disc-dbproxy-configmap"
+    mountpath: "/etc"
+
+  resources:
+    requests:
+      memory: 2Gi
+      cpu: 3000m
+    limits:
+      memory: 6Gi
+      cpu: 8000m
+
+  gc_debug: "false"

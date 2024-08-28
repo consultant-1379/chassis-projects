@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="off" monitorInterval="5">
+  <Properties>
+    <Property name="NETWORK_FUNCTION">NRF</Property>
+    <Property name="SERVICE_ID">Discovery</Property>
+  </Properties>
+  <appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout>
+        <pattern>{"timestamp":"%d{yyyy-MM-dd'T'HH:mm:ssZZ}","level":"%p","networkFunction":"${NETWORK_FUNCTION}","serviceId":"${SERVICE_ID}","message":"%m","stackinfo":"%F:%L"}%n</pattern>
+      </PatternLayout>
+    </Console>
+  </appenders>
+  <loggers>
+    <logger name="ericsson.core.nrf.dbproxy.DBProxyServer" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+
+    <logger name="ericsson.core.nrf.dbproxy.grpc.NFDataManagementServiceImpl" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+
+    <logger name="ericsson.core.nrf.dbproxy.executor.Executor" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.executor.ExecutorManager" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.executor.groupprofile.GroupProfileDeleteExecutor" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.executor.groupprofile.GroupProfileGetExecutor" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.executor.groupprofile.GroupProfilePutExecutor" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.executor.gpsiprofile.GpsiProfileDeleteExecutor" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.executor.gpsiprofile.GpsiProfileGetExecutor" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.executor.gpsiprofile.GpsiProfilePutExecutor" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.executor.common.ImsiPrefixProfilesUtil" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.executor.imsiprefixprofile.ImsiprefixProfileGetExecutor" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.executor.common.GpsiPrefixProfilesUtil" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.executor.gpsiprefixprofile.GpsiprefixProfileGetExecutor" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.executor.nfprofile.NFProfileDeleteExecutor" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.executor.nfprofile.NFProfileGetExecutor" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.executor.nfprofile.NFProfilePutExecutor" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.executor.cachenfprofile.CacheNFProfileGetExecutor" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.executor.cachenfprofile.CacheNFProfilePutExecutor" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.executor.nrfaddress.NRFAddressDeleteExecutor" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.executor.nrfaddress.NRFAddressGetExecutor" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.executor.nrfaddress.NRFAddressPutExecutor" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.executor.subscription.SubscriptionDeleteExecutor" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.executor.subscription.SubscriptionGetExecutor" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.executor.subscription.SubscriptionPutExecutor" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.executor.nrfprofile.NRFProfileDeleteExecutor" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.executor.nrfprofile.NRFProfileGetExecutor" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.executor.nrfprofile.NRFProfilePutExecutor" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.executor.protocolerror.ProtocolErrorExecutor" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+
+    <logger name="ericsson.core.nrf.dbproxy.config.ConfigLoader" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.config.GeodeConfig" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.config.AttributeConfig" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.config.EnvironmentConfig" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+
+    <logger name="ericsson.core.nrf.dbproxy.clientcache.ClientCacheService" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.clientcache.region.ClientRegion" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.clientcache.state.ClientCacheServiceInitState" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.clientcache.state.ClientCacheServiceCreatedState" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+
+    <logger name="ericsson.core.nrf.dbproxy.helper.protocolerror.ProtocolErrorHelper" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.helper.groupprofile.GroupProfileDelHelper" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.helper.groupprofile.GroupProfilePutHelper" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.helper.groupprofile.GroupProfileGetHelper" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.helper.gpsiprofile.GpsiProfileDelHelper" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.helper.gpsiprofile.GpsiProfilePutHelper" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.helper.gpsiprofile.GpsiProfileGetHelper" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.helper.imsiprefixprofile.ImsiprefixProfileGetHelper" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.helper.gpsiprefixprofile.GpsiprefixProfileGetHelper" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.helper.nfprofile.NFProfileDelHelper" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.helper.nfprofile.NFProfilePutHelper" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.helper.nfprofile.NFProfileGetHelper" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.helper.cachenfprofile.CacheNFProfilePutHelper" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.helper.cachenfprofile.CacheNFProfileGetHelper" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.helper.nrfaddress.NRFAddressDelHelper" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.helper.nrfaddress.NRFAddressPutHelper" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.helper.nrfaddress.NRFAddressGetHelper" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.helper.subscription.SubscriptionDelHelper" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.helper.subscription.SubscriptionPutHelper" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.helper.subscription.SubscriptionGetHelper" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.helper.nrfprofile.NRFProfileDelHelper" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.helper.nrfprofile.NRFProfilePutHelper" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.helper.nrfprofile.NRFProfileGetHelper" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.common.FragmentSessionManagement" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.common.FragmentUtil" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.functionservice.RemoteCacheClearThread" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="ericsson.core.nrf.dbproxy.functionservice.RemoteCacheMonitorThread" level="warn" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+
+    <logger name="org.apache.geode" level="off" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="org.apache.geode.internal.cache.GemFireCacheImpl" level="off" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="org.apache.geode.cache.client.internal.PoolImpl" level="off" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="org.apache.geode.internal.cache.LocalRegion" level="off" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="org.apache.geode.cache.client.internal.pooling.ConnectionManagerImpl" level="off" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="org.apache.geode.cache.client.internal.AutoConnectionSourceImpl" level="off" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <logger name="org.apache.geode.distributed.internal.tcpserver.TcpClient" level="off" additivity="false">
+      <appender-ref ref="Console"/>
+    </logger>
+    <root level="error">
+      <appender-ref ref="Console"/>
+    </root>
+  </loggers>
+</Configuration>

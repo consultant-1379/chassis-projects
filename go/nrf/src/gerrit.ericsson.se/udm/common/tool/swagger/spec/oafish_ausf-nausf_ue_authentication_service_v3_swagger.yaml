@@ -1,0 +1,239 @@
+openapi: 3.0.0
+info:
+  version: "v3"
+  title: AUSF Nausf_UEAuthentication Service
+  description: AUSF Nausf_UEAuthentication Service
+servers:
+  - description: SwaggerHub API Auto Mocking
+    url: 'https://virtserver.swaggerhub.com/EriCT4/nausf-ueauth/v1'
+paths:
+  /ue-authentications:
+    post:
+      summary: Authentication Initiation Request 
+      operationId: AuthenticationId
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthenticationInfo'
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UEAuthenticationCtx'
+  /ue-authentications/{authCtxId}/5g-aka-confirmation:
+    put:
+      summary: Authentication Confirmation
+      operationId: AuthenticationId
+      parameters:
+        - name: authCtxId
+          in: path
+          description: authCtxId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmationData'
+      responses:
+        '200':
+          description: Ok
+  /ue-authentications/{authCtxId}/eap-session:
+    post:
+      summary: Authentication eap session
+      operationId: AuthenticationId
+      parameters:
+        - name: authCtxId
+          in: path
+          description: authCtxId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EapSession'
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EapSession'
+components:
+  schemas:
+    AuthType:
+      type: object
+      properties:
+        authType:
+          type: string
+          enum:
+            - 5G-AKA
+            #- 5G_AKA_CONFIRMATION
+            - EAP-AKA-PRIME
+      required:
+        - authType
+      #discriminator:
+        #propertyName: authType
+#    AccessType:
+#      type: string
+#      description: access type
+#      enum:
+#        - 3GPP_ACCESS
+#        - NON_3GPP_ACCESS
+    UEType:
+      type: string
+      description: UE type
+      enum:
+        - SUPI
+        - SUCI
+    UEId:
+      type: object
+      properties:
+        UEType:
+          $ref: '#/components/schemas/UEType'
+        UEIdentity:
+          $ref: '#/components/schemas/UEIdentity'
+      required:
+      - UEType
+      - UEIdentity
+    EapPayload:
+      type: string
+      format: byte
+    EapAkaPrimeData:
+      type: object
+      properties:
+        linkToConfirm:
+          $ref: '#/components/schemas/LinkForNotification'
+        eapPayload:
+          $ref: '#/components/schemas/EapPayload'
+      required:
+      - linkToConfirm
+      - eapPayload
+    5gAkaData:
+      type: object
+      properties:
+        linkToConfirm:
+          $ref: '#/components/schemas/LinkForNotification'
+        av5GAka:
+          $ref: '#/components/schemas/Av5GAka'
+      required:
+      - linkToConfirm
+      - av5GAka
+    Av5GAka:
+      #type: array
+      #items:
+      type: object
+      properties:
+        rand:
+          $ref: '#/components/schemas/Rand'
+        hxresstar:
+          $ref: '#/components/schemas/Hxresstar'
+        autn:
+          $ref: '#/components/schemas/Autn'
+        kseaf:
+          $ref: '#/components/schemas/Kseaf'
+      required:
+      - rand
+      - hxresstar
+      - autn
+      - kseaf
+    ResynchronizationInfo:
+      type: object
+      properties:
+        rand:
+          $ref: '#/components/schemas/Rand'
+        auts:
+          $ref: '#/components/schemas/Auts'
+      required:
+      - rand
+      - auts
+    UEAuthenticationCtx:
+      type: object
+      properties:
+        UEId:
+          $ref: '#/components/schemas/UEId'
+        authenticationMethod:
+          $ref: '#/components/schemas/AuthType'
+        5gAkaData:
+          $ref: '#/components/schemas/5gAkaData'
+        eapAkaPrimeData:
+          $ref: '#/components/schemas/EapAkaPrimeData'
+        servingNetworkName:
+          $ref: '#/components/schemas/ServingNetworkName'
+        #accessType:
+          #$ref: '#/components/schemas/AccessType'
+      required:
+      - UEId
+      - authenticationMethod
+    AuthenticationInfo:
+      type: object
+      properties:
+        UEId:
+          $ref: '#/components/schemas/UEId'
+        servingNetworkName:
+          $ref: '#/components/schemas/ServingNetworkName'
+        #accessType:
+          #$ref: '#/components/schemas/AccessType'
+        #numberOfRequestedAVs:
+          #type: integer
+        reSynchronizationInfo:
+          $ref: '#/components/schemas/ResynchronizationInfo'
+      required:
+      - UEId
+      - servingNetworkName
+      - accessType 
+    ConfirmationData:
+      type: object
+      properties:
+        resstar:
+          $ref: '#/components/schemas/ResStar'
+      required:
+      - resstar
+    EapSession:
+      type: object
+      properties:
+        eapPayload:
+          $ref: '#/components/schemas/EapPayload'
+        linkForNotification:  
+          $ref: '#/components/schemas/LinkForNotification'
+        kseaf:
+          $ref: '#/components/schemas/Kseaf'
+        UEId:
+          $ref: '#/components/schemas/UEId'
+      required:
+      - eapPayload
+
+    UEIdentity:
+      type: string
+      pattern: "(imsi-[0-9]{5,15})"
+    LinkForNotification:
+      type: string    
+    ServingNetworkName:
+      type: string
+    Autn:
+      type: string
+      pattern: "[A-Fa-f0-9]{32}"    
+    Auts:
+      type: string
+      pattern: "[A-Fa-f0-9]{28}"
+    Hxresstar:
+      type: string
+      pattern: "[A-Fa-f0-9]{32}"
+    Kseaf:
+      type: string
+      pattern: "[A-Fa-f0-9]{64}"
+    Rand:
+      type: string
+      pattern: "[A-Fa-f0-9]{32}"
+    ResStar:
+      type: string
+      pattern: "[A-Fa-f0-9]{32}"      
+externalDocs:
+  description: Documentation
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.509/29509-040.zip'

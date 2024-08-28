@@ -1,0 +1,516 @@
+{
+   "data": {
+      "ericsson-pm:pm": {      
+         "job": [
+             {
+               "name": "eric-nrf-job-1min",
+               "type": "measurement-job",
+               "reporting-period": "one-min",
+               "granularity-period": "one-min",
+               "control": "start-stop",
+               "compression-type": "gzip",
+               "measurement-reader": [
+                  {
+                     "name": "eric-nrf-nnrf-nfm-job",
+                     "group-ref": "eric-nrf-nnrf-nfm-group",
+                     "target": []
+                  },
+                  {
+                     "name": "eric-nrf-nnrf-disc-job",
+                     "group-ref": "eric-nrf-nnrf-disc-group",
+                     "target": []
+                  },
+                  {
+                     "name": "eric-nrf-nnrf-prov-job",
+                     "group-ref": "eric-nrf-nnrf-prov-group",
+                     "target": []
+                  }
+               ],
+               "requested-job-state": "active"
+             },
+             {
+               "name": "eric-nrf-job",
+               "type": "measurement-job",
+               "reporting-period": "fifteen-min",
+               "granularity-period": "fifteen-min",
+               "control": "start-stop",
+               "compression-type": "gzip",
+               "measurement-reader": [
+                  {
+                     "name": "eric-nrf-nnrf-nfm-job",
+                     "group-ref": "eric-nrf-nnrf-nfm-group",
+                     "target": []
+                  },
+                  {
+                     "name": "eric-nrf-nnrf-disc-job",
+                     "group-ref": "eric-nrf-nnrf-disc-group",
+                     "target": []
+                  },
+                  {
+                     "name": "eric-nrf-nnrf-prov-job",
+                     "group-ref": "eric-nrf-nnrf-prov-group",
+                     "target": []
+                  }
+               ],
+               "requested-job-state": "active"
+             },
+             {
+               "name": "eric-nrf-nnrf-nfm-threshold-job",
+               "type": "threshold-job",
+               "granularity-period": "one-min",
+               "control": "start-stop",
+               "measurement-reader": [
+                  {
+                     "name": "eric-nrf-nnrf-nfm-unsuccessful-responses-recv-timeout-mr",
+                     "group-ref": "eric-nrf-nnrf-nfm-group",
+                     "measurement-type-ref": "eric-nrf-nnrf-nfm-unsuccessful-responses-recv-timeout",
+                     "target": [],
+                     "threshold-monitoring": [ 
+                        {
+                           "name": "eric-nrf-nnrf-nfm-unsuccessful-responses-recv-timeout-tm",
+                           "threshold-high": "4",
+                           "threshold-low": "0",
+                           "threshold-severity": "major"
+                        }
+                     ]
+                  }
+               ],
+               "requested-job-state": "active"
+             },
+             {
+               "name": "eric-nrf-nnrf-disc-threshold-job",
+               "type": "threshold-job",
+               "granularity-period": "one-min",
+               "control": "start-stop",
+               "measurement-reader": [
+                  {
+                     "name": "eric-nrf-nnrf-disc-unsuccessful-responses-recv-timeout-mr",
+                     "group-ref": "eric-nrf-nnrf-disc-group",
+                     "measurement-type-ref": "eric-nrf-nnrf-disc-unsuccessful-responses-recv-timeout",
+                     "target": [],
+                     "threshold-monitoring": [ 
+                        {
+                           "name": "eric-nrf-nnrf-disc-unsuccessful-responses-recv-timeout-tm",
+                           "threshold-high": "4",
+                           "threshold-low": "0",
+                           "threshold-severity": "major"
+                        }
+                     ]
+                  }
+               ],
+               "requested-job-state": "active"
+             }
+         ],
+         "group": [
+            {
+              "name": "eric-nrf-nnrf-nfm-group",
+              "generation": "5GS",
+              "validity": true,
+              "description": "NRF management counter group",
+              "version": "0.1.7",
+              "measurement-type": [
+                 {
+                   "id": "eric-nrf-nnrf-nfm-requests-recv",
+                   "size": 8,
+                   "collection-method": "cc",
+                   "description": "Total number of OpenAPI requests received by NRF management service",
+                   "condition": "Incremented when OpenAPI requests are received by NRF management service",
+                   "aggregation": "sum",
+                   "measurement-status": "used",
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": true,
+                   "internal-metric-name": "eric_nrf_nnrf_nfm_requests_recv",
+                   "internal-instrumentation-label": {
+                      "resource": "",
+                      "operation": "",
+                      "remote_endpoint": ""
+                   },
+                   "internal-target-pattern": "resource=[resource],operation=[operation],remote-endpoint=[remote_endpoint]",
+                   "internal-metric-type": "Counter"
+                 },
+                 {
+                   "id": "eric-nrf-nnrf-nfm-successful-responses-sent",
+                   "size": 8,
+                   "collection-method": "cc",
+                   "description": "Total number of successful responses sent by NRF management service",
+                   "condition": "Incremented when requests are successfully handled and replied by NRF management service",
+                   "aggregation": "sum",
+                   "measurement-status": "used",
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": true,
+                   "internal-metric-name": "eric_nrf_nnrf_nfm_successful_responses_sent",
+                   "internal-instrumentation-label": {
+                      "resource": "",
+                      "operation": "",
+                      "remote_endpoint": "",
+                      "status_code": ""
+                   },
+                   "internal-target-pattern": "resource=[resource],operation=[operation],remote-endpoint=[remote_endpoint],status-code=[status_code]",
+                   "internal-metric-type": "Counter"
+                 },
+                 {
+                   "id": "eric-nrf-nnrf-nfm-unsuccessful-responses-sent",
+                   "size": 8,
+                   "collection-method": "cc",
+                   "description": "Total number of failure responses handled by NRF management service",
+                   "condition": "Incremented when requests are not successfully replied by NRF management service",
+                   "aggregation": "sum",
+                   "measurement-status": "used",
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": true,
+                   "internal-metric-name": "eric_nrf_nnrf_nfm_unsuccessful_responses_sent",
+                   "internal-instrumentation-label": {
+                      "resource": "",
+                      "operation": "",
+                      "remote_endpoint": "",
+                      "status_code": "",
+                      "detailed_info": ""
+                   },
+                   "internal-target-pattern": "resource=[resource],operation=[operation],remote-endpoint=[remote_endpoint],status-code=[status_code],detailed-info=[detailed_info]",
+                   "internal-metric-type": "Counter"
+                 },
+                 {
+                   "id": "eric-nrf-nnrf-nfm-requests-sent",
+                   "size": 8,
+                   "collection-method": "cc",
+                   "description": "Total number of requests sent by NRF management service",
+                   "condition": "Incremented when a request is sent by NRF management service",
+                   "aggregation": "sum",
+                   "measurement-status": "used",
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": true,
+                   "internal-metric-name": "eric_nrf_nnrf_nfm_requests_sent",
+                   "internal-instrumentation-label": {
+                      "resource": "",
+                      "operation": "",
+                      "remote_endpoint": ""
+                   },
+                   "internal-target-pattern": "resource=[resource],operation=[operation],remote-endpoint=[remote_endpoint]",
+                   "internal-metric-type": "Counter"
+                 },
+                 {
+                   "id": "eric-nrf-nnrf-nfm-successful-responses-recv",
+                   "size": 8,
+                   "collection-method": "cc",
+                   "description": "Total number of successful responses received by NRF management service",
+                   "condition": "Incremented when a successful response is received by NRF management service",
+                   "aggregation": "sum",
+                   "measurement-status": "used",
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": true,
+                   "internal-metric-name": "eric_nrf_nnrf_nfm_successful_responses_recv",
+                   "internal-instrumentation-label": {
+                      "resource": "",
+                      "operation": "",
+                      "remote_endpoint": "",
+                      "status_code": ""
+                   },
+                   "internal-target-pattern": "resource=[resource],operation=[operation],remote-endpoint=[remote_endpoint],status-code=[status_code]",
+                   "internal-metric-type": "Counter"
+                 },
+                 {
+                   "id": "eric-nrf-nnrf-nfm-unsuccessful-responses-recv",
+                   "size": 8,
+                   "collection-method": "cc",
+                   "description": "Total number of failure responses received by NRF management service",
+                   "condition": "Incremented when an unsuccessful response is received by NRF management service or request timeout",
+                   "aggregation": "sum",
+                   "measurement-status": "used",
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": true,
+                   "internal-metric-name": "eric_nrf_nnrf_nfm_unsuccessful_responses_recv",
+                   "internal-instrumentation-label": {
+                      "resource": "",
+                      "operation": "",
+                      "remote_endpoint": "",
+                      "status_code": ""
+                   },
+                   "internal-target-pattern": "resource=[resource],operation=[operation],remote-endpoint=[remote_endpoint],status-code=[status_code]",
+                   "internal-metric-type": "Counter"
+                 },
+                 {
+                   "id": "eric-nrf-nnrf-nfm-unsuccessful-responses-recv-timeout",
+                   "size": 8,
+                   "collection-method": "cc",
+                   "description": "Total number of timeout requests sent by NRF management service",
+                   "condition": "Incremented when a request sent by NRF management service is timeout",
+                   "aggregation": "sum",
+                   "measurement-status": "used", 
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": true,
+                   "service-name": "eric-nrf-nnrf-nfm",
+                   "fault-name": "nrfMngtRemoteTimeOut",
+                   "fault-description": "NRF eric-nrf-nnrf-nfm Service, response timeout exceed threshold for certain remote endpoint",
+                   "internal-metric-name": "eric_nrf_nnrf_nfm_unsuccessful_responses_recv",
+                   "internal-instrumentation-label": {
+                      "remote_endpoint": "",
+                      "status_code": "timeout"
+                   },
+                   "internal-target-pattern": "remote-endpoint=[remote_endpoint]",
+                   "internal-metric-type": "Counter"
+                 },
+                 {
+                   "id": "eric-nrf-nf-profiles",
+                   "size": 8,
+                   "collection-method": "gauge",
+                   "description": "Total number of NF profiles per specific status in NRF",
+                   "condition": "Set every 30 seconds in NRF management service",
+                   "aggregation": "last-update",
+                   "measurement-status": "used",
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": false,
+                   "internal-metric-name": "eric_nrf_nf_profiles",
+                   "internal-instrumentation-label": {
+                      "remote_endpoint": "",
+                      "detailed_info": ""
+                   },
+                   "internal-target-pattern": "remote-endpoint=[remote_endpoint],detailed-info=[detailed_info]",
+                   "internal-metric-type": "Gauge"
+                 }
+              ]
+            },
+            {
+              "name": "eric-nrf-nnrf-disc-group",
+              "generation": "5GS",
+              "validity": true,
+              "description": "NRF discovery counter group",
+              "version": "0.1.7",
+              "measurement-type": [
+                 {
+                   "id": "eric-nrf-nnrf-disc-requests-recv",
+                   "size": 8,
+                   "collection-method": "cc",
+                   "description": "Total number of OpenAPI requests received by NRF discovery service",
+                   "condition": "Incremented when OpenAPI requests are received by NRF discovery service",
+                   "aggregation": "sum",
+                   "measurement-status": "used",
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": true,
+                   "internal-metric-name": "eric_nrf_nnrf_disc_requests_recv",
+                   "internal-instrumentation-label": {
+                      "resource": "",
+                      "operation": "",
+                      "remote_endpoint": "",
+                      "req_info": ""
+                   },
+                   "internal-target-pattern": "resource=[resource],operation=[operation],remote-endpoint=[remote_endpoint],req-info=[req_info]",
+                   "internal-metric-type": "Counter"
+                 },
+                 {
+                   "id": "eric-nrf-nnrf-disc-successful-responses-sent",
+                   "size": 8,
+                   "collection-method": "cc",
+                   "description": "Total number of successful responses sent by NRF discovery service",
+                   "condition": "Incremented when requests are successfully handled and replied by NRF discovery service",
+                   "aggregation": "sum",
+                   "measurement-status": "used",
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": true,
+                   "internal-metric-name": "eric_nrf_nnrf_disc_successful_responses_sent",
+                   "internal-instrumentation-label": {
+                      "resource": "",
+                      "operation": "",
+                      "remote_endpoint": "",
+                      "req_info": "",
+                      "status_code": ""
+                   },
+                   "internal-target-pattern": "resource=[resource],operation=[operation],remote-endpoint=[remote_endpoint],req-info=[req_info],status-code=[status_code]",
+                   "internal-metric-type": "Counter"
+                 },
+                 {
+                   "id": "eric-nrf-nnrf-disc-unsuccessful-responses-sent",
+                   "size": 8,
+                   "collection-method": "cc",
+                   "description": "Total number of failure responses handled by NRF discovery service",
+                   "condition": "Incremented when requests are not successfully replied by NRF discovery service",
+                   "aggregation": "sum",
+                   "measurement-status": "used",
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": true,
+                   "internal-metric-name": "eric_nrf_nnrf_disc_unsuccessful_responses_sent",
+                   "internal-instrumentation-label": {
+                      "resource": "",
+                      "operation": "",
+                      "remote_endpoint": "",
+                      "req_info": "",
+                      "status_code": "",
+                      "detailed_info": ""
+                   },
+                   "internal-target-pattern": "resource=[resource],operation=[operation],remote-endpoint=[remote_endpoint],req-info=[req_info],status-code=[status_code],detailed-info=[detailed_info]",
+                   "internal-metric-type": "Counter"
+                 },
+                 {
+                   "id": "eric-nrf-nnrf-disc-requests-sent",
+                   "size": 8,
+                   "collection-method": "cc",
+                   "description": "Total number of requests sent by NRF discovery service",
+                   "condition": "Incremented when requests are sent by NRF discovery service",
+                   "aggregation": "sum",
+                   "measurement-status": "used",
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": true,
+                   "internal-metric-name": "eric_nrf_nnrf_disc_requests_sent",
+                   "internal-instrumentation-label": {
+                      "resource": "",
+                      "operation": "",
+                      "remote_endpoint": ""
+                   },
+                   "internal-target-pattern": "resource=[resource],operation=[operation],remote-endpoint=[remote_endpoint]",
+                   "internal-metric-type": "Counter"
+                 },
+                 {
+                   "id": "eric-nrf-nnrf-disc-successful-responses-recv",
+                   "size": 8,
+                   "collection-method": "cc",
+                   "description": "Total number of successful responses received by NRF discovery service",
+                   "condition": "Incremented when successful requests are received by NRF discovery service",
+                   "aggregation": "sum",
+                   "measurement-status": "used",
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": true,
+                   "internal-metric-name": "eric_nrf_nnrf_disc_successful_responses_recv",
+                   "internal-instrumentation-label": {
+                      "resource": "",
+                      "operation": "",
+                      "remote_endpoint": "",
+                      "status_code": ""
+                   },
+                   "internal-target-pattern": "resource=[resource],operation=[operation],remote-endpoint=[remote_endpoint],status-code=[status_code]",
+                   "internal-metric-type": "Counter"
+                 },
+                 {
+                   "id": "eric-nrf-nnrf-disc-unsuccessful-responses-recv",
+                   "size": 8,
+                   "collection-method": "cc",
+                   "description": "Total number of failure responses received by NRF discovery service",
+                   "condition": "Incremented when failure requests are received by NRF discovery service",
+                   "aggregation": "sum",
+                   "measurement-status": "used",
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": true,
+                   "internal-metric-name": "eric_nrf_nnrf_disc_unsuccessful_responses_recv",
+                   "internal-instrumentation-label": {
+                      "resource": "",
+                      "operation": "",
+                      "remote_endpoint": "",
+                      "status_code": ""
+                   },
+                   "internal-target-pattern": "resource=[resource],operation=[operation],remote-endpoint=[remote_endpoint],status-code=[status_code]",
+                   "internal-metric-type": "Counter"
+                 },
+                 {
+                   "id": "eric-nrf-nnrf-disc-unsuccessful-responses-recv-timeout",
+                   "size": 8,
+                   "collection-method": "cc",
+                   "description": "Total number of timeout requests sent by NRF discovery service",
+                   "condition": "Incremented when a requests sent by NRF discovery service is timeout",
+                   "aggregation": "sum",
+                   "measurement-status": "used", 
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": true,
+                   "service-name": "eric-nrf-nnrf-disc",
+                   "fault-name": "nrfDiscRemoteTimeOut",
+                   "fault-description": "NRF eric-nrf-nnrf-disc Service, response timeout exceed threshold for certain remote endpoint",
+                   "internal-metric-name": "eric_nrf_nnrf_disc_unsuccessful_responses_recv",
+                   "internal-instrumentation-label": {
+                      "remote_endpoint": "",
+                      "status_code": "timeout"
+                   },
+                   "internal-target-pattern": "remote-endpoint=[remote_endpoint]",
+                   "internal-metric-type": "Counter"
+                 }
+              ]
+            },
+            {
+              "name": "eric-nrf-nnrf-prov-group",
+              "generation": "5GS",
+              "validity": true,
+              "description": "NRF provision counter group",
+              "version": "0.1.7",
+              "measurement-type": [
+                 {
+                   "id": "eric-nrf-nnrf-prov-requests-recv",
+                   "size": 8,
+                   "collection-method": "cc",
+                   "description": "Total number of OpenAPI requests received by NRF provision service",
+                   "condition": "Incremented when OpenAPI requests are received by NRF provision service",
+                   "aggregation": "sum",
+                   "measurement-status": "used",
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": true,
+                   "internal-metric-name": "eric_nrf_nnrf_prov_requests_recv",
+                   "internal-instrumentation-label": {
+                      "resource": "",
+                      "operation": "",
+                      "remote_endpoint": ""
+                   },
+                   "internal-target-pattern": "resource=[resource],operation=[operation],remote-endpoint=[remote_endpoint]",
+                   "internal-metric-type": "Counter"
+                 },
+                 {
+                   "id": "eric-nrf-nnrf-prov-successful-responses-sent",
+                   "size": 8,
+                   "collection-method": "cc",
+                   "description": "Total number of successful responses sent by NRF provision service",
+                   "condition": "Incremented when requests are successfully handled and replied by NRF provision service",
+                   "aggregation": "sum",
+                   "measurement-status": "used",
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": true,
+                   "internal-metric-name": "eric_nrf_nnrf_prov_successful_responses_sent",
+                   "internal-instrumentation-label": {
+                      "resource": "",
+                      "operation": "",
+                      "remote_endpoint": "",
+                      "status_code": ""
+                   },
+                   "internal-target-pattern": "resource=[resource],operation=[operation],remote-endpoint=[remote_endpoint],status-code=[status_code]",
+                   "internal-metric-type": "Counter"
+                 },
+                 {
+                   "id": "eric-nrf-nnrf-prov-unsuccessful-responses-sent",
+                   "size": 8,
+                   "collection-method": "cc",
+                   "description": "Total number of failure responses handled by NRF provision service",
+                   "condition": "Incremented when requests are not successfully replied by NRF provision service",
+                   "aggregation": "sum",
+                   "measurement-status": "used",
+                   "measurement-result": "Integer value",
+                   "multiplicity": 1,
+                   "reset-at-gran-period": true,
+                   "internal-metric-name": "eric_nrf_nnrf_prov_unsuccessful_responses_sent",
+                   "internal-instrumentation-label": {
+                      "resource": "",
+                      "operation": "",
+                      "remote_endpoint": "",
+                      "status_code": "",
+                      "detailed_info": ""
+                   },
+                   "internal-target-pattern": "resource=[resource],operation=[operation],remote-endpoint=[remote_endpoint],status-code=[status_code],detailed-info=[detailed_info]",
+                   "internal-metric-type": "Counter"
+                 }
+               ]
+            }
+        ]
+      }
+   },
+   "name": "ADP-GS-PM-BR",
+   "title": "The ADP-GS-PM-BR configuration"
+}

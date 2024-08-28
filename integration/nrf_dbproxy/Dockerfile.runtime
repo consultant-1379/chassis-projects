@@ -1,0 +1,22 @@
+FROM armdocker.rnd.ericsson.se/proj-ipworks/buildtool-java:v2 as builder
+MAINTAINER ezganlu/ericsson
+RUN wget --no-check-certificate -O /bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_amd64
+RUN chmod +x /bin/dumb-init
+COPY ["java", "/tmp/"]
+
+RUN cd /tmp && ./gradlew clean && ./gradlew build && ./gradlew install
+
+
+
+
+# make runtime image
+FROM armdocker.rnd.ericsson.se/proj-ipworks/sles-java-tools:v1
+
+
+WORKDIR /home/dbproxy
+RUN mkdir -p /etc/log4j2/
+COPY start_dbproxy.sh /home/dbproxy
+COPY config/log4j2 /etc/log4j2/
+COPY --from=builder /tmp/build/install/db_proxy/lib /home/dbproxy/lib
+COPY --from=builder /bin/dumb-init /usr/bin/dumb-init
+CMD ["/home/dbproxy/start_dbproxy.sh", "-Djava.ext.dirs=lib", "ericsson.core.nrf.dbproxy.DBProxyServer"]

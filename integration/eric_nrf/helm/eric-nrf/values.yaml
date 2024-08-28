@@ -1,0 +1,84 @@
+# ########################################################################### #
+# Deployment Tags, select which 5g@nrf service would like to deploy
+# ########################################################################### #
+tags:
+  eric-nrf-all: false
+  eric-nrf-common: true
+  eric-nrf-discovery: true
+  eric-nrf-management: true
+  eric-nrf-accesstoken: false
+  eric-nrf-provision: true
+  eric-nrf-dns: false
+
+global:
+  timezone: UTC
+
+  #ip protocol stack mode: ipv4 or ipv6
+  ipStackMode: ipv4
+
+  serviceType: ClusterIP
+
+  istio:
+    sidecar:
+      inject: true
+    tlsHandledByServiceMesh: true
+    ingresstls:
+      mode: MUTUAL
+      minProtocolVersion: TLSV1_2
+      maxProtocolVersion: TLSV1_3
+      cipherSuites: {}
+      secretName: eric-ccrc-sbi-server-certs
+      certsPath: /etc/istio/ingressgateway-certs/
+      serverCertificate: tls.crt
+      privateKey: tls.key
+      caSecretName: eric-ccrc-sbi-server-ca-certs
+      caCertsPath: /etc/istio/ingressgateway-ca-certs/
+      caCertificates: ca-chain.cert.pem
+    destinationtls:
+      mode: MUTUAL
+      secretName: eric-ccrc-sbi-client-certs
+      certsPath: /etc/istio/egress-certs/
+      clientCertificate: tls.crt
+      privateKey: tls.key
+      caSecretName: eric-ccrc-sbi-client-ca-certs
+      caCertsPath: /etc/istio/egress-ca-cert/
+      caCertificates: ca-chain.cert.pem
+
+  #If the ADP deployed in a different namespace with eric-nrf
+  #please assign the namespace of ADP when install nrf.
+  adpNamespace:
+
+  nameOverride:
+    #If the chart eric_nrf_common.nameOverride is configured, this value should also be set the same.
+    #If the chart eric_nrf_common.nameOverride is not configured, this value need not change.
+    nrf_common: eric-nrf-common
+
+  registry:
+    url: armdocker.rnd.ericsson.se
+    pullSecret:
+  imageCredentials:
+    pullPolicy: IfNotPresent
+
+  adp:
+    kafka_connection: "eric-data-message-bus-kf"
+    kafka_connection_port: "9092"
+    cmm_service: "http://eric-cm-mediator"
+    cmm_service_port_path: "5003/cm/api/v1.1"
+    cmm_config_schema_prefix_name: "ericsson-nrf"
+    cmm_config_module_name: "ericsson-nrf:nrf"
+    cmm_config_topic: "nrf-agent-cmproxy"
+
+  db:
+    info:
+      configmap:
+        name: "dbinfo"
+        mountpath: "/etc"
+    multisite:
+      configmap:
+        name: "multisite"
+        mountpath: "/etc"
+
+  dbproxy:
+    configmap:
+      name: "dbproxy-attributes"
+      mountpath: "/etc"

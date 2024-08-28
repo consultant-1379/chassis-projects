@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: robot-ft
+  labels:
+    app: robot-ft
+spec:
+  type: NodePort
+  ports:
+  - port: 3000
+    name: http2-withoutls
+  - port: 3001
+    name: http-withoutls
+  - port: 3002
+    name: http-withtls 
+  selector:
+    app: robot-ft
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: robot-ft
+  labels:
+    app: robot-ft
+  annotations:
+    sidecar.istio.io/inject: "false"
+spec:
+  selector:
+    matchLabels:
+      app: robot-ft
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: robot-ft
+    spec:
+      containers:
+      - name: robot-ft
+        image: armdocker.rnd.ericsson.se/proj-ipworks/robot_nrf:2.0 
+        imagePullPolicy: Always 
+        command: [ "/bin/sh" ]
+        args: [ "-c", "while true; do sleep 10; done" ]
+        volumeMounts:
+        - mountPath: /robot-ft
+          name: ft-volume
+        env:
+        - name: CONTAINER_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+      volumes:
+      - name: ft-volume
+        hostPath:
+          path: /home/pdu/go/src/gerrit.ericsson.se/udm/
+          type: Directory

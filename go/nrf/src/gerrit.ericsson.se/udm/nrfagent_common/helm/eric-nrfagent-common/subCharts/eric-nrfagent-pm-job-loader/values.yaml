@@ -1,0 +1,20 @@
+pmjob:
+  nf_type: "NRFAgent"
+  load_pmjob_name: "eric-nrf-agent-pm-job-loader"
+  unload_pmjob_name: "eric-nrf-agent-pm-job-unloader"
+  pm_br_schema_name: "adp-gs-pm-br"
+  pm_br_conf_name: "adp-gs-pm-br"
+  pm_br_skeleton_file: "/pm_br_config_skeleton.json"
+  pm_br_service_file: "/pm_br_config_eric_nrf_agent.json"
+
+  image:
+    name: "nrfagentpmjobloader"
+    tag: latest
+    pullPolicy: IfNotPresent
+
+global:
+  cm_uri_prefix: http://eric-cm-mediator:5003/cm/api/v1.1
+
+  imageCredentials:
+    repository: armdocker.rnd.ericsson.se/proj-ipworks
+

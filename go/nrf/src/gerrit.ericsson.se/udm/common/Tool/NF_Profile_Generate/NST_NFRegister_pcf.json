@@ -1,0 +1,101 @@
+{
+  "nfInstanceId": "2911e29b-bd6a-4fa5-bb8b-a8cf8e369d96",
+  "nfType": "PCF",
+  "nfStatus": "REGISTERED",
+  "plmn": 
+     {
+      "mcc": "460",
+      "mnc": "00"
+   },
+  "sNssais": [
+    {
+      "sst": 0,
+      "sd": "0"
+    },
+    {
+      "sst": 1,
+      "sd": "1"
+    }  
+  ],
+  "nsiList": [
+    "111111",
+    "222222",
+    "333333"
+  ],
+  "ipv4Addresses": [
+         "127.0.0.1"
+  ],
+  "capacity": 100,
+  "pcfInfo": {
+    "dnnList": [
+      "province1.mnc012.mcc345.gprs",
+      "ggsn-cluster-A.provinceB.mnc012.mcc345.gprs"
+    ]
+  },
+  "nfServices": [
+    {
+      "serviceInstanceId": "npcf-smpc-0001",
+      "serviceName": "npcf-smpolicycontrol",
+      "version": [],
+      "schema": "https",
+      "ipEndPoints": [
+         {
+          "ipv4Address": "127.0.0.1",
+          "port": 3870
+         }
+       ],
+      "allowedPlmns": [
+        {
+         "mcc": "460",
+         "mnc": "00"
+        }
+      ],
+      "allowedNfTypes": [
+             "SMF", "UDM"
+     ]
+    }, 
+    {
+      "serviceInstanceId": "npcf-ampc-0001",
+      "serviceName": "npcf-comm",
+      "version": [{
+        "apiVersionInUri":"v1",
+        "apiFullVersion": "1.R15.1.1 " ,
+        "expiry":"2020-07-06T02:54:32Z"}],
+      "schema": "https://",
+      "ipEndPoints":[
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30088
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30089
+        },
+        {
+          
+          "transport": "TCP",
+          "port": 30090
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30089
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30089
+        }
+      ],
+      "allowedPlmns": [
+        {
+         "mcc": "460",
+         "mnc": "00"
+        }
+      ]
+    }
+  ]
+}  
+

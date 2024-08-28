@@ -1,0 +1,199 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "{{ .Values.serviceport.metrics_port }}"
+  name: {{ .Values.global.nf_instance_name }}-{{ .Values.service.name_nrfagent_disc }}
+  labels:
+    app: {{ .Values.global.nf_instance_name }}-{{ .Values.service.name_nrfagent_disc }}
+spec:
+  type: NodePort
+  ports:
+  - port: {{ .Values.serviceport.disc_h1_withouttls }}
+    name: http-withoutls
+  - port: {{ .Values.serviceport.disc_h2_withouttls }}
+    name: http2-withoutls
+  - port: {{ .Values.serviceport.metrics_port }}
+    name: http-metrics
+  selector:
+    app: {{ .Values.global.nf_instance_name }}-{{ .Values.service.name_nrfagent_disc }}
+---
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ .Values.global.nf_instance_name }}-{{ .Values.service.name_nrfagent_disc }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.global.nf_instance_name }}-{{ .Values.service.name_nrfagent_disc }}
+  replicas: {{ .Values.replicacount.nrfagent_disc }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.global.nf_instance_name }}-{{ .Values.service.name_nrfagent_disc }}
+    spec:
+      serviceAccountName: {{ .Values.global.serviceAccountName }}
+      volumes:
+      - name: {{ .Values.configmap.name }}
+        emptyDir: {}
+      - name: {{ .Values.configmap.nrfagent_conf }}
+        configMap:
+          name: {{ .Values.configmap.nrfagent_conf }}
+      - name: {{ .Values.jsonschema.configmap.name }}
+        configMap:
+          name: {{ .Values.jsonschema.configmap.name }}
+      containers:
+      - name: {{ .Values.service.name_nrfagent_disc }}
+        image: {{ .Values.global.imageCredentials.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.imageCredentials.pullPolicy }}
+        args:
+        - start_disc
+        - -maxstreams
+        - {{ .Values.args.maxstreams }}
+        - -loglevel
+        - {{ .Values.args.loglevel }}
+        - -port_h1
+        - {{ .Values.serviceport.disc_h1_withouttls | quote }}
+        - -port_h2c
+        - {{ .Values.serviceport.disc_h2_withouttls | quote }}
+        - -filenotify
+        - {{ .Values.configmap.mountpath | quote }}
+        - -config
+        - {{ .Values.args.confFile }}
+        env:
+        - name: NAME_NRFAGENT_REG
+          value: {{ .Values.global.nf_instance_name }}-{{ .Values.service.name_nrfagent_reg }}
+        - name: NAME_NRFAGENT_REG_PORT
+          value: {{ .Values.serviceport.reg_h2_withouttls | quote }}
+        - name: NF_INSTANCE_NAME
+          value: {{ .Values.global.nf_instance_name }}
+        - name: MESSAGE_BUS_KAFKA
+          value: {{ .Values.global.kafka_connection }}
+        - name: MESSAGE_BUS_TOPIC
+          value: {{ .Values.global.nf_instance_name }}-{{ .Values.env.topicname }}
+        - name: CM_URI_PREFIX
+          value: {{ .Values.global.cm_uri_prefix }}/
+        - name: CM_CONFNAME_PREFIX
+          value: {{ .Values.global.nf_instance_name }}
+        - name: POD_NAMESPACE
+          value: {{ .Release.Namespace }}
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: SCHEMA_DIR
+          value: {{ .Values.jsonschema.configmap.mountpath }}
+        - name: SCHEMA_NF_PROFILE
+          value: {{ .Values.jsonschema.nfProfileInSearchResult.fileName }}
+        - name: SCHEMA_PATCH_DOCUMENT
+          value: {{ .Values.jsonschema.patchDocument.fileName }}
+        resources:
+          requests:
+            memory: {{ .Values.resources.memory }}
+            cpu: {{ .Values.resources.cpu }}
+          limits:
+            memory: {{ .Values.resources.maxMemory }}
+            cpu: {{ .Values.resources.maxCpu }}
+        livenessProbe:
+          exec:
+            command:
+            - curl
+            - -f
+            - http://localhost:{{ .Values.serviceport.disc_h1_withouttls }}/nrf-agent-disc/v1/health
+            initialDelaySeconds: {{ .Values.liveness.initialDelay }}
+            periodSeconds: {{ .Values.liveness.period }}
+        readinessProbe:
+          exec:
+            command:
+            - curl
+            - -f
+            - http://localhost:{{ .Values.serviceport.disc_h1_withouttls }}/nrf-agent-disc/v1/ready-check
+            initialDelaySeconds: {{ .Values.readiness.initialDelay }}
+            periodSeconds: {{ .Values.readiness.period }}
+        volumeMounts:
+        - name: {{ .Values.configmap.name }}
+          mountPath: {{ .Values.configmap.mountpath }}
+        - name: {{ .Values.configmap.nrfagent_conf }}
+          readOnly: true
+          mountPath: {{ .Values.configmap.configmap_confile }}
+        - name: {{ .Values.jsonschema.configmap.name }}
+          mountPath: {{ .Values.jsonschema.configmap.mountpath }}
+        ports:
+        - containerPort: {{ .Values.serviceport.disc_h1_withouttls }}
+          name: http-withoutls
+        - containerPort: {{ .Values.serviceport.disc_h2_withouttls }}
+          name: http2-withoutls
+        - containerPort: {{ .Values.serviceport.metrics_port }}
+          name: http-metrics
+      - name: {{ .Values.service.name_nrfagent_disc }}-k8s-sidecar
+        image: {{ .Values.global.imageCredentials.repository }}/{{ .Values.sidecar.image.name }}:{{ .Values.sidecar.image.tag }}
+        imagePullPolicy: {{ .Values.sidecar.image.pullPolicy }}
+        volumeMounts:
+        - name: {{ .Values.configmap.name }}
+          mountPath: {{ .Values.configmap.mountpath }}
+        resources:
+          requests:
+            memory: {{ .Values.sidecar.resources.requests.memory }}
+            cpu: {{ .Values.sidecar.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.sidecar.resources.limits.memory }}
+            cpu: {{ .Values.sidecar.resources.limits.cpu }}
+        env:
+        - name: LABEL
+          value: {{ .Values.sidecar.label }}
+        - name: FOLDER
+          value: {{ .Values.configmap.mountpath }}
+      - name: {{ .Values.service.name_nrfagent_disc }}-leader-elector
+        image: {{ .Values.global.imageCredentials.repository }}/{{ .Values.elector.image.name }}:{{ .Values.elector.image.tag }}
+        imagePullPolicy: {{ .Values.elector.image.pullPolicy }}
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - /bin/sh
+              - -c
+              - kill `pidof server`
+        args:
+        - --id=$(POD_IP)
+        - --election={{ .Values.service.name_nrfagent_disc }}-leader-elector
+        - --http=localhost:{{ .Values.elector.port }}
+        - --election-namespace=$(POD_NAMESPACE)
+        ports:
+        - containerPort: {{ .Values.elector.port }}
+          protocol: TCP
+        resources:
+          requests:
+            memory: {{ .Values.elector.resources.requests.memory }}
+            cpu: {{ .Values.elector.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.elector.resources.limits.memory }}
+            cpu: {{ .Values.elector.resources.limits.cpu }}
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+      initContainers:
+      - name: {{ .Values.service.name_nrfagent_disc }}-init-container
+        image: {{ .Values.global.imageCredentials.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.imageCredentials.pullPolicy }}
+        command: ['sh', '-c', 'until /etc/nrfagent/scripts/check_nrfagent_cm.sh; do echo waiting for cm mediator ready; sleep 5; done;']
+        env:
+        - name: CM_URI_PREFIX
+          value: {{ .Values.global.cm_uri_prefix }}/
+        - name: CM_CHECK_ENABLED
+          value: {{ .Values.service.cm_check_enable }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 100%
+      maxUnavailable: 0

@@ -1,0 +1,91 @@
+{
+  "nfInstanceId": "2911e29b-bd6a-4fa5-bb8b-a8cf8e369d03",
+  "nfType": "UPF",
+  "nfStatus": "REGISTERED",
+  "plmn": {
+    "mcc": "460",
+    "mnc": "00"
+  },
+  "sNssais": [
+    {
+      "sst": 0,
+      "sd": "0"
+    },
+    {
+      "sst": 1,
+      "sd": "1"
+    }   
+  ],
+  "nsiList": [
+    "111111",
+    "222222",
+    "333333"
+  ],
+  "fqdn": "seliius03690.seli.gic.ericsson.se",
+  "capacity": 100,
+  "upfInfo": {
+    "sNssaiUpfInfoList": [
+      {
+        "sNssai": {
+          "sst": 0,
+          "sd": "0"
+        },
+        "dnnUpfInfoList": [
+          {
+          "dnn": "01"
+          },
+           {
+          "dnn": "02"
+          }
+        ]
+      }
+    ]
+  },
+  "nfServices": [
+    {
+      "serviceInstanceId": "nupf-test-01",
+      "serviceName": "nupf-test",
+      "version": [{
+        "apiVersionInUri":"v1",
+        "apiFullVersion": "1.R15.1.1 " ,
+        "expiry":"2020-07-06T02:54:32Z"}],
+      "schema": "https",
+      "fqdn": "seliius03695.seli.gic.ericsson.se",
+      "ipEndPoints":[
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30088
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000",
+          "transport": "TCP",
+          "port": 30089
+        },
+        {
+          "ipv6Address": "fe80:1234:0000:0000:0000:0000:0000:0000", 
+          "transport": "TCP",
+          "port": 30090
+        }
+      ],
+      "defaultNotificationSubscriptions": [
+        {
+          "notificationType": "N1_MESSAGES",
+          "callbackUri": "/nnrf-nfm/v1/nf-instances/udr-5g-01",
+          "n1MessageClass": "5GMM",
+          "n2InformationClass": "SM"
+        },
+        {
+          "notificationType": "N1_MESSAGES",
+          "callbackUri": "/nnrf-nfm/v1/nf-instances/udr-5g-02",
+          "n1MessageClass": "5GMM",
+          "n2InformationClass": "SM"
+        }
+      ],
+      "allowedNfTypes": [
+        "UDM", "AUSF", "UDR", "PCF", "AMF", "SMF"
+      ]
+      
+    }
+  ]
+}
